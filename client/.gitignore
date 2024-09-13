@@ -12,9 +12,7 @@ dist
 dist-ssr
 *.local
 
-# Ignore environment files in the server folder
-server/.env
-server/.env.*
+
 
 # Editor directories and files
 .vscode/*
