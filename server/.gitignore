@@ -14,3 +14,14 @@ temp/
 # Build output
 dist/
 .env
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Build output
+dist/
+build/
