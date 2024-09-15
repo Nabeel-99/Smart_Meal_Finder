@@ -7,6 +7,10 @@ const metricsSchema = new mongoose.Schema(
       ref: "user",
       required: true,
     },
+    gender: {
+      type: String,
+      required: true,
+    },
     age: {
       type: Number,
       required: true,

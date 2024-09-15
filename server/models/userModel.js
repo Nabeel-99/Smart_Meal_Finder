@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     bodyMetrics: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "body_metrics",
+      ref: "metrics",
       required: false,
     },
   },

@@ -16,7 +16,7 @@ export const verifyUser = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     if (!token) {
-      res.status(400).json({ message: "Access denied. No Token provided" });
+      res.status(401).json({ message: "Access denied. Unauthorized" });
     }
     const verifiedToken = jwt.verify(token, process.env.SECRET_KEY);
     req.userId = verifiedToken.userId;
