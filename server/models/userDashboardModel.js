@@ -7,10 +7,53 @@ const userDashboardSchema = new mongoose.Schema(
       ref: "user",
       required: true,
     },
-    recipeId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "recipe",
-      required: true,
+    generatedMeals: {
+      breakfast: [
+        {
+          recipeId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "recipe",
+          },
+          isSelected: {
+            type: Boolean,
+            default: false,
+          },
+        },
+      ],
+      lunch: [
+        {
+          recipeId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "recipe",
+          },
+          isSelected: {
+            type: Boolean,
+            default: false,
+          },
+        },
+      ],
+      dinner: [
+        {
+          recipeId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "recipe",
+          },
+          isSelected: {
+            type: Boolean,
+            default: false,
+          },
+        },
+      ],
+    },
+    selectedRecipes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "recipe",
+      },
+    ],
+    totalCalories: {
+      type: Number,
+      default: 0,
     },
     generatedAt: {
       type: Date,

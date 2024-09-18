@@ -32,7 +32,7 @@ const metricsSchema = new mongoose.Schema(
       required: true,
     },
     dietaryPreferences: {
-      type: String,
+      type: [String],
       required: true,
     },
   },

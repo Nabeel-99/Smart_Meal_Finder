@@ -7,11 +7,11 @@ const recipeSchema = new mongoose.Schema(
       required: true,
     },
     ingredients: {
-      type: Array,
+      type: [String],
       required: true,
     },
     instructions: {
-      type: Array,
+      type: [String],
       required: true,
     },
     image: {
@@ -23,7 +23,7 @@ const recipeSchema = new mongoose.Schema(
       required: true,
     },
     dietaryPreferences: {
-      type: String,
+      type: [String],
       required: true,
     },
     videoLink: {
@@ -32,6 +32,10 @@ const recipeSchema = new mongoose.Schema(
     },
     sourceUrl: {
       type: String,
+      required: true,
+    },
+    calories: {
+      type: Number,
       required: true,
     },
   },
