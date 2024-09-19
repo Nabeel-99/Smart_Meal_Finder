@@ -9,7 +9,7 @@ const recipeOfTheDaySchema = new mongoose.Schema(
     },
     selectedRecipes: [
       {
-        recipe: { type: mongoose.Schema.Types.ObjectId, ref: "recipe" },
+        recipeId: { type: mongoose.Schema.Types.ObjectId, ref: "recipe" },
         addedAt: { type: Date, default: Date.now },
       },
     ],

@@ -42,7 +42,7 @@ export const getCalorieIntake = (goal, tdee) => {
 const getSpoonacularRecipes = async (
   category,
   goal,
-  dietaryPreferences = {}
+  dietaryPreferences = []
 ) => {
   const calorieRanges = {
     muscle_gain: {
@@ -59,27 +59,20 @@ const getSpoonacularRecipes = async (
     },
   };
   const { minCalories, maxCalories } = calorieRanges[goal];
-  const dietaryParams = {
-    vegan: dietaryPreferences === "vegan" || false,
-    vegetarian: dietaryPreferences === "vegetarian" || false,
-    glutenFree: dietaryPreferences === "gluten_free" || false,
-    dairyFree: dietaryPreferences === "dairy_free" || false,
-  };
+  const dietaryPref =
+    dietaryPreferences.length > 0 ? dietaryPreferences[0] : null;
   try {
     const response = await axios.get(`${spoonacularAPI}`, {
       params: {
         number: 15,
         addRecipeInformation: true,
+        addRecipeInstructions: true,
         fillIngredients: true,
         type: category,
         minCalories: minCalories,
         maxCalories: maxCalories,
-        ...Object.fromEntries(
-          Object.entries(dietaryParams)
-            .filter(([key, value]) => value)
-            .map(([key, value]) => [key, "true"])
-        ),
-        apiKey: process.env.SPOONACULAR_KEY_RECIPE_QUERY,
+        ...(dietaryPref ? { diet: dietaryPref } : {}),
+        apiKey: process.env.SPOONACULAR_KEY_RECIPE_ID,
       },
     });
 
@@ -179,11 +172,13 @@ export const filterAndRankRecipes = (recipes) => {
       ingredients = recipe.extendedIngredients
         ? recipe.extendedIngredients.map((ingredient) => ingredient.name)
         : [];
-      instructions = recipe.analyzedInstructions
-        ? recipe.analyzedInstructions.flatMap((instruction) =>
-            instruction.steps.map((step) => step.step)
-          )
-        : [];
+      instructions =
+        recipe.analyzedInstructions && recipe.analyzedInstructions.length > 0
+          ? recipe.analyzedInstructions.flatMap((instruction) =>
+              instruction.steps.map((step) => step.step)
+            )
+          : [];
+      if (instructions.length === 0) return;
       mealType = recipe.dishTypes || [];
       dietaryPreferences = [
         recipe.vegetarian ? "Vegetarian" : "",
@@ -222,8 +217,11 @@ export const filterAndRankRecipes = (recipes) => {
       }
     }
 
-    // Push recipe to each relevant category
+    // Ensure category array exists
     category.forEach((cat) => {
+      if (!categories[cat]) {
+        categories[cat] = [];
+      }
       categories[cat].push({
         title,
         ingredients,
