@@ -5,8 +5,8 @@ import User from "../models/userModel.js";
 import {
   calculateBMR,
   calculateTDEE,
-  fetchAPIRecipes,
-  filterAndRankRecipes,
+  categorizeRecipes,
+  fetchDashboardRecipes,
   getCalorieIntake,
 } from "../utils/recipeLogic.js";
 
@@ -44,8 +44,8 @@ const generateDashboardRecipes = async (req, res) => {
     const TDEE = calculateTDEE(BMR, exerciseLevel);
     const calorieTarget = getCalorieIntake(goal, TDEE);
 
-    const allRecipes = await fetchAPIRecipes(goal, dietaryPreferences);
-    const filteredAndRankedRecipes = filterAndRankRecipes(allRecipes);
+    const allRecipes = await fetchDashboardRecipes(goal, dietaryPreferences);
+    const filteredAndRankedRecipes = await categorizeRecipes(allRecipes);
     return {
       message: "Dashboard recipes fetched successfully",
       calorieTarget: calorieTarget,
