@@ -17,7 +17,7 @@ const Home = () => {
       </p>
       <div className="relative pt-10  bg-gradient-to-b  from-[#08090a] to-[#02031A] w-full pb-9">
         <div className="absolute -bottom-10 h-44 w-full bg-gradient-to-t from-[#08090a]  to-[#02031A] "></div>
-        <div className="flex flex-col md:flex-row items-center justify-center gap-10">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-10 px-8 lg:px-0">
           <GridCard
             header={"Get recipes based on Ingredients"}
             image={ingredients}

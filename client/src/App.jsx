@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Home from "./sections/Home";
 import Features from "./sections/Features";
 import Hero from "./pages/Hero";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Hero />} />
         </Routes>
+        <Footer />
       </Router>
     </div>
   );

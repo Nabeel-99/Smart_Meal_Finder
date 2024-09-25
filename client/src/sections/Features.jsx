@@ -5,7 +5,9 @@ import formImgMobile from "../assets/form-mobile.png";
 import bgAlgorithm from "../assets/algorithm-bg.png";
 import bgAlgorithmMobile from "../assets/algorithm-bg-mobile.png";
 import formMetrics from "../assets/form-metrics.png";
+import formMetricsMobile from "../assets/form-metrics-mobile.png";
 import personLG from "../assets/person-lg.png";
+import personMobile from "../assets/person-small.png";
 import { Link } from "react-router-dom";
 const Features = () => {
   return (
@@ -13,22 +15,22 @@ const Features = () => {
       <h1 className="text-[16px] lg:text-xl tracking-[5px] font-medium">
         FEATURES
       </h1>
-      <div className="flex flex-col gap-12 lg:gap-0 lg:flex-row items-start  pt-10">
+      <div className="flex flex-col gap-12 lg:gap-0 lg:flex-row items-start px-8 lg:px-0  pt-10">
         <div className="flex flex-col gap-6">
           <p className="font-bold text-2xl lg:text-4xl tracking-tight">
             Ingredient-Based
             <span className="block"> Recipe Generation</span>
           </p>
-          <p className="text-[#bababa] text-sm lg:text-lg">
+          <p className="text-[#bababa] text-sm md:text-lg">
             Meals are generated based on{" "}
             <span className="text-[#ffffff]">provided items</span>
-            <span className="block">
+            <span className="md:block">
               {" "}
               giving you personalized recipes that utilize your{" "}
             </span>
             available ingredients.
           </p>
-          <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-6 text-xs lg:text-sm">
             <div className="flex items-center gap-1">
               <FaKeyboard /> Entering ingredients
             </div>
@@ -81,42 +83,42 @@ const Features = () => {
         </div>
       </div>
       {/* bigger screen */}
-      <div className="hidden md:flex relative  items-center gap-10 pt-44 pb-44">
+      <div className="hidden md:flex relative  items-start  gap-10 pt-44 px-10 xl:px-64 pb-44">
         <div className="flex flex-col gap-4">
           <h1 className="text-3xl font-bold">Multiple Recipe Suggestions</h1>
           <p className="text-lg">
             To minimize decision fatigue, 3-5 recipes are{" "}
-            <span className="block">
-              generated with option to view more, making it easy to
+            <span className="lg:block">
+              generated with option to view more, making it easy to choose your
+              preferred meal.
             </span>{" "}
-            choose your preferred meal.
           </p>
         </div>
         <div className="flex flex-col gap-4">
           <h1 className="text-3xl font-bold">Ingredient Substitutions</h1>
           <p className="text-lg">
             In the absence of certain ingredients,{" "}
-            <span className="block">
+            <span className="lg:block">
               {" "}
               suitable alternatives are suggested to accommodate meal
+              preparation.
             </span>{" "}
-            preparation.
           </p>
         </div>
-        <div className="absolute top-36 -z-10">
+        <div className="absolute  top-56 lg:top-36 -z-10">
           <img src={bgAlgorithm} alt="" />
         </div>
       </div>
       {/* mobile screen */}
-      <div className="md:hidden flex flex-col gap-44 pt-20  relative">
+      <div className="md:hidden flex flex-col gap-44 pt-20 px-8 relative">
         <div className="flex flex-col gap-4">
           <h1 className="text-xl font-bold">Multiple Recipe Suggestions</h1>
           <p className="text-sm">
             To minimize decision fatigue, 3-5 recipes are{" "}
             <span className="block">
-              generated with option to view more, making it easy to
+              generated with option to view more, making it easy to choose your
+              preferred meal.
             </span>{" "}
-            choose your preferred meal.
           </p>
         </div>
         <div className="absolute top-52  -z-10">
@@ -129,16 +131,16 @@ const Features = () => {
             <span className="block">
               {" "}
               suitable alternatives are suggested to accommodate meal
+              preparation.
             </span>{" "}
-            preparation.
           </p>
         </div>
       </div>
 
       {/* metrics bigger screen */}
-      <div className="flex flex-col gap-10 pt-64">
+      <div className="hidden md:flex flex-col items-center gap-10 px-20 pt-64">
         <div className="flex items-center gap-20">
-          <h1 className="text-[40px] font-bold">
+          <h1 className="text-2xl xl:text-[40px] leading-[2.5rem] font-bold">
             Body Metrics-Based{" "}
             <span className="block">Meal Recommendations</span>{" "}
           </h1>
@@ -155,9 +157,9 @@ const Features = () => {
           <img
             src={formMetrics}
             alt=""
-            className="max-h-[700px] max-w-[900px]"
+            className="max-h-[700px] max-w-[900px] px-20 xl:px-0"
           />
-          <div className="absolute bottom-10 left-8  gap-8">
+          <div className="absolute bottom-10 left-28 xl:left-8  gap-8">
             <p className="text-[#A3A3A3] text-sm lg:text-xl">
               The Algorithm creates personalized daily meals,{" "}
               <span className="block">
@@ -174,8 +176,52 @@ const Features = () => {
               </Link>
             </div>
           </div>
+          <div className="absolute top-10 right-32 xl:right-10">
+            <img src={personLG} alt="hey" className="h-[400px] xl:h-[600px]" />
+          </div>
+        </div>
+      </div>
+      {/* metrics mobile screen */}
+      <div className="md:hidden flex flex-col items-center gap-10 pt-64">
+        <div className="flex flex-col items-start justify-center pt-24 px-8 gap-6">
+          <h1 className="text-xl font-bold">
+            Body Metrics-Based{" "}
+            <span className="block">Meal Recommendations</span>{" "}
+          </h1>
+          <p className="text-[#bababa] ">
+            Using body metrics such as age, weight, height,{" "}
+            <span className="">
+              {" "}
+              and activity level., Meal plans are generated to
+            </span>{" "}
+            align with health and nutritional goals.
+          </p>
+        </div>
+        <div className="relative">
+          <img
+            src={formMetricsMobile}
+            alt=""
+            className="max-h-[700px] max-w-[353px] px-2"
+          />
+          <div className="absolute bottom-10 left-4  gap-8">
+            <p className="text-[#A3A3A3] text-sm lg:text-xl">
+              The Algorithm creates personalized daily meals,{" "}
+              <span className="block">
+                supporting goals like weight loss, muscle gains,{" "}
+              </span>{" "}
+              or overall health objectives.
+            </p>
+            <div className="pt-8">
+              <Link
+                to={"/"}
+                className="bg-[#B678F0]  rounded-lg px-8 py-2 text-lg "
+              >
+                Test
+              </Link>
+            </div>
+          </div>
           <div className="absolute top-10 right-10">
-            <img src={personLG} alt="hey" className="h-[600px]" />
+            <img src={personLG} alt="" className="h-52" />
           </div>
         </div>
       </div>

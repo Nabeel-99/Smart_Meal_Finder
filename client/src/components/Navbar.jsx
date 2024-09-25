@@ -23,7 +23,7 @@ const Navbar = () => {
           className="hidden lg:flex fixed top-7 lg:top-12 left-8 lg:left-24"
         >
           {" "}
-          <SiGreasyfork className="text-2xl lg:text-4xl" />
+          <SiGreasyfork className="text-2xl lg:text-4xl backdrop-blur-lg" />
         </Link>
       </div>
       <div className="hidden lg:flex  justify-center  items-center  gap-10 border border-[#302d2d] bg-[#08090A] rounded-xl w-[328px] h-[55px] ">
