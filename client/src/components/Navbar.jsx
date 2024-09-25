@@ -32,7 +32,7 @@ const Navbar = () => {
         <Link to={"/"}>About</Link>
       </div>
 
-      <div className="hidden lg:flex items-center gap-4 border border-[#302d2d] bg-[#08090A] backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">
+      <div className="hidden lg:flex items-center gap-4 border border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">
         <Link
           to={"/"}
           className="border flex items-center justify-center rounded-lg border-[#343333] bg-[#29292a] w-20 h-8 "
