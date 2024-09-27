@@ -8,16 +8,30 @@ import Home from "./sections/Home";
 import Features from "./sections/Features";
 import Hero from "./pages/Hero";
 import Footer from "./components/Footer";
+import SignUp from "./pages/SignUp";
+import MaybeShowComponent from "./components/MaybeShowComponent";
+import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const App = () => {
   return (
     <div className="flex flex-col h-full w-screen pb-20 gap-10">
       <Router>
-        <Navbar />
+        <MaybeShowComponent>
+          <Navbar />
+        </MaybeShowComponent>
+
         <Routes>
           <Route path="/" element={<Hero />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
-        <Footer />
+        <MaybeShowComponent>
+          <Footer />
+        </MaybeShowComponent>
       </Router>
     </div>
   );

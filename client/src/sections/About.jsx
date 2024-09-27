@@ -53,7 +53,7 @@ const About = () => {
         <img src={metricsRecipeMobile} alt="" className="" />
       </div>
       {/* CTA */}
-      <div className="flex flex-col px-8 gap-20 md:flex-row items-start md:items-center border-b border-b-[#343333] pt-20 pb-20 w-full md:justify-between md:px-16 lg:px-0 xl:justify-around bg-gradient-to-b from-[#08090a] to-[#161616]">
+      <div className="flex flex-col px-8 gap-20 md:flex-row items-start md:items-center border-b border-b-[#343333] pt-20 pb-20 w-full md:justify-between md:px-16  xl:justify-around bg-gradient-to-b from-[#08090a] to-[#161616]">
         <div>
           <h2 className="text-2xl  md:text-5xl xl:text-6xl tracking-tighter">
             Plan the present. <span className="block">Cook Later.</span>

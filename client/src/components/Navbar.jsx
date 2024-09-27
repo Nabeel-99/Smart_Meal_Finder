@@ -20,7 +20,7 @@ const Navbar = () => {
       <div className="">
         <Link
           to={"/"}
-          className="hidden lg:flex fixed top-7 lg:top-12 left-8 lg:left-24"
+          className="hidden lg:flex fixed top-7 lg:top-12  z-50  left-8 lg:left-24"
         >
           {" "}
           <SiGreasyfork className="text-2xl lg:text-4xl backdrop-blur-lg" />
@@ -32,15 +32,15 @@ const Navbar = () => {
         <Link to={"/"}>About</Link>
       </div>
 
-      <div className="hidden lg:flex items-center gap-4 border border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">
+      <div className="hidden lg:flex items-center z-50 gap-4 border border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">
         <Link
-          to={"/"}
+          to={"/login"}
           className="border flex items-center justify-center rounded-lg border-[#343333] bg-[#29292a] w-20 h-8 "
         >
           Log in
         </Link>
         <Link
-          to={"/"}
+          to={"/sign-up"}
           className="border flex items-center justify-center rounded-lg bg-[#d9d9d9] text-black w-20 h-8 "
         >
           Sign Up
