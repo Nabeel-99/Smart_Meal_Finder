@@ -4,15 +4,14 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./sections/Home";
-import Features from "./sections/Features";
-import Hero from "./pages/Hero";
 import Footer from "./components/Footer";
 import SignUp from "./pages/SignUp";
 import MaybeShowComponent from "./components/MaybeShowComponent";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword";
+import IngredientsBased from "./pages/IngredientsBased";
+import Home from "./pages/Home";
 
 const App = () => {
   return (
@@ -23,11 +22,12 @@ const App = () => {
         </MaybeShowComponent>
 
         <Routes>
-          <Route path="/" element={<Hero />} />
+          <Route path="/" element={<Home />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/ingredients-based" element={<IngredientsBased />} />
         </Routes>
         <MaybeShowComponent>
           <Footer />

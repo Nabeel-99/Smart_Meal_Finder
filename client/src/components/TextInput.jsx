@@ -8,6 +8,9 @@ const TextInput = ({
   value,
   onChange,
   className = "",
+  placeholder,
+  max,
+  min,
 }) => {
   return (
     <div className="flex flex-col  gap-2 pb-4">
@@ -18,8 +21,11 @@ const TextInput = ({
       <input
         className={`bg-[#171717] border w-full border-[#343333] rounded-lg px-3 py-2 + ${className}`}
         id={id}
+        min={min}
+        max={max}
         type={type}
         value={value}
+        placeholder={placeholder}
         onChange={onChange}
         required
       />

@@ -49,7 +49,7 @@ const Navbar = () => {
 
       {/* burger menu*/}
       <div
-        className={`lg:hidden fixed px-4 pt-8 w-full flex items-center justify-between ${
+        className={`lg:hidden fixed px-4 pt-8 w-full z-50 flex items-center justify-between ${
           isBurgerMenu ? "bg-[#08090a]" : ""
         }  backdrop-blur-lg pb-4`}
       >
@@ -62,13 +62,13 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Link
-              to={"/"}
+              to={"/login"}
               className="border flex items-center justify-center rounded-lg border-[#343333] bg-[#29292a] w-20 h-8 "
             >
               Log in
             </Link>
             <Link
-              to={"/"}
+              to={"/sign-up"}
               className="border flex items-center justify-center rounded-lg bg-[#d9d9d9] text-black w-20 h-8 "
             >
               Sign Up
