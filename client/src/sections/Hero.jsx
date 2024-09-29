@@ -24,14 +24,14 @@ const Hero = () => {
             description={
               "Easily get meal suggestions by entering your available ingredients. Our tool helps you find meals that match what you have on hand."
             }
-            to={"/"}
+            to={"/ingredients-based"}
           />
           <GridCard
             header={"Get recipes based on Body Metrics"}
             image={metrics}
             description={`Adjust your meal plans by entering your body metrics. Our tool
               will recommend meals that aligns with your health goals.`}
-            to={"/"}
+            to={"/metrics-based"}
           />
         </div>
       </div>

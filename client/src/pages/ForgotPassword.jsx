@@ -37,6 +37,7 @@ const ForgotPassword = () => {
               htmlFor={"email"}
               id={"email"}
               type={"email"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <div className="pt-4">

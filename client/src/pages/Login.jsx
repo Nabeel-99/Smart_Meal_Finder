@@ -40,6 +40,7 @@ const Login = () => {
               htmlFor={"email"}
               id={"email"}
               type={"email"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <TextInput
@@ -47,6 +48,7 @@ const Login = () => {
               htmlFor={"password"}
               id={"password"}
               type={"password"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <div className="flex justify-end pb-4">

@@ -43,6 +43,7 @@ const SignUp = () => {
               htmlFor={"first-name"}
               id={"first-name"}
               type={"text"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <TextInput
@@ -50,6 +51,7 @@ const SignUp = () => {
               htmlFor={"last-name"}
               id={"last-name"}
               type={"text"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <TextInput
@@ -57,6 +59,7 @@ const SignUp = () => {
               htmlFor={"email"}
               id={"email"}
               type={"email"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <TextInput
@@ -64,6 +67,7 @@ const SignUp = () => {
               htmlFor={"password"}
               id={"password"}
               type={"password"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <div className="pt-4">

@@ -8,18 +8,19 @@ const TextInput = ({
   value,
   onChange,
   className = "",
+  labelClassName = "",
   placeholder,
   max,
   min,
 }) => {
   return (
     <div className="flex flex-col  gap-2 pb-4">
-      <label htmlFor={htmlFor} className="lg:text-lg ">
+      <label htmlFor={htmlFor} className={`text-sm ${labelClassName}`}>
         {label}
       </label>
 
       <input
-        className={`bg-[#171717] border w-full border-[#343333] rounded-lg px-3 py-2 + ${className}`}
+        className={`bg-[#171717] border  border-[#343333] rounded-lg px-3 py-2 ${className}`}
         id={id}
         min={min}
         max={max}

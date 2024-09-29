@@ -73,7 +73,7 @@ const IngredientsBased = () => {
         </div>
       </div>
       <div className="flex flex-col gap-6 items-center   w-full px-2 lg:px-44">
-        <div className="flex justify-center w-full lg:justify-end  lg:w-3/4">
+        <div className="flex justify-center w-full lg:justify-end  lg:w-2/3">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <p>Use your body metrics</p>
@@ -91,7 +91,7 @@ const IngredientsBased = () => {
             </div>
           </div>
         </div>
-        <div className=" lg:relative border border-[#343333]  md:w-3/4 rounded-xl py-2 px-2 bg-[#0E0F10] min-h-[700px] h-full lg:max-h-[750px] ">
+        <div className=" lg:relative border border-[#343333] w-96  md:w-2/3 rounded-xl py-2 px-2 bg-[#0E0F10] min-h-[700px] h-full  ">
           <form
             onSubmit={onSubmit}
             className="flex flex-col gap-8 p-8 items-center justify-center "
@@ -100,7 +100,7 @@ const IngredientsBased = () => {
               Enter the ingredients you have
             </div>
             <div className="flex flex-col lg:flex-row items-center justify-evenly w-full ">
-              <div className="flex order-1 lg:order-none items-center gap-6">
+              <div className="flex flex-col lg:flex-row order-1 lg:order-none items-center gap-6">
                 <TextInput
                   id={"ingredients"}
                   type={"text"}
@@ -117,32 +117,8 @@ const IngredientsBased = () => {
                   Add
                 </button>
               </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={decrementCount}
-                  type="button"
-                  className="md:hidden"
-                >
-                  <BiSolidLeftArrow className="text-2xl" />
-                </button>
-                <TextInput
-                  type={"number"}
-                  min={0}
-                  max={9}
-                  value={ingredientCount}
-                  onChange={(e) => setIngredientCount(e.target.value)}
-                  className="w-14 px-3"
-                />
-                <button
-                  onClick={incrementCount}
-                  type="button"
-                  className="md:hidden"
-                >
-                  <BiSolidRightArrow className="text-2xl" />
-                </button>
-              </div>
             </div>
-            <div className="grid grid-cols-2  gap-4  max-h-44 overflow-auto">
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4  max-h-44 overflow-auto">
               {ingredients.length > 0 &&
                 ingredients.map((ingredient, index) => (
                   <div
@@ -178,7 +154,34 @@ const IngredientsBased = () => {
                 </div>
               ))}
             </div>
-            <div className="pt-10 lg:absolute bottom-10">
+            <div className="pt-4 border-t border-t-[#343333]">
+              <div className="flex items-center justify-center gap-4">
+                <button
+                  onClick={decrementCount}
+                  type="button"
+                  className="md:hidden"
+                >
+                  <BiSolidLeftArrow className="text-2xl" />
+                </button>
+                <TextInput
+                  label={"Specify number of recipes"}
+                  type={"number"}
+                  min={0}
+                  max={9}
+                  value={ingredientCount}
+                  onChange={(e) => setIngredientCount(e.target.value)}
+                  className=" px-3"
+                />
+                <button
+                  onClick={incrementCount}
+                  type="button"
+                  className="md:hidden"
+                >
+                  <BiSolidRightArrow className="text-2xl" />
+                </button>
+              </div>
+            </div>
+            <div className="pt-10">
               <button
                 type="submit"
                 className="bg-[#B678F0] py-2 text-center px-6 w-44 rounded-lg"

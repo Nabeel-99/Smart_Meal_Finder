@@ -34,6 +34,7 @@ const ResetPassword = () => {
               htmlFor={"new-password"}
               id={"new-password"}
               type={"password"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <TextInput
@@ -41,6 +42,7 @@ const ResetPassword = () => {
               htmlFor={"confirm-password"}
               id={"confirm-password"}
               type={"password"}
+              labelClassName="lg:text-lg"
               className="lg:w-96"
             />
             <div className="pt-4">
