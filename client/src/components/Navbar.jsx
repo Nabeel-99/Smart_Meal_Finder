@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Link as ScrollToLink } from "react-scroll";
 import { SiGreasyfork } from "react-icons/si";
 import { FaBarsStaggered, FaXmark } from "react-icons/fa6";
 import BurgerMenu from "./BurgerMenu";
@@ -27,9 +28,15 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="hidden lg:flex  justify-center  items-center  gap-10 border border-[#302d2d] bg-[#08090A] rounded-xl w-[328px] h-[55px] ">
-        <Link to={"/"}>Home</Link>
-        <Link to={"/"}>Features</Link>
-        <Link to={"/"}>About</Link>
+        <Link to="/" duration={500} smooth={true}>
+          Home
+        </Link>
+        <ScrollToLink to="features" duration={500} smooth={true}>
+          Features
+        </ScrollToLink>
+        <ScrollToLink to={"about"} duration={500} smooth={true}>
+          About
+        </ScrollToLink>
       </div>
 
       <div className="hidden lg:flex items-center z-50 gap-4 border border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">

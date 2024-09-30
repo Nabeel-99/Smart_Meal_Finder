@@ -4,7 +4,10 @@ import metricsRecipeMobile from "../assets/metrics-recipe-mobile.png";
 import { Link } from "react-router-dom";
 const About = () => {
   return (
-    <div className="flex flex-col gap-9 md:gap-20  lg:px-0 lg:pt-0 pt-8 items-center justify-center">
+    <div
+      id="about"
+      className="flex flex-col gap-9 md:gap-20  lg:px-0  pt-8 items-center justify-center"
+    >
       <h1 className="text-[16px] lg:text-xl tracking-[5px] font-medium">
         ABOUT
       </h1>

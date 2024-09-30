@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 import MetricsBased from "./pages/MetricsBased";
 import ScrollToTop from "./components/ScrollToTop";
 import RecipeDetails from "./pages/RecipeDetails";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   return (
@@ -24,11 +25,11 @@ const App = () => {
         <MaybeShowComponent>
           <Navbar />
         </MaybeShowComponent>
-
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/ingredients-based" element={<IngredientsBased />} />

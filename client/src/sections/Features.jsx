@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaDiceD6, FaKeyboard } from "react-icons/fa6";
 import formImg from "../assets/form-lg.png";
 import formImgMobile from "../assets/form-mobile.png";
@@ -8,10 +8,13 @@ import formMetrics from "../assets/form-metrics.png";
 import formMetricsMobile from "../assets/form-metrics-mobile.png";
 import personLG from "../assets/person-lg.png";
 import personMobile from "../assets/person-small.png";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 const Features = () => {
   return (
-    <div className="pt-14 flex flex-col items-center justify-start w-full pb-20 ">
+    <div
+      id="features"
+      className="pt-14 flex flex-col items-center justify-start w-full pb-20 "
+    >
       <h1 className="text-[16px] lg:text-xl tracking-[5px] font-medium">
         FEATURES
       </h1>
@@ -52,7 +55,7 @@ const Features = () => {
             </p>
             <div className="pt-8">
               <Link
-                to={"/"}
+                to={"/ingredients-based"}
                 className="bg-[#B678F0]  rounded-lg px-8 py-2 text-lg "
               >
                 Test
@@ -73,7 +76,7 @@ const Features = () => {
             </p>
             <div className="pt-4">
               <Link
-                to={"/"}
+                to={"/ingredients-based"}
                 className="bg-[#B678F0]  rounded-lg px-6 py-2 text-sm "
               >
                 Test
@@ -169,7 +172,7 @@ const Features = () => {
             </p>
             <div className="pt-8">
               <Link
-                to={"/"}
+                to={"/metrics-based"}
                 className="bg-[#B678F0]  rounded-lg px-8 py-2 text-lg "
               >
                 Test
@@ -213,7 +216,7 @@ const Features = () => {
             </p>
             <div className="pt-8">
               <Link
-                to={"/"}
+                to={"/metrics-based"}
                 className="bg-[#B678F0]  rounded-lg px-8 py-2 text-lg "
               >
                 Test
