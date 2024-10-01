@@ -3,7 +3,7 @@ import IngredientsImg from "../assets/ingredients-slanted.png";
 import IngredientsImgMobile from "../assets/ingredients-slanted-mobile.png";
 import { FaInfo, FaXmark } from "react-icons/fa6";
 import { FaCircleInfo } from "react-icons/fa6";
-import TextInput from "../components/TextInput";
+import TextInput from "../components/formInputs/TextInput";
 import { TbCircleDotted } from "react-icons/tb";
 import Food1 from "../assets/food1.jpg";
 import SkeletonLoader from "../components/SkeletonLoader";
@@ -197,7 +197,7 @@ const IngredientsBased = () => {
           <p className="">Generating meal recommendations</p> */}
 
           <div className="flex flex-col ">
-            {/* <SkeletonLoader count={ingredientCount} /> */}
+            {/* <SkeletonLoader count={ingredientCount} className="w-[300px]" /> */}
             {/* <div className="flex flex-col gap-1 text-[#c7c6c6] cursor-pointer hover:text-white">
               <img
                 src={Food1}

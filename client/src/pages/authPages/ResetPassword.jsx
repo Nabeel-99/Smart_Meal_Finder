@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { SiGreasyfork } from "react-icons/si";
 import { Link } from "react-router-dom";
-import TextInput from "../components/TextInput";
+import TextInput from "../../components/formInputs/TextInput";
 
-const ForgotPassword = () => {
+const ResetPassword = () => {
   const [firstName, setFirstName] = useState("");
 
   return (
@@ -19,24 +19,29 @@ const ForgotPassword = () => {
       </div>
       <div className="flex flex-col gap-8 pt-32 items-center justify-evenly  ">
         <div className="flex flex-col items-center w-full md:w-1/2 lg:w-auto   h-full lg:justify-center gap-2">
-          <div className="flex flex-col w-full gap-4">
+          <div className="flex flex-col items-center  w-full gap-4">
             <h1 className="text-4xl  font-bold tracking-tight">
-              Forgot Password
+              Reset Password
             </h1>
-            <p className="md:w-96">
-              Enter the email address associated with your account and we will
-              send you instructions to reset your password.
-            </p>
+            <p className="">Enter a new password for your account.</p>
           </div>
         </div>
         <div className=" w-[0.08px] h-full bg-[#343333]"></div>
         <div className="w-full md:w-1/2 lg:w-auto">
           <form className="">
             <TextInput
-              label={"Email"}
-              htmlFor={"email"}
-              id={"email"}
-              type={"email"}
+              label={"New Password"}
+              htmlFor={"new-password"}
+              id={"new-password"}
+              type={"password"}
+              labelClassName="lg:text-lg"
+              className="lg:w-96"
+            />
+            <TextInput
+              label={"Confirm Password"}
+              htmlFor={"confirm-password"}
+              id={"confirm-password"}
+              type={"password"}
               labelClassName="lg:text-lg"
               className="lg:w-96"
             />
@@ -45,12 +50,8 @@ const ForgotPassword = () => {
                 type="submit"
                 className="bg-[#B678F0] py-2 text-center w-full lg:w-96 rounded-lg"
               >
-                Submit
+                Reset Password
               </button>
-            </div>
-            <div className="pt-4 flex gap-1 justify-end">
-              <p>Didn't receive an email?</p>
-              <button>Resend</button>
             </div>
           </form>
         </div>
@@ -59,4 +60,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

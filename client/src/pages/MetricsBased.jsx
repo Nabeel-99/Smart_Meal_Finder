@@ -3,13 +3,13 @@ import MetricsImg from "../assets/background-metrics.png";
 import MetricsBg from "../assets/background-circle.svg";
 import { FaInfo, FaXmark } from "react-icons/fa6";
 import { FaCircleInfo } from "react-icons/fa6";
-import TextInput from "../components/TextInput";
+import TextInput from "../components/formInputs/TextInput";
 import { TbCircleDotted } from "react-icons/tb";
 import Food1 from "../assets/food1.jpg";
 import SkeletonLoader from "../components/SkeletonLoader";
 import { Link } from "react-router-dom";
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
-import SelectInput from "../components/SelectInput";
+import SelectInput from "../components/formInputs/SelectInput";
 
 const MetricsBased = () => {
   const [item, setItem] = useState("");
@@ -37,15 +37,6 @@ const MetricsBased = () => {
     { name: "Dairy-free", id: "dairy-free" },
     { name: "Nut-free", id: "nut-free" },
   ];
-  const addIngredient = () => {
-    if (item) {
-      setIngredients([...ingredients, item]);
-      setItem("");
-    }
-  };
-  const removeIngredient = (ingredient) => {
-    setIngredients(ingredients.filter((item) => item !== ingredient));
-  };
   const incrementCount = () => {
     setIngredientCount(ingredientCount + 1);
     if (ingredientCount >= 9) {
@@ -218,7 +209,7 @@ const MetricsBased = () => {
           <p className="">Generating meal recommendations</p> */}
 
           <div className="flex flex-col ">
-            {/* <SkeletonLoader count={ingredientCount} /> */}
+            {/* <SkeletonLoader count={ingredientCount} className='w-[300px]' /> */}
             {/* <div className="flex flex-col gap-1 text-[#c7c6c6] cursor-pointer hover:text-white">
               <img
                 src={Food1}

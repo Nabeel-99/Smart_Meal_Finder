@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { SiGreasyfork } from "react-icons/si";
 import { Link } from "react-router-dom";
-import TextInput from "../components/TextInput";
+import TextInput from "../../components/formInputs/TextInput";
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState("");
