@@ -1,11 +1,63 @@
 import React, { useState } from "react";
 import { SiGreasyfork } from "react-icons/si";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TextInput from "../../components/formInputs/TextInput";
+import axios from "axios";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
-const Login = () => {
-  const [firstName, setFirstName] = useState("");
+const Login = ({ authenticateUser }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/users/login",
+        {
+          email: email,
+          password: password,
+        },
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        authenticateUser();
+        setLoading(true);
+        setTimeout(() => {
+          navigate("/preferences");
+          setLoading(false);
+        }, 5000);
+      }
+      if (response.status === 400) {
+        setLoading(false);
+        setError("Invalid email or password");
+        setTimeout(() => {
+          setError("");
+        }, 10000);
+      }
+    } catch (error) {
+      setLoading(false);
+      if (
+        error.response &&
+        (error.response.status > 400 || error.response.status <= 500)
+      ) {
+        setError("Invalid email or password");
+        setTimeout(() => {
+          setError("");
+        }, 10000);
+        console.log(error);
+      } else {
+        setError("Invalid email or password");
+        setTimeout(() => {
+          setError("");
+        }, 10000);
+      }
+    }
+  };
   return (
     <div className="flex flex-col gap-20  w-full pt-10 px-8 lg:px-24">
       <div className="flex justify-between items-center backdrop-blur-lg lg:backdrop-blur-0  fixed right-8 lg:right-16 lg:top-12 left-8 lg:left-24">
@@ -34,11 +86,14 @@ const Login = () => {
         </div>
         <div className=" w-[0.08px] h-full bg-[#343333]"></div>
         <div className="w-full md:w-1/2 lg:w-auto">
-          <form className="">
+          {error && <div className="text-red-500 pb-4">{error}</div>}
+          <form onSubmit={onSubmit} className="">
             <TextInput
               label={"Email"}
               htmlFor={"email"}
               id={"email"}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               type={"email"}
               labelClassName="lg:text-lg"
               className="lg:w-96"
@@ -47,6 +102,8 @@ const Login = () => {
               label={"Password"}
               htmlFor={"password"}
               id={"password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               type={"password"}
               labelClassName="lg:text-lg"
               className="lg:w-96"
@@ -57,9 +114,14 @@ const Login = () => {
             <div className="pt-4">
               <button
                 type="submit"
-                className="bg-[#B678F0] py-2 text-center w-full lg:w-96 rounded-lg"
+                disabled={loading}
+                className="bg-[#B678F0] py-2 text-center flex items-center justify-center w-full lg:w-96 rounded-lg"
               >
-                Login
+                {loading ? (
+                  <AiOutlineLoading3Quarters className="spin text-2xl" />
+                ) : (
+                  "Login"
+                )}
               </button>
             </div>
           </form>

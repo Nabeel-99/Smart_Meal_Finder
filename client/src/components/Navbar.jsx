@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Link as ScrollToLink } from "react-scroll";
 import { SiGreasyfork } from "react-icons/si";
 import { FaBarsStaggered, FaXmark } from "react-icons/fa6";
 import BurgerMenu from "./menuCards/BurgerMenu";
 
 const Navbar = () => {
+  const location = useLocation();
+  const pathNames = ["/ingredients-based", "/metrics-based"];
   const [isBurgerMenu, setIsBurgerMenu] = useState(false);
   const toggleMenu = () => setIsBurgerMenu(!isBurgerMenu);
+
   useEffect(() => {
     // handle background scrolling when burger menu is open
     if (isBurgerMenu) {
@@ -31,22 +34,26 @@ const Navbar = () => {
         <Link to="/" duration={500} smooth="true">
           Home
         </Link>
-        <ScrollToLink
-          className="cursor-pointer"
-          to="features"
-          duration={500}
-          smooth="true"
-        >
-          Features
-        </ScrollToLink>
-        <ScrollToLink
-          className="cursor-pointer"
-          to={"about"}
-          duration={500}
-          smooth="true"
-        >
-          About
-        </ScrollToLink>
+        {pathNames.every((path) => !location.pathname.startsWith(path)) && (
+          <>
+            <ScrollToLink
+              className="cursor-pointer"
+              to="features"
+              duration={500}
+              smooth="true"
+            >
+              Features
+            </ScrollToLink>
+            <ScrollToLink
+              className="cursor-pointer"
+              to={"about"}
+              duration={500}
+              smooth="true"
+            >
+              About
+            </ScrollToLink>
+          </>
+        )}
       </div>
 
       <div className="hidden lg:flex items-center z-50 gap-4 border border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">

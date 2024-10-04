@@ -25,16 +25,27 @@ import SavedMeals from "./pages/dashboard/SavedMeals";
 import DashboardContent from "./pages/dashboard/DashboardContent";
 import CookingChoice from "./pages/dashboard/CookingChoice";
 import Settings from "./pages/dashboard/Settings";
+import Preferences from "./pages/Preferences";
+import axios from "axios";
 
 const App = () => {
-  // const location = useLocation();
-  // useEffect(() => {
-  //   if (location.pathname === "/dashboard") {
-  //     document.body.style.backgroundColor = "#171717";
-  //   } else {
-  //     document.body.style.backgroundColor = "#08090a";
-  //   }
-  // }, [location]);
+  const [userData, setUserData] = useState(null);
+  const authenticateUser = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/auth", {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setUserData(response.data.user);
+      }
+    } catch (error) {
+      console.log("Auth error", error);
+    }
+  };
+
+  useEffect(() => {
+    authenticateUser();
+  }, []);
   return (
     <div className="flex flex-col h-full w-screen pb-20 gap-10">
       <Router>
@@ -45,7 +56,11 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={<Login authenticateUser={authenticateUser} />}
+          />
+          <Route path="/preferences" element={<Preferences />} />
           <Route path="/dashboard/*" element={<Dashboard />}></Route>
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

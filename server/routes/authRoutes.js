@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post("/request-reset-password", requestResetPassword);
 router.post("/reset-password", resetPassword);
-router.get("/auth", verifyUser, async (req, res) => {
+router.get("/", verifyUser, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
     if (!user) {

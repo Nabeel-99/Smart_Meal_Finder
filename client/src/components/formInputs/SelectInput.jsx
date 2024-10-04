@@ -7,6 +7,7 @@ const SelectInput = ({
   options,
   value,
   onChange,
+  disabled = false,
   htmlFor,
   className = "",
 }) => {
@@ -17,6 +18,7 @@ const SelectInput = ({
       </label>
       <select
         id={id}
+        disabled={disabled}
         name={name}
         value={value}
         onChange={onChange}

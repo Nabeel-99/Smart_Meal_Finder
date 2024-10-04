@@ -1,3 +1,5 @@
+import Joi from "joi";
+
 export const validate = (data) => {
   const schema = Joi.object({
     firstName: Joi.string().required().label("First Name"),

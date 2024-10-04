@@ -14,7 +14,7 @@ export const createUser = async (req, res) => {
     // check if there is no validation error
     const { error } = validate(req.body);
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      return res.status(401).json({ message: error.details[0].message });
     }
     // use salt for enhanced security and bcrypt to hash the password
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -25,6 +25,7 @@ export const createUser = async (req, res) => {
     await newUser.save();
     return res.status(200).json({ message: "user created successfully" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -53,6 +54,7 @@ export const loginUser = async (req, res) => {
 
     return res.status(200).json({ message: "log in successful" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

@@ -12,6 +12,7 @@ const TextInput = ({
   placeholder,
   max,
   min,
+  disabled = false,
 }) => {
   return (
     <div className="flex flex-col  gap-2 pb-4">
@@ -24,6 +25,7 @@ const TextInput = ({
         id={id}
         min={min}
         max={max}
+        disabled={disabled}
         type={type}
         value={value}
         placeholder={placeholder}
