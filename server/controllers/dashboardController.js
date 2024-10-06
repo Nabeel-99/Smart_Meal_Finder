@@ -12,19 +12,19 @@ import {
 
 const prepareRecipesForInsertion = (recipes) => {
   return recipes.map((recipe) => ({
-    title: recipe.title,
-    ingredients: recipe.ingredients,
-    instructions: recipe.instructions,
-    image: recipe.image,
-    category: recipe.category,
-    dietaryPreferences: recipe.dietaryPreferences,
+    title: recipe.title || "Untitled",
+    ingredients: recipe.ingredients || [],
+    instructions: recipe.instructions || [],
+    image: recipe.image || "",
+    category: recipe.category || "uncategorized",
+    dietaryPreferences: recipe.dietaryPreferences || [],
     videoLink: recipe.videoLink || "",
-    sourceUrl: recipe.sourceUrl,
-    calories: recipe.calories,
+    sourceUrl: recipe.sourceUrl || "",
+    calories: recipe.calories || 0,
   }));
 };
 // get dashboard recipes
-const generateDashboardRecipes = async (req, res) => {
+const generateDashboardRecipes = async (req) => {
   try {
     const userId = req.userId;
     const user = await Metrics.findOne({ userId: userId });
@@ -32,23 +32,31 @@ const generateDashboardRecipes = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     const {
-      gender,
-      age,
-      weight,
-      height,
-      exerciseLevel,
-      goal,
-      dietaryPreferences,
+      gender = null,
+      age = null,
+      weight = null,
+      height = null,
+      exerciseLevel = "sedentary",
+      goal = null,
+      dietaryPreferences = [],
     } = user;
-    const BMR = calculateBMR(gender, weight, height, age);
-    const TDEE = calculateTDEE(BMR, exerciseLevel);
-    const calorieTarget = getCalorieIntake(goal, TDEE);
+
+    let BMR = null;
+    let TDEE = null;
+    let calorieTarget = null;
+
+    if (gender && weight && height && age) {
+      BMR = calculateBMR(gender, weight, height, age);
+      TDEE = calculateTDEE(BMR, exerciseLevel);
+      calorieTarget = getCalorieIntake(goal, TDEE);
+    }
 
     const allRecipes = await fetchDashboardRecipes(goal, dietaryPreferences);
     const filteredAndRankedRecipes = await categorizeRecipes(allRecipes);
     return {
       message: "Dashboard recipes fetched successfully",
-      calorieTarget: calorieTarget,
+      calorieTarget:
+        calorieTarget || "No calorie target due to missing preferences",
       recipes: filteredAndRankedRecipes,
     };
   } catch (error) {
@@ -65,11 +73,11 @@ export const prepareDashboardRecipes = async (req, res) => {
     const existingDashboard = await UserDashboard.findOne({ userId: userId });
     if (existingDashboard) {
       return res
-        .status(404)
+        .status(409)
         .json({ message: "Dashboard meals already exists" });
     }
     const { recipes: filteredAndRankedRecipes, calorieTarget } =
-      await generateDashboardRecipes(req, res);
+      await generateDashboardRecipes(req);
 
     const recipesToSave = prepareRecipesForInsertion([
       ...filteredAndRankedRecipes.breakfast,
@@ -117,8 +125,9 @@ export const prepareDashboardRecipes = async (req, res) => {
 
     await newUserDashboard.save();
     return res.status(200).json({
-      message: "Dashboard recipes fetched successfully",
-      calorieTarget: calorieTarget,
+      message: "Dashboard prepared successfully",
+      calorieTarget:
+        calorieTarget || "No calorie target due to missing preferences",
     });
   } catch (error) {
     console.log("error", error);

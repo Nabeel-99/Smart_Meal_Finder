@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import TextInput from "../../components/formInputs/TextInput";
 import SelectInput from "../../components/formInputs/SelectInput";
+import {
+  dietPreferences,
+  exerciseOptions,
+  genderOptions,
+  goalOptions,
+} from "../../../../server/utils/helper";
 const Settings = () => {
   const [name, setName] = useState("");
   const [isChangingName, setIsChangingName] = useState(false);
@@ -24,22 +30,6 @@ const Settings = () => {
   const showInput = () => setIsChangingName(!isChangingName);
 
   const themeOptions = ["Light", "Dark", "System theme"];
-  const genderOptions = ["male", "female"];
-  const goalOptions = ["muscle_gain", "weight_loss", "maintenance"];
-  const dietaryPreferences = [
-    { name: "Vegetarian", id: "vegetarian" },
-    { name: "Vegan", id: "vegan" },
-    { name: "Gluten-free", id: "gluten-free" },
-    { name: "Dairy-free", id: "dairy-free" },
-    { name: "Nut-free", id: "nut-free" },
-  ];
-  const exerciseOptions = [
-    "sedentary",
-    "lightly_active",
-    "moderately_active",
-    "very_active",
-    "extra_active",
-  ];
 
   return (
     <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
@@ -197,7 +187,7 @@ const Settings = () => {
             </div>
             <div className=" flex flex-col gap-3">
               <div>Dietary Preferences</div>
-              {dietaryPreferences.map((pref) => (
+              {dietPreferences.map((pref) => (
                 <div className="flex gap-4 items-center" key={pref.id}>
                   <label className="text-lg lg:text-sm  w-32" htmlFor={pref.id}>
                     {pref.name}

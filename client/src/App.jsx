@@ -27,6 +27,7 @@ import CookingChoice from "./pages/dashboard/CookingChoice";
 import Settings from "./pages/dashboard/Settings";
 import Preferences from "./pages/Preferences";
 import axios from "axios";
+import AnimationComponent from "./components/AnimationComponent";
 
 const App = () => {
   const [userData, setUserData] = useState(null);
@@ -61,7 +62,10 @@ const App = () => {
             element={<Login authenticateUser={authenticateUser} />}
           />
           <Route path="/preferences" element={<Preferences />} />
-          <Route path="/dashboard/*" element={<Dashboard />}></Route>
+          <Route
+            path="/dashboard/*"
+            element={<Dashboard userData={userData} />}
+          ></Route>
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/ingredients-based" element={<IngredientsBased />} />

@@ -10,6 +10,12 @@ import SkeletonLoader from "../components/SkeletonLoader";
 import { Link } from "react-router-dom";
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
 import SelectInput from "../components/formInputs/SelectInput";
+import {
+  dietPreferences,
+  exerciseOptions,
+  genderOptions,
+  goalOptions,
+} from "../../../server/utils/helper";
 
 const MetricsBased = () => {
   const [item, setItem] = useState("");
@@ -21,22 +27,7 @@ const MetricsBased = () => {
   const [height, setHeight] = useState(0);
   const [weight, setWeight] = useState(0);
   const [exerciseLevel, setExerciseLevel] = useState("");
-  const genderOptions = ["male", "female"];
-  const goalOptions = ["muscle_gain", "weight_loss", "maintenance"];
-  const exerciseOptions = [
-    "sedentary",
-    "lightly_active",
-    "moderately_active",
-    "very_active",
-    "extra_active",
-  ];
-  const dietaryPreferences = [
-    { name: "Vegetarian", id: "vegetarian" },
-    { name: "Vegan", id: "vegan" },
-    { name: "Gluten-free", id: "gluten-free" },
-    { name: "Dairy-free", id: "dairy-free" },
-    { name: "Nut-free", id: "nut-free" },
-  ];
+
   const incrementCount = () => {
     setIngredientCount(ingredientCount + 1);
     if (ingredientCount >= 9) {
@@ -151,7 +142,7 @@ const MetricsBased = () => {
                 Dietary Preferences (optional)
               </p>
               {/* checkbox */}
-              {dietaryPreferences.map((pref) => (
+              {dietPreferences.map((pref) => (
                 <div className="flex gap-4 items-center" key={pref.id}>
                   <label className="text-lg lg:text-sm  w-32" htmlFor={pref.id}>
                     {pref.name}

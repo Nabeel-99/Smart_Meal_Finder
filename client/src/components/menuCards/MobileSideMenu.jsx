@@ -6,22 +6,23 @@ import {
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { mapText } from "../../../../server/utils/helper";
 
 const MobileSideMenu = ({
   showPreferences,
-  userPreferences,
+  userMetrics,
   preferences,
   setSideMenu,
 }) => {
   const navigate = useNavigate();
   return (
-    <div className="flex lg:hidden flex-col pt-6 justify-between  w-full z-20  bg-[#171717] h-full fixed ">
+    <div className="flex lg:hidden flex-col pt-20 justify-between  w-full z-20  bg-[#171717] h-full fixed ">
       <div className="px-2">
-        <div className="flex px-3 items-center text-lg gap-4">
+        <div className="flex px-5 items-center text-lg gap-4">
           <div className="w-6 h-6 rounded-full text-center flex items-center justify-center bg-[#B678F0]">
             F
           </div>
-          <div>Farouk Nabeel</div>
+          <div className="text-[#d2d2d2]">Farouk Nabeel</div>
         </div>
         <div className="flex px-4 pt-8 flex-col border-b border-b-[#343333] pb-4 text-sm gap-4">
           <div className="flex items-center text-lg gap-4">
@@ -119,12 +120,22 @@ const MobileSideMenu = ({
           {preferences && (
             <div className="flex px-3   pb-4 text-sm ">
               <div className="w-5"></div>
-              <ul className="flex flex-col px-3 gap-4">
-                {userPreferences.map((pref, index) => (
-                  <li key={index} className="">
-                    {pref}
-                  </li>
-                ))}
+              <ul className="flex flex-col gap-2">
+                <li className="">Age: {userMetrics.age}</li>
+                <li>Goal: {mapText[userMetrics.goal]}</li>
+                <li>Weight: {userMetrics.weight} kg</li>
+                <li>Height: {userMetrics.height} cm</li>
+                <li>
+                  Diet:{" "}
+                  {userMetrics.dietaryPreferences.length > 0 ? (
+                    userMetrics.dietaryPreferences.map((diet, index) => (
+                      <span key={index}>{diet}</span>
+                    ))
+                  ) : (
+                    <span>None</span>
+                  )}
+                </li>
+                <li>Exercise Level: {mapText[userMetrics.exerciseLevel]}</li>
               </ul>
             </div>
           )}

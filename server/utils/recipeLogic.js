@@ -46,7 +46,7 @@ export const getCalorieIntake = (goal, tdee) => {
 // spoonacular recipes
 const getSpoonacularRecipes = async (
   mealType = null,
-  goal,
+  goal = null,
   dietaryPreferences = []
 ) => {
   const calorieRanges = {
@@ -63,7 +63,7 @@ const getSpoonacularRecipes = async (
       maxCalories: 600,
     },
   };
-  const { minCalories, maxCalories } = calorieRanges[goal];
+  const { minCalories, maxCalories } = goal ? calorieRanges[goal] : {};
   const dietaryPref =
     dietaryPreferences.length > 0 ? dietaryPreferences[0] : null;
 
@@ -75,8 +75,8 @@ const getSpoonacularRecipes = async (
         addRecipeInstructions: true,
         fillIngredients: true,
         ...(mealType && { type: mealType }),
-        ...(minCalories && { minCalories: minCalories }),
-        ...(maxCalories && { maxCalories: maxCalories }),
+        ...(goal && { minCalories: minCalories }),
+        ...(goal && { maxCalories: maxCalories }),
         ...(dietaryPref && { diet: dietaryPref }),
         apiKey: process.env.SPOONACULAR_API_KEY4,
       },
@@ -128,12 +128,13 @@ const getEdamamRecipes = async (
 // fetch dashboard specific recipes
 export const fetchDashboardRecipes = async (goal, dietaryPreferences) => {
   try {
+    const randomCalories = goal || null;
     // fetching recipes
     const [spoonacularBreakfast, spoonacularLunch, spoonacularDinner] =
       await Promise.all([
-        getSpoonacularRecipes("breakfast", goal, dietaryPreferences),
-        getSpoonacularRecipes("lunch", goal, dietaryPreferences),
-        getSpoonacularRecipes("dinner", goal, dietaryPreferences),
+        getSpoonacularRecipes("breakfast", randomCalories, dietaryPreferences),
+        getSpoonacularRecipes("lunch", randomCalories, dietaryPreferences),
+        getSpoonacularRecipes("dinner", randomCalories, dietaryPreferences),
       ]);
 
     const breakfastRecipes = [...spoonacularBreakfast];
@@ -207,7 +208,7 @@ export const categorizeRecipes = async (recipes) => {
       ingredients,
       instructions,
       mealType = [],
-      dietaryPreferences,
+      dietaryPreferences = [],
       videoLink,
       sourceUrl,
       image;
@@ -229,7 +230,6 @@ export const categorizeRecipes = async (recipes) => {
               instruction.steps.map((step) => step.step)
             )
           : [];
-      if (instructions.length === 0) return;
       mealType = recipe.dishTypes;
       dietaryPreferences = [
         recipe.vegetarian ? "Vegetarian" : "",
@@ -248,7 +248,7 @@ export const categorizeRecipes = async (recipes) => {
         : [];
       instructions = await generateInstructionsForEdamam(title, ingredients);
       mealType = recipe.mealType || [];
-      dietaryPreferences = recipe.healthLabels;
+      dietaryPreferences = recipe.healthLabels || [];
       image = recipe.image;
       sourceUrl = recipe.shareAs;
       videoLink = "will come back to this";

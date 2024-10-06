@@ -80,3 +80,20 @@ export const updateMetrics = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// get user metrics
+export const getUserMetrics = async (req, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const metrics = await Metrics.findOne({ userId: userId });
+    if (!metrics) {
+      return res.status(404).json({ message: "User has no metrics" });
+    }
+    return res.status(200).json({ metrics: metrics });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

@@ -6,17 +6,21 @@ import {
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { mapText } from "../../../../server/utils/helper";
 
-const SideMenu = ({ showPreferences, preferences, userPreferences }) => {
+const SideMenu = ({ showPreferences, preferences, userData, userMetrics }) => {
   const navigate = useNavigate();
+
   return (
     <div className="hidden lg:flex flex-col pt-6 justify-between  w-64 border-r border-r-[#343333] bg-[#171717] h-full fixed ">
       <div>
         <div className="flex px-3 items-center gap-2">
           <div className="w-6 h-6 rounded-full text-center flex items-center justify-center bg-[#B678F0]">
-            F
+            {userData.firstName.slice(0, 1)}
           </div>
-          <div>Farouk Nabeel</div>
+          <div>
+            {userData.firstName} {userData.lastName}
+          </div>
         </div>
         <div className="flex px-3 pt-8 flex-col border-b border-b-[#343333] pb-4 text-sm gap-4">
           <div className="flex items-center gap-2">
@@ -111,11 +115,21 @@ const SideMenu = ({ showPreferences, preferences, userPreferences }) => {
             <div className="flex px-3   pb-4 text-sm ">
               <div className="w-5"></div>
               <ul className="flex flex-col gap-2">
-                {userPreferences.map((pref, index) => (
-                  <li key={index} className="">
-                    {pref}
-                  </li>
-                ))}
+                <li className="">Age: {userMetrics.age}</li>
+                <li>Goal: {mapText[userMetrics.goal]}</li>
+                <li>Weight: {userMetrics.weight} kg</li>
+                <li>Height: {userMetrics.height} cm</li>
+                <li>
+                  Diet:{" "}
+                  {userMetrics.dietaryPreferences.length > 0 ? (
+                    userMetrics.dietaryPreferences.map((diet, index) => (
+                      <span key={index}>{diet}</span>
+                    ))
+                  ) : (
+                    <span>None</span>
+                  )}
+                </li>
+                <li>Exercise Level: {mapText[userMetrics.exerciseLevel]}</li>
               </ul>
             </div>
           )}

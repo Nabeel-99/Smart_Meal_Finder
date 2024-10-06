@@ -45,6 +45,19 @@ h1 {
   animation: spinMe 3s linear infinite;
 }
 
+.progress-bar {
+  animation: progress-animation 5s linear forwards;
+}
+
+@keyframes progress-animation {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 @keyframes spinMe {
   from {
     transform: rotate(0deg);

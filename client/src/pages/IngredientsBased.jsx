@@ -9,18 +9,13 @@ import Food1 from "../assets/food1.jpg";
 import SkeletonLoader from "../components/SkeletonLoader";
 import { Link } from "react-router-dom";
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
+import { dietPreferences } from "../../../server/utils/helper";
 
 const IngredientsBased = () => {
   const [item, setItem] = useState("");
   const [ingredients, setIngredients] = useState([]);
   const [ingredientCount, setIngredientCount] = useState(6);
-  const dietaryPreferences = [
-    { name: "Vegetarian", id: "vegetarian" },
-    { name: "Vegan", id: "vegan" },
-    { name: "Gluten-free", id: "gluten-free" },
-    { name: "Dairy-free", id: "dairy-free" },
-    { name: "Nut-free", id: "nut-free" },
-  ];
+
   const addIngredient = () => {
     if (item) {
       setIngredients([...ingredients, item]);
@@ -140,7 +135,7 @@ const IngredientsBased = () => {
                 Dietary Preferences (optional)
               </p>
               {/* checkbox */}
-              {dietaryPreferences.map((pref) => (
+              {dietPreferences.map((pref) => (
                 <div className="flex gap-4 items-center" key={pref.id}>
                   <label className="text-lg lg:text-sm  w-32" htmlFor={pref.id}>
                     {pref.name}

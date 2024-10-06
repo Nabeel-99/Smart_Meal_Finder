@@ -31,8 +31,8 @@ const SelectInput = ({
         }}
       >
         {options.map((option, index) => (
-          <option className="" key={index} value={option}>
-            {option}
+          <option className="" key={index} value={option.value}>
+            {option.label}
           </option>
         ))}
       </select>
