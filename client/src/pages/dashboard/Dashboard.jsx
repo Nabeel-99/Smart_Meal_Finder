@@ -33,6 +33,10 @@ const Dashboard = ({ userData }) => {
   const [listView, setListView] = useState(false);
   const [gridView, setGridView] = useState(true);
   const [viewOptions, setViewOptions] = useState(false);
+  const [userMetrics, setUserMetrics] = useState(null);
+  const [dashboardRecipes, setDashboardRecipes] = useState([]);
+  const [fetchingInProgress, setFetchingInProgress] = useState(false);
+
   const showListView = () => {
     setListView(true);
     setGridView(false);
@@ -46,11 +50,9 @@ const Dashboard = ({ userData }) => {
   const showOptions = () => setViewOptions(!viewOptions);
   const showSideMenu = () => setSideMenu(!sideMenu);
   const showPreferences = () => setPreferences(!preferences);
-  const [userMetrics, setUserMetrics] = useState();
-  const [dashboardRecipes, setDashboardRecipes] = useState([]);
-  const [fetchingInProgress, setFetchingInProgress] = useState(false);
 
   const getUserMetrics = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(
         "http://localhost:8000/api/users/get-user-metrics",
@@ -65,6 +67,8 @@ const Dashboard = ({ userData }) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,6 +93,7 @@ const Dashboard = ({ userData }) => {
               viewOptions={viewOptions}
               gridView={gridView}
               listView={listView}
+              dashboardRecipes={dashboardRecipes}
             />
           }
         />
@@ -124,42 +129,36 @@ const Dashboard = ({ userData }) => {
     setFetchingInProgress(true);
 
     try {
+      // First, try to fetch existing dashboard recipes
       const response = await axios.get(
         "http://localhost:8000/api/recipes/dashboard-recipes",
         { withCredentials: true }
       );
+
       if (response.status === 200) {
         console.log(response.data);
-        setDashboardRecipes("initial response", response.data.recipes);
+        setDashboardRecipes(response.data.recipes);
       }
     } catch (error) {
       console.log("Error fetching dashboard recipes", error);
       if (error.response && error.response.status === 404) {
+        // Only create new dashboard if none exists
         try {
+          console.log("No dashboard found, creating a new one...");
           const newResponse = await axios.post(
             "http://localhost:8000/api/recipes/prepare-dashboard-recipes",
             {},
             { withCredentials: true }
           );
           if (newResponse.status === 200) {
-            console.log("new response", newResponse.data);
+            console.log("New dashboard created successfully");
             const finalResponse = await axios.get(
               "http://localhost:8000/api/recipes/dashboard-recipes",
               { withCredentials: true }
             );
             if (finalResponse.status === 200) {
               console.log(finalResponse.data);
-              setDashboardRecipes("final response", finalResponse.data.recipes);
-            }
-          } else if (newResponse.status === 409) {
-            console.log("Dashboard already exists");
-            const existingDashboardRecipes = await axios.get(
-              "http://localhost:8000/api/recipes/dashboard-recipes",
-              { withCredentials: true }
-            );
-            if (existingDashboardRecipes.status === 200) {
-              console.log(existingDashboardRecipes.data);
-              setDashboardRecipes(existingDashboardRecipes.data.recipes);
+              setDashboardRecipes(finalResponse.data.recipes);
             }
           }
         } catch (error) {
@@ -184,6 +183,7 @@ const Dashboard = ({ userData }) => {
       setLoading(false);
     }, 2000);
   }, []);
+
   useEffect(() => {
     if (sideMenu) {
       document.body.style.overflow = "hidden";
@@ -191,50 +191,55 @@ const Dashboard = ({ userData }) => {
       document.body.style.overflow = "";
     }
   }, [sideMenu]);
+
+  if (loading || !userData || !userMetrics) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <AiOutlineLoading3Quarters className="spin text-3xl" />
+      </div>
+    );
+  }
   return (
     <>
-      {loading ? (
-        <div className="flex items-center justify-center h-screen">
-          <AiOutlineLoading3Quarters className="spin text-3xl" />
-        </div>
-      ) : (
-        <div className="flex flex-col lg:flex-row bg-[#171717] w-full  gap-10">
+      <div className="flex flex-col lg:flex-row bg-[#171717] w-full  gap-10">
+        {userData && userMetrics && (
           <SideMenu
             userData={userData}
             userMetrics={userMetrics}
             showPreferences={showPreferences}
             preferences={preferences}
           />
-          <div className="lg:hidden pt-6 pl-6 flex items-center text-sm gap-4 border-b pb-3 border-b-[#343333] fixed bg-[#171717] z-30 w-full">
-            <div>
-              <button onClick={showSideMenu} className="">
-                {sideMenu ? (
-                  <FaXmark className="text-2xl" />
-                ) : (
-                  <FaBarsStaggered className="text-2xl" />
-                )}
-              </button>
-            </div>
-            <div className="mb-1 text-lg">{getCurrentView()}</div>
+        )}
+
+        <div className="lg:hidden pt-6 pl-6 flex items-center text-sm gap-4 border-b pb-3 border-b-[#343333] fixed bg-[#171717] z-30 w-full">
+          <div>
+            <button onClick={showSideMenu} className="">
+              {sideMenu ? (
+                <FaXmark className="text-2xl" />
+              ) : (
+                <FaBarsStaggered className="text-2xl" />
+              )}
+            </button>
           </div>
-          {/* mobile side menu */}
-          {sideMenu && (
-            <MobileSideMenu
-              userData={userData}
-              userMetrics={userMetrics}
-              showPreferences={showPreferences}
-              preferences={preferences}
-              setSideMenu={setSideMenu}
-            />
-          )}
-          <div className="bg-[#171717] lg:pl-64 flex flex-col min-h-screen pb-8 w-full">
-            <div className="hidden lg:block fixed bg-[#171717] pt-6 pb-6 border-b border-b-[#343333] z-30 w-full">
-              <div className="px-10 text-sm">{getCurrentView()}</div>
-            </div>
-            {renderContentView()}
-          </div>
+          <div className="mb-1 text-lg">{getCurrentView()}</div>
         </div>
-      )}
+        {/* mobile side menu */}
+        {sideMenu && userData && userMetrics && (
+          <MobileSideMenu
+            userData={userData}
+            userMetrics={userMetrics}
+            showPreferences={showPreferences}
+            preferences={preferences}
+            setSideMenu={setSideMenu}
+          />
+        )}
+        <div className="bg-[#171717] lg:pl-64 flex flex-col min-h-screen pb-8 w-full">
+          <div className="hidden lg:block fixed bg-[#171717] pt-6 pb-6 border-b border-b-[#343333] z-30 w-full">
+            <div className="px-10 text-sm">{getCurrentView()}</div>
+          </div>
+          {renderContentView()}
+        </div>
+      </div>
     </>
   );
 };

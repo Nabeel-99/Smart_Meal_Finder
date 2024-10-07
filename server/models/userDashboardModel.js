@@ -6,6 +6,7 @@ const userDashboardSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
+      unique: true,
     },
     generatedMeals: {
       breakfast: [
@@ -51,9 +52,9 @@ const userDashboardSchema = new mongoose.Schema(
         ref: "recipe",
       },
     ],
-    totalCalories: {
+    calorieTarget: {
       type: Number,
-      default: 0,
+      default: null,
     },
     generatedAt: {
       type: Date,

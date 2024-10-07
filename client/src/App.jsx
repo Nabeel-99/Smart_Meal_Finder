@@ -31,7 +31,10 @@ import AnimationComponent from "./components/AnimationComponent";
 
 const App = () => {
   const [userData, setUserData] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
   const authenticateUser = async () => {
+    if (isFetching) return;
+    setIsFetching(true);
     try {
       const response = await axios.get("http://localhost:8000/api/auth", {
         withCredentials: true,
@@ -41,6 +44,8 @@ const App = () => {
       }
     } catch (error) {
       console.log("Auth error", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 

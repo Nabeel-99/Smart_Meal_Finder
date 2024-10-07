@@ -6,6 +6,7 @@ import {
   calculateBMR,
   calculateTDEE,
   categorizeRecipes,
+  fetchAPIRecipes,
   fetchDashboardRecipes,
   getCalorieIntake,
 } from "../utils/recipeLogic.js";
@@ -51,7 +52,7 @@ const generateDashboardRecipes = async (req) => {
       calorieTarget = getCalorieIntake(goal, TDEE);
     }
 
-    const allRecipes = await fetchDashboardRecipes(goal, dietaryPreferences);
+    const allRecipes = await fetchAPIRecipes(goal, dietaryPreferences);
     const filteredAndRankedRecipes = await categorizeRecipes(allRecipes);
     return {
       message: "Dashboard recipes fetched successfully",
@@ -99,9 +100,9 @@ export const prepareDashboardRecipes = async (req, res) => {
       .filter((recipe) => recipe.category === "dinner")
       .map((r) => r._id);
 
-    const limitedBreakfastIds = breakfastIds.slice(0, 12);
-    const limitedLunchIds = lunchIds.slice(0, 12);
-    const limitedDinnerIds = dinnerIds.slice(0, 12);
+    const limitedBreakfastIds = breakfastIds.slice(0, 24);
+    const limitedLunchIds = lunchIds.slice(0, 24);
+    const limitedDinnerIds = dinnerIds.slice(0, 24);
 
     // insert the recipe Ids in the userdashboard
     const newUserDashboard = new UserDashboard({
@@ -120,6 +121,7 @@ export const prepareDashboardRecipes = async (req, res) => {
           isSelected: false,
         })),
       },
+      calorieTarget: calorieTarget || null,
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
@@ -159,6 +161,8 @@ export const getDashboardRecipes = async (req, res) => {
     return res.status(200).json({
       message: "Dashboard recipes retrieved successfully",
       recipes: recipes,
+      calorieTarget:
+        userDashboard.calorieTarget || "No calorie target available",
     });
   } catch (error) {
     console.log(error);

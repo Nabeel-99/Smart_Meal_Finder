@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { CiGrid41 } from "react-icons/ci";
 import { HiBars3 } from "react-icons/hi2";
 import { LuArrowDownWideNarrow } from "react-icons/lu";
 import { SiGreasyfork } from "react-icons/si";
 import SkeletonLoader from "../../components/SkeletonLoader";
+import { Link } from "react-router-dom";
+import MealCard from "../../components/MealCard";
 
 const DashboardContent = ({
   showOptions,
@@ -12,7 +14,31 @@ const DashboardContent = ({
   viewOptions,
   gridView,
   listView,
+  dashboardRecipes,
 }) => {
+  let breakfastMeals = dashboardRecipes?.breakfast || [];
+  let lunchMeals = dashboardRecipes?.lunch || [];
+  let dinnerMeals = dashboardRecipes?.dinner || [];
+  const [breakfast, setBreakfast] = useState(true);
+  const [lunch, setLunch] = useState(false);
+  const [dinner, setDinner] = useState(false);
+
+  const showBreakfast = () => {
+    setBreakfast(true);
+    setLunch(false);
+    setDinner(false);
+  };
+  const showLunch = () => {
+    setBreakfast(false);
+    setLunch(true);
+    setDinner(false);
+  };
+  const showDinner = () => {
+    setBreakfast(false);
+    setLunch(false);
+    setDinner(true);
+  };
+
   return (
     <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
       <div className="flex flex-col xl:flex-row lg:items-center gap-4 w-full lg:gap-10">
@@ -42,13 +68,28 @@ const DashboardContent = ({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center  lg:justify-between">
           <div className="flex items-center justify-between   lg:justify-normal gap-4">
             <div className="relative">
-              <button className="border border-[#343333] px-3 py-1 bg-[#2e2e2e] rounded-md">
+              <button
+                onClick={showBreakfast}
+                className={` px-3 py-1  rounded-md ${
+                  breakfast ? "border border-[#343333] bg-[#2e2e2e]" : ""
+                }`}
+              >
                 Breakfast
               </button>
-              <button className=" -[#343333] px-3 py-1  rounded-md">
+              <button
+                onClick={showLunch}
+                className={` px-3 py-1  rounded-md ${
+                  lunch ? "border border-[#343333] bg-[#2e2e2e]" : ""
+                }`}
+              >
                 Lunch
               </button>
-              <button className=" -[#343333] px-3 py-1  rounded-md">
+              <button
+                onClick={showDinner}
+                className={` px-3 py-1  rounded-md ${
+                  dinner ? "border border-[#343333] bg-[#2e2e2e]" : ""
+                }`}
+              >
                 Dinner
               </button>
             </div>
@@ -92,30 +133,43 @@ const DashboardContent = ({
           </div>
         </div>
       </div>
-      {/* <div className="grid grid-cols-3 w-full h-full gap-10">
-            {/* <div className="">
-              <div className="pb-2">
-                <img
-                  src={Food1}
-                  alt=""
-                  className="w-full h-[250px] object-cover rounded-xl"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div>Chicken Sandwich</div>
-                  <input type="checkbox" />
-                </div>
-                <div>600 calories</div>
-              </div>
-            </div> 
-          </div> */}
-      <SkeletonLoader
+      <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3  w-full h-full gap-10">
+        {breakfast &&
+          breakfastMeals.length > 0 &&
+          breakfastMeals.map((meal, index) => (
+            <MealCard key={index} meal={meal} />
+          ))}
+        {lunch &&
+          lunchMeals.length > 0 &&
+          lunchMeals.map((meal, index) => <MealCard key={index} meal={meal} />)}
+        {dinner &&
+          dinnerMeals.length > 0 &&
+          dinnerMeals.map((meal, index) => (
+            <MealCard key={index} meal={meal} />
+          ))}
+        {/* <div className="">
+          <div className="pb-2">
+            <img
+              src={""}
+              alt=""
+              className="w-full h-[250px] object-cover rounded-xl"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div>Chicken Sandwich</div>
+              <input type="checkbox" />
+            </div>
+            <div>600 calories</div>
+          </div>
+        </div> */}
+      </div>
+      {/* <SkeletonLoader
         count={12}
         className="w-full"
         isGridView={gridView}
         isListView={listView}
-      />
+      /> */}
     </div>
   );
 };
