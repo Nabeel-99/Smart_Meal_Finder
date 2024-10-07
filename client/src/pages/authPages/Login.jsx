@@ -17,7 +17,7 @@ const Login = ({ authenticateUser }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/users/login",
+        "http://localhost:8000/api/auth/login",
         {
           email: email,
           password: password,
@@ -26,11 +26,16 @@ const Login = ({ authenticateUser }) => {
       );
       if (response.status === 200) {
         authenticateUser();
+        const isNewUser = response.data.isNewUser;
         setLoading(true);
         setTimeout(() => {
-          navigate("/preferences");
+          if (isNewUser) {
+            navigate("/preferences");
+          } else {
+            navigate("/dashboard");
+          }
           setLoading(false);
-        }, 5000);
+        }, 3000);
       }
       if (response.status === 400) {
         setLoading(false);

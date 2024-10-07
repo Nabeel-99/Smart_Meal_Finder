@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       ref: "metrics",
       required: false,
     },
+    isNewUser: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

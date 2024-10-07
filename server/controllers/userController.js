@@ -52,7 +52,16 @@ export const loginUser = async (req, res) => {
       httpOnly: true,
     });
 
-    return res.status(200).json({ message: "log in successful" });
+    const isNewUser = user.isNewUser;
+
+    if (isNewUser) {
+      user.isNewUser = false;
+      await user.save();
+    }
+
+    return res
+      .status(200)
+      .json({ message: "log in successful", isNewUser: isNewUser });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });

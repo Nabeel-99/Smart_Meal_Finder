@@ -129,7 +129,29 @@ const Dashboard = ({ userData }) => {
     setFetchingInProgress(true);
 
     try {
-      // First, try to fetch existing dashboard recipes
+      try {
+        console.log("creating dashboard recipes..");
+        const newResponse = await axios.post(
+          "http://localhost:8000/api/recipes/prepare-dashboard-recipes",
+          {},
+          { withCredentials: true }
+        );
+
+        if (newResponse.status === 200) {
+          console.log("New dashboard created successfully");
+          setDashboardRecipes(newResponse.data);
+          return;
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 409) {
+          console.log("Dashboard already exists, fetching existing one");
+        } else {
+          console.log("Error creating dashboard recipes", error);
+          return;
+        }
+      }
+
+      // Fetch existing dashboard recipes
       const response = await axios.get(
         "http://localhost:8000/api/recipes/dashboard-recipes",
         { withCredentials: true }
@@ -137,34 +159,11 @@ const Dashboard = ({ userData }) => {
 
       if (response.status === 200) {
         console.log(response.data);
-        setDashboardRecipes(response.data.recipes);
+        setDashboardRecipes(response.data);
+        return;
       }
     } catch (error) {
       console.log("Error fetching dashboard recipes", error);
-      if (error.response && error.response.status === 404) {
-        // Only create new dashboard if none exists
-        try {
-          console.log("No dashboard found, creating a new one...");
-          const newResponse = await axios.post(
-            "http://localhost:8000/api/recipes/prepare-dashboard-recipes",
-            {},
-            { withCredentials: true }
-          );
-          if (newResponse.status === 200) {
-            console.log("New dashboard created successfully");
-            const finalResponse = await axios.get(
-              "http://localhost:8000/api/recipes/dashboard-recipes",
-              { withCredentials: true }
-            );
-            if (finalResponse.status === 200) {
-              console.log(finalResponse.data);
-              setDashboardRecipes(finalResponse.data.recipes);
-            }
-          }
-        } catch (error) {
-          console.log("Error creating dashboard recipes", error);
-        }
-      }
     } finally {
       setFetchingInProgress(false);
     }

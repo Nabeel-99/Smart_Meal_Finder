@@ -16,9 +16,10 @@ const DashboardContent = ({
   listView,
   dashboardRecipes,
 }) => {
-  let breakfastMeals = dashboardRecipes?.breakfast || [];
-  let lunchMeals = dashboardRecipes?.lunch || [];
-  let dinnerMeals = dashboardRecipes?.dinner || [];
+  let breakfastMeals = dashboardRecipes.recipes?.breakfast || [];
+  let lunchMeals = dashboardRecipes.recipes?.lunch || [];
+  let dinnerMeals = dashboardRecipes.recipes?.dinner || [];
+  let calorieTargetTotal = Number(dashboardRecipes?.calorieTarget) || 0;
   const [breakfast, setBreakfast] = useState(true);
   const [lunch, setLunch] = useState(false);
   const [dinner, setDinner] = useState(false);
@@ -56,7 +57,9 @@ const DashboardContent = ({
           <div className="font-semibold">Calories Target</div>
           <div className="border border-[#343333] pl-1 w-full xl:w-96 h-10 flex items-center rounded-full">
             <div className="xl:w-64 h-8   rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-green-500 flex items-center justify-center">
-              <div className="text-sm font-bold">400/2406 Calories</div>
+              <div className="text-sm font-bold">
+                400/{calorieTargetTotal.toFixed(0)} calories
+              </div>
             </div>
           </div>
         </div>

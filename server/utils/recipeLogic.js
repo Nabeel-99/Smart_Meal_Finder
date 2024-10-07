@@ -45,10 +45,13 @@ export const getCalorieIntake = (goal, tdee) => {
 
 // spoonacular recipes
 const getSpoonacularRecipes = async (
-  mealType = null,
+  mealType = [],
   goal = null,
   dietaryPreferences = []
 ) => {
+  if (!Array.isArray(mealType)) {
+    mealType = [mealType];
+  }
   const calorieRanges = {
     muscle_gain: {
       minCalories: 200,
@@ -70,16 +73,16 @@ const getSpoonacularRecipes = async (
   try {
     const response = await axios.get(`${spoonacularAPI}`, {
       params: {
-        number: 30,
+        number: 40,
         addRecipeInformation: true,
         addRecipeInstructions: true,
         addRecipeNutrition: true,
         fillIngredients: true,
-        ...(mealType && { type: mealType }),
+        ...(mealType.length > 0 && { type: mealType.join(",") }),
         ...(goal && { minCalories: minCalories }),
         ...(goal && { maxCalories: maxCalories }),
         ...(dietaryPref && { diet: dietaryPref }),
-        apiKey: process.env.SPOONACULAR_API_KEY4,
+        apiKey: process.env.SPOONACULAR_API_KEY2,
       },
     });
 
@@ -130,12 +133,14 @@ const getEdamamRecipes = async (
 export const fetchDashboardRecipes = async (goal, dietaryPreferences) => {
   try {
     const calories = goal || null;
+    const lunchQueries = ["side dish", "snack"];
+    const dinnerQueries = ["dessert", "main course", "soup"];
     // fetching recipes
     const [spoonacularBreakfast, spoonacularLunch, spoonacularDinner] =
       await Promise.all([
-        getSpoonacularRecipes("breakfast", calories, dietaryPreferences),
-        getSpoonacularRecipes("lunch", calories, dietaryPreferences),
-        getSpoonacularRecipes("dinner", calories, dietaryPreferences),
+        getSpoonacularRecipes(["breakfast"], calories, dietaryPreferences),
+        getSpoonacularRecipes(lunchQueries, calories, dietaryPreferences),
+        getSpoonacularRecipes(dinnerQueries, calories, dietaryPreferences),
       ]);
 
     const breakfastRecipes = [...spoonacularBreakfast];
@@ -206,9 +211,13 @@ export const fetchAPIRecipes = async (goal, dietaryPreferences) => {
 };
 
 // (async () => {
-//   const recipes = await fetchAPIRecipes(null, []);
+//   const recipes = await fetchDashboardRecipes(null, []);
+//   console.log("Spoonacular recipes:", recipes);
 //   const categorized = await categorizeRecipes(recipes);
-//   console.log("catgeorized recipes", categorized);
+//   console.log("Categorized Recipes:", categorized);
+//   console.log("breakfast length:", categorized.breakfast.length);
+//   console.log("lunch length:", categorized.lunch.length);
+//   console.log("dinner length:", categorized.dinner.length);
 // })();
 
 // async function fetchRecipes() {
@@ -227,16 +236,21 @@ export const fetchAPIRecipes = async (goal, dietaryPreferences) => {
 // }
 // fetchRecipes(); // Call the function to fetch recipes
 const generateInstructionsForEdamam = async (title, ingredients) => {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY3);
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `title: ${title}
   ingredients: ${ingredients}
   generate purely instructions using only the provided ingredients and title, with numbered steps, without headers or extra commentary.
   `;
-
-  const result = await model.generateContent(prompt);
-  return [result.response.text()];
+  try {
+    const result = await model.generateContent(prompt);
+    console.log("result", result.response.text());
+    return [result.response.text()];
+  } catch (error) {
+    console.error("Error generating instructions:", error);
+    return ["Instructions could not be generated."];
+  }
 };
 
 // filter and rank recipes
@@ -303,14 +317,11 @@ export const categorizeRecipes = async (recipes) => {
       videoLink = "will come back to this";
     }
 
-    // Skip if recipe already exists in any category
     if (existingRecipes.has(title)) continue;
 
-    // Assign category based on mealType
     let assigned = false;
 
     if (Array.isArray(mealType)) {
-      // Assign to breakfast if applicable
       if (
         (mealType.includes("morning meal") || mealType.includes("breakfast")) &&
         !assigned
@@ -330,8 +341,10 @@ export const categorizeRecipes = async (recipes) => {
         assigned = true;
       }
 
-      // Assign to lunch if applicable
-      if (mealType.includes("lunch") && !assigned) {
+      if (
+        mealType.includes("side dish") ||
+        (mealType.includes("snack") && !assigned)
+      ) {
         categories.lunch.push({
           title,
           ingredients,
@@ -347,8 +360,11 @@ export const categorizeRecipes = async (recipes) => {
         assigned = true;
       }
 
-      // Assign to dinner if applicable
-      if (mealType.includes("dinner") && !assigned) {
+      if (
+        mealType.includes("dessert") ||
+        mealType.includes("main course") ||
+        (mealType.includes("soup") && !assigned)
+      ) {
         categories.dinner.push({
           title,
           ingredients,
@@ -364,42 +380,40 @@ export const categorizeRecipes = async (recipes) => {
         assigned = true;
       }
 
-      // Handle 'lunch/dinner' case
-      if (mealType.includes("lunch/dinner") && !assigned) {
-        categories.lunch.push({
-          title,
-          ingredients,
-          instructions,
-          image,
-          category: "lunch",
-          dietaryPreferences,
-          videoLink,
-          calories,
-          sourceUrl,
-        });
-        existingRecipes.add(title);
-        assigned = true;
+      // if (mealType.includes("lunch/dinner") && !assigned) {
+      //   categories.lunch.push({
+      //     title,
+      //     ingredients,
+      //     instructions,
+      //     image,
+      //     category: "lunch",
+      //     dietaryPreferences,
+      //     videoLink,
+      //     calories,
+      //     sourceUrl,
+      //   });
+      //   existingRecipes.add(title);
+      //   assigned = true;
 
-        // Only add to dinner if not already assigned to lunch
-        if (!categories.dinner.find((r) => r.title === title)) {
-          categories.dinner.push({
-            title,
-            ingredients,
-            instructions,
-            image,
-            category: "dinner",
-            dietaryPreferences,
-            videoLink,
-            calories,
-            sourceUrl,
-          });
-          existingRecipes.add(title);
-        }
-      }
+      //   if (!categories.dinner.find((r) => r.title === title)) {
+      //     categories.dinner.push({
+      //       title,
+      //       ingredients,
+      //       instructions,
+      //       image,
+      //       category: "dinner",
+      //       dietaryPreferences,
+      //       videoLink,
+      //       calories,
+      //       sourceUrl,
+      //     });
+      //     existingRecipes.add(title);
+      //   }
+      // }
     }
   }
 
-  const limit = 24;
+  const limit = 18;
   // Limit results by ingredient if needed
   const topRecipes = {
     breakfast: categories.breakfast.slice(0, limit),
@@ -407,6 +421,17 @@ export const categorizeRecipes = async (recipes) => {
     dinner: categories.dinner.slice(0, limit),
   };
 
+  // for (const mealType of Object.keys(topRecipes)) {
+  //   for (const recipe of topRecipes[mealType]) {
+  //     if (recipe.instructions === "no instructions for edamam") {
+  //       const generateInstructions = await generateInstructionsForEdamam(
+  //         recipe.title,
+  //         recipe.ingredients
+  //       );
+  //       recipe.instructions = generateInstructions;
+  //     }
+  //   }
+  // }
   return {
     breakfast: topRecipes.breakfast,
     lunch: topRecipes.lunch,
@@ -625,225 +650,3 @@ const limitResultsByMainIngredient = (
 
   return uniqueRecipes.slice(0, num);
 };
-
-// spoonacular
-// spoonacular
-// const getSpoonacularRecipes = async (
-//   mealTypes,
-//   goal,
-//   dietaryPreferences = []
-// ) => {
-//   const calorieRanges = {
-//     muscle_gain: {
-//       minCalories: 500,
-//       maxCalories: 700,
-//     },
-//     weight_loss: {
-//       minCalories: 300,
-//       maxCalories: 500,
-//     },
-//     maintenance: {
-//       minCalories: 500,
-//       maxCalories: 600,
-//     },
-//   };
-//   const { minCalories, maxCalories } = calorieRanges[goal];
-//   const dietaryPref =
-//     dietaryPreferences.length > 0 ? dietaryPreferences[0] : null;
-
-//   try {
-//     let allRecipes = [];
-//     for (const mealType of mealTypes) {
-//       const response = await axios.get(`${spoonacularAPI}`, {
-//         params: {
-//           number: 20,
-//           type: mealType,
-//           addRecipeInformation: true,
-//           addRecipeInstructions: true,
-//           fillIngredients: true,
-//           minCalories: minCalories,
-//           maxCalories: maxCalories,
-//           ...(dietaryPref ? { diet: dietaryPref } : {}),
-//           apiKey: process.env.SPOONACULAR_API_KEY4,
-//         },
-//       });
-
-//       allRecipes = [...allRecipes, ...response.data.results];
-//     }
-
-//     return allRecipes;
-//   } catch (error) {
-//     console.log("Error fetching from spoonacular", error);
-//     throw error;
-//   }
-// };
-
-// edamama
-// const getEdamamRecipes = async (mealType, goal, dietaryPreferences = []) => {
-//   try {
-//     const calorieRanges = {
-//       muscle_gain: "500-700",
-//       weight_loss: "300-500",
-//       maintenance: "500-600",
-//     };
-//     const calorieRange = calorieRanges[goal];
-//     const healthLabel =
-//       dietaryPreferences.length > 0 ? dietaryPreferences[0] : undefined;
-//     const response = await axios.get(`${edamamAPI}`, {
-//       params: {
-//         app_id: process.env.EDAMAM_APP_ID_QUERY,
-//         app_key: process.env.EDAMAM_APP_KEY_RECIPE_ID,
-//         from: 0,
-//         to: 15,
-//         mealType: mealType,
-//         ...(healthLabel && { health: healthLabel }),
-//         calories: calorieRange,
-//       },
-//     });
-//     return response.data.hits;
-//   } catch (error) {
-//     console.log("error fetching from edamam", error);
-//     throw error;
-//   }
-// };
-
-// export const fetchDashboardRecipes = async (goal, dietaryPreferences) => {
-//   try {
-//     const mealTypes = ["breakfast", "brunch", "morning meal"];
-//     // fetching recipes
-//     const [spoonacularBreakfast, spoonacularLunch, spoonacularDinner] =
-//       await Promise.all([
-//         getSpoonacularRecipes(mealTypes, goal, dietaryPreferences),
-//         getSpoonacularRecipes("lunch", goal, dietaryPreferences),
-//         getSpoonacularRecipes("dinner", goal, dietaryPreferences),
-//       ]);
-
-//     const breakfastRecipes = [...spoonacularBreakfast];
-//     const lunchRecipes = [...spoonacularLunch];
-//     const dinnerRecipes = [...spoonacularDinner];
-
-//     const allRecipes = [...breakfastRecipes, ...lunchRecipes, ...dinnerRecipes];
-//     return allRecipes;
-//   } catch (error) {
-//     console.log("Error fetching Recipes from APIS", error);
-//     throw error;
-//   }
-// };
-
-// filter and rank recipes
-// export const filterAndRankRecipes = (recipes) => {
-//   const categories = {
-//     breakfast: [],
-//     lunch: [],
-//     dinner: [],
-//   };
-
-//   recipes.forEach((recipe) => {
-//     let calories,
-//       title,
-//       ingredients,
-//       instructions,
-//       mealType = [],
-//       dietaryPreferences,
-//       videoLink,
-//       sourceUrl,
-//       image;
-
-//     const isSpoonacular = recipe.spoonacularSourceUrl;
-//     const isEdamam = recipe.shareAs;
-
-//     if (isSpoonacular) {
-//       calories = recipe.nutrition?.nutrients.find(
-//         (nutrient) => nutrient.name === "Calories"
-//       )?.amount;
-//       title = recipe.title;
-//       ingredients = recipe.extendedIngredients
-//         ? recipe.extendedIngredients.map((ingredient) => ingredient.name)
-//         : [];
-//       instructions =
-//         recipe.analyzedInstructions && recipe.analyzedInstructions.length > 0
-//           ? recipe.analyzedInstructions.flatMap((instruction) =>
-//               instruction.steps.map((step) => step.step)
-//             )
-//           : [];
-//       if (instructions.length === 0) return;
-//       mealType = recipe.dishTypes;
-//       dietaryPreferences = [
-//         recipe.vegetarian ? "Vegetarian" : "",
-//         recipe.vegan ? "Vegan" : "",
-//         recipe.glutenFree ? "Gluten-Free" : "",
-//         recipe.dairyFree ? "Dairy-Free" : "",
-//       ].filter(Boolean);
-//       sourceUrl = recipe.spoonacularSourceUrl;
-//       image = recipe.image;
-//       videoLink = "will come back to this";
-//     } else if (isEdamam) {
-//       calories = recipe.calories / recipe.yield;
-//       title = recipe.label;
-//       ingredients = recipe.ingredients
-//         ? recipe.ingredients.map((ingredient) => ingredient.food)
-//         : [];
-//       instructions = ["no instructions for edamam"];
-//       mealType = recipe.mealType || [];
-//       dietaryPreferences = recipe.healthLabels;
-//       image = recipe.image;
-//       sourceUrl = recipe.shareAs;
-//       videoLink = "will come back to this";
-//     }
-
-//     // Handle category assignment based on mealType
-//     let category = [];
-//     if (Array.isArray(mealType)) {
-//       if (
-//         mealType.includes("breakfast") ||
-//         mealType.includes("brunch") ||
-//         mealType.includes("morning meal")
-//       ) {
-//         category.push("breakfast");
-//       }
-//       if (mealType.includes("lunch") || mealType.includes("lunch/dinner")) {
-//         category.push("lunch");
-//       }
-//       if (mealType.includes("dinner") || mealType.includes("lunch/dinner")) {
-//         category.push("dinner");
-//       }
-//     }
-
-//     // Ensure category array exists and prevent duplicates
-//     category.forEach((cat) => {
-//       if (!categories[cat]) {
-//         categories[cat] = [];
-//       }
-//       if (
-//         !categories[cat].some(
-//           (existingRecipe) => existingRecipe.title === title
-//         )
-//       ) {
-//         categories[cat].push({
-//           title,
-//           ingredients,
-//           instructions,
-//           image,
-//           category: cat,
-//           dietaryPreferences,
-//           videoLink,
-//           calories,
-//           sourceUrl,
-//         });
-//       }
-//     });
-//   });
-
-//   const limit = 12;
-//   const topRecipes = {
-//     breakfast: categories.breakfast.slice(0, limit),
-//     lunch: categories.lunch.slice(0, limit),
-//     dinner: categories.dinner.slice(0, limit),
-//   };
-
-//   return {
-//     breakfast: topRecipes.breakfast,
-//     lunch: topRecipes.lunch,
-//     dinner: topRecipes.dinner,
-//   };
-// };

@@ -52,7 +52,7 @@ const generateDashboardRecipes = async (req) => {
       calorieTarget = getCalorieIntake(goal, TDEE);
     }
 
-    const allRecipes = await fetchAPIRecipes(goal, dietaryPreferences);
+    const allRecipes = await fetchDashboardRecipes(goal, dietaryPreferences);
     const filteredAndRankedRecipes = await categorizeRecipes(allRecipes);
     return {
       message: "Dashboard recipes fetched successfully",

@@ -19,7 +19,7 @@ const SignUp = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/users/signup",
+        "http://localhost:8000/api/auth/signup",
         {
           firstName: firstName,
           lastName: lastName,

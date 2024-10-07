@@ -6,7 +6,6 @@ const userDashboardSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
-      unique: true,
     },
     generatedMeals: {
       breakfast: [
