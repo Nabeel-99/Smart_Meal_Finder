@@ -1,10 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const MealCard = ({ meal }) => {
   return (
     <div className="">
-      <Link>
+      <Link to={`/recipe-details/${meal._id}`}>
         <div className="pb-2">
           <img
             src={meal.image}

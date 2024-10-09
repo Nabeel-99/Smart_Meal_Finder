@@ -5,11 +5,20 @@ import { SiGreasyfork } from "react-icons/si";
 import { FaBarsStaggered, FaXmark } from "react-icons/fa6";
 import BurgerMenu from "./menuCards/BurgerMenu";
 
-const Navbar = () => {
+const Navbar = ({ userData }) => {
   const location = useLocation();
   const pathNames = ["/ingredients-based", "/metrics-based"];
   const [isBurgerMenu, setIsBurgerMenu] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const toggleMenu = () => setIsBurgerMenu(!isBurgerMenu);
+
+  useEffect(() => {
+    if (userData) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [userData]);
 
   useEffect(() => {
     // handle background scrolling when burger menu is open
@@ -55,21 +64,29 @@ const Navbar = () => {
           </>
         )}
       </div>
-
-      <div className="hidden lg:flex items-center z-50 gap-4 border border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">
+      {isLoggedIn ? (
         <Link
-          to={"/login"}
-          className="border flex items-center justify-center rounded-lg border-[#343333] bg-[#29292a] w-20 h-8 "
+          to={"/dashboard"}
+          className="hidden lg:flex items-center z-50 gap-4 border bg-[#dadada] text-black hover:bg-[#483ba3] hover:text-white transition-all duration-300 border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10"
         >
-          Log in
+          Dashboard
         </Link>
-        <Link
-          to={"/sign-up"}
-          className="border flex items-center justify-center rounded-lg bg-[#d9d9d9] text-black w-20 h-8 "
-        >
-          Sign Up
-        </Link>
-      </div>
+      ) : (
+        <div className="hidden lg:flex items-center z-50 gap-4 border border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">
+          <Link
+            to={"/login"}
+            className="border flex items-center justify-center rounded-lg border-[#343333] bg-[#29292a] w-20 h-8 "
+          >
+            Log in
+          </Link>
+          <Link
+            to={"/sign-up"}
+            className="border flex items-center justify-center rounded-lg bg-[#d9d9d9] text-black w-20 h-8 "
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
 
       {/* burger menu*/}
       <div

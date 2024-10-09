@@ -57,7 +57,7 @@ const App = () => {
       <Router>
         <ScrollToTop />
         <MaybeShowComponent>
-          <Navbar />
+          <Navbar userData={userData} />
         </MaybeShowComponent>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -75,7 +75,7 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/ingredients-based" element={<IngredientsBased />} />
           <Route path="/metrics-based" element={<MetricsBased />} />
-          <Route path="/recipe-details" element={<RecipeDetails />} />
+          <Route path="/recipe-details/:id" element={<RecipeDetails />} />
         </Routes>
         <MaybeShowComponent>
           <Footer />

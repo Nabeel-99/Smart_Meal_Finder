@@ -46,7 +46,7 @@ const MetricsBased = () => {
   return (
     <div className="overflow-hidden flex flex-col gap-8 pt-8 justify-center items-center">
       <div className="flex items-center gap-2 pt-20 text-sm">
-        <div className="h-4 w-6 rounded-xl bg-[#361BFF]"></div>
+        <div className="h-4 w-6 rounded-xl bg-[#d08824]"></div>
         <p>Metrics-based</p>
       </div>
       <div className="  w-full h-[300px] lg:h-[550px]  flex flex-col items-center">

@@ -44,14 +44,20 @@ const DashboardContent = ({
     <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
       <div className="flex flex-col xl:flex-row lg:items-center gap-4 w-full lg:gap-10">
         <div className="flex flex-col gap-5  md:grid grid-cols-2 w-full items-center lg:gap-10">
-          <div className="border border-[#343333] bg-[#2e2e2e] w-full rounded-lg h-20 xl:w-64 flex items-center justify-center gap-3">
+          <Link
+            to={"/ingredients-based"}
+            className="border border-[#343333] bg-[#2e2e2e] hover:bg-[#5a4bc8] w-full rounded-lg h-20 xl:w-64 flex items-center justify-center gap-3"
+          >
             <SiGreasyfork className="text-3xl " />
             <div className="font-semibold">Get Meal By Ingredients</div>
-          </div>
-          <div className="border border-[#343333] bg-[#2e2e2e] w-full rounded-lg h-20 xl:w-64 flex items-center justify-center gap-3">
+          </Link>
+          <Link
+            to={"/metrics-based"}
+            className="border border-[#343333] bg-[#2e2e2e] hover:bg-[#d08824] w-full rounded-lg h-20 xl:w-64 flex items-center justify-center gap-3"
+          >
             <SiGreasyfork className="text-3xl" />
             <div className="font-semibold">Get Meal By Body Metrics</div>
-          </div>
+          </Link>
         </div>
         <div className="flex flex-col xl:flex-row items-center w-full gap-3">
           <div className="font-semibold">Calories Target</div>
@@ -140,7 +146,7 @@ const DashboardContent = ({
         {breakfast &&
           breakfastMeals.length > 0 &&
           breakfastMeals.map((meal, index) => (
-            <MealCard key={index} meal={meal} />
+            <MealCard key={index} meal={meal} to={``} />
           ))}
         {lunch &&
           lunchMeals.length > 0 &&

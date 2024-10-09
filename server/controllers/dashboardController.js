@@ -5,10 +5,11 @@ import User from "../models/userModel.js";
 import {
   calculateBMR,
   calculateTDEE,
-  categorizeRecipes,
-  fetchAPIRecipes,
-  fetchDashboardRecipes,
   getCalorieIntake,
+} from "../utils/helper.js";
+import {
+  categorizeRecipes,
+  fetchDashboardRecipes,
 } from "../utils/recipeLogic.js";
 
 const prepareRecipesForInsertion = (recipes) => {

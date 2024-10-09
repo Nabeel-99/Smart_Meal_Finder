@@ -1,12 +1,15 @@
 import {
-  calculateBMR,
-  calculateTDEE,
   fetchBasedOnIngredients,
   fetchBasedOnMetrics,
   getBestMatchingRecipe,
-  getCalorieIntake,
   rankRecipes,
 } from "../utils/recipeLogic.js";
+import Recipe from "../models/recipeModel.js";
+import {
+  calculateBMR,
+  calculateTDEE,
+  getCalorieIntake,
+} from "../utils/helper.js";
 
 export const generateIngredientsBasedRecipes = async (req, res) => {
   try {
@@ -61,5 +64,18 @@ export const generateMetricsBasedRecipes = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "error fetching recipes" });
+  }
+};
+
+export const getRecipeDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const foundRecipe = await Recipe.findById(id);
+    if (!foundRecipe) {
+      return res.status(404).json({ message: "recipe not found" });
+    }
+    return res.status(200).json(foundRecipe);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
