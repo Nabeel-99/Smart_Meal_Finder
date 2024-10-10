@@ -1,3 +1,5 @@
+import axios from "axios";
+
 // api links
 const spoonacularAPI = "https://api.spoonacular.com/recipes/complexSearch";
 const edamamAPI = "https://api.edamam.com/api/recipes/v2?&type=public";
@@ -43,7 +45,7 @@ export const getSpoonacularRecipes = async (
         ...(goal && { minCalories: minCalories }),
         ...(goal && { maxCalories: maxCalories }),
         ...(dietaryPref && { diet: dietaryPref }),
-        apiKey: process.env.SPOONACULAR_API_KEY2,
+        apiKey: process.env.SPOONACULAR_API_KEY3,
       },
     });
 
@@ -106,10 +108,10 @@ export const getTastyAPIRecipes = async (ingredients = []) => {
         "x-rapidapi-host": "tasty.p.rapidapi.com",
       },
     });
-    console.log(response.data);
-    return response.data;
+
+    return response.data.results;
   } catch (error) {
-    console.error("error occured", error);
+    console.error("Error occurred", error);
     throw error;
   }
 };

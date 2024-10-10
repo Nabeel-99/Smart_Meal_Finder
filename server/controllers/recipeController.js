@@ -1,8 +1,6 @@
 import {
   fetchBasedOnIngredients,
   fetchBasedOnMetrics,
-  getBestMatchingRecipe,
-  rankRecipes,
 } from "../utils/recipeLogic.js";
 import Recipe from "../models/recipeModel.js";
 import {
@@ -54,7 +52,7 @@ export const generateMetricsBasedRecipes = async (req, res) => {
     const calorieTarget = getCalorieIntake(goal, TDEE);
 
     const allRecipes = await fetchBasedOnMetrics(goal, dietaryPreferences);
-    const filteredRecipes = await rankRecipes(allRecipes);
+    // const filteredRecipes = await rankRecipes(allRecipes);
 
     return res.status(200).json({
       recipe: filteredRecipes,
