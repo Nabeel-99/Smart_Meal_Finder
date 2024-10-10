@@ -4,7 +4,7 @@ import {
   getSpoonacularRecipes,
   getTastyAPIRecipes,
 } from "./api.js";
-import commonIngredients from "./pantry.json" assert { type: "json" };
+import defaultPantry from "./pantry.json" assert { type: "json" };
 import { extractRecipeData, generateMealTitlesForAPI } from "./helper.js";
 
 // spooncular pantry
@@ -78,18 +78,60 @@ export const fetchAPIRecipes = async (query = [], goal, dietaryPreferences) => {
 //   const ingredients = ["rice", "milk", "banana", "chicken", "fries"];
 //   const recipes = await fetchAPIRecipes(ingredients, null, []);
 //   const topRanked = await filteredAndRankedRecipes(recipes, ingredients);
-//   console.log("from the fucntion recipe total:", recipes.length);
-//   console.log("Top ranked", topRanked);
-//   console.log("top ranked", topRanked.length);
+
+//   console.log("From the function recipe total:", recipes.length);
+
+//   console.log(
+//     "Top ranked details:",
+//     topRanked.map((rank) => {
+//       return {
+//         title: rank.title,
+//         ingredients: rank.ingredients,
+//         userInput: ingredients,
+//         userUsedIngredients: rank.userUsedIngredients, // Fixed naming
+//         missingIngredients: rank.missingIngredients,
+//         missingIngredientsCount: rank.missingIngredientsCount,
+//       };
+//     })
+//   );
+
+//   console.log("Top ranked", topRanked.length);
 // })();
 // Function to check if two ingredients share any common words
-const hasCommonWords = (ingredient1, ingredient2) => {
-  const words1 = ingredient1.toLowerCase().split(" ");
-  const words2 = ingredient2.toLowerCase().split(" ");
-  return words1.some((word1) => words2.includes(word1));
+export const fetchBasedOnIngredients = async (
+  userIngredients,
+  userGoal = null,
+  dietaryPreferences = [],
+  userPantry = { items: [] }
+) => {
+  try {
+    const recipes = await fetchAPIRecipes(
+      userIngredients,
+      userGoal,
+      dietaryPreferences
+    );
+    const topRanked = await filteredAndRankedRecipes(
+      recipes,
+      userIngredients,
+      userPantry
+    );
+    return topRanked;
+  } catch (error) {
+    console.log("error fetching", error);
+    throw error;
+  }
 };
-export const filteredAndRankedRecipes = async (recipes, userIngredients) => {
+
+export const filteredAndRankedRecipes = async (
+  recipes,
+  userIngredients,
+  userPantry
+) => {
   const meals = [];
+  const pantryToUse =
+    userPantry.items && userPantry.items.length > 0
+      ? userPantry.items
+      : defaultPantry.pantry;
   for (const recipe of recipes) {
     const {
       calories,
@@ -105,20 +147,37 @@ export const filteredAndRankedRecipes = async (recipes, userIngredients) => {
       nutrients,
     } = extractRecipeData(recipe);
 
-    // filter out common ingredients
-    const filteredIngredients = ingredients.filter((ingredient) => {
-      return !commonIngredients.pantry.some((commonIngredient) => {
-        return hasCommonWords(ingredient, commonIngredient);
+    const recipeIngredients = ingredients.map((item) => item.toLowerCase());
+
+    const userIngredientsLowercase = userIngredients.map((ingredient) =>
+      ingredient.toLowerCase()
+    );
+    //filter out ingredients that match partially
+    const filteredIngredients = recipeIngredients.filter((ingredient) => {
+      return !pantryToUse.some((pantryItem) => {
+        return (
+          ingredient.toLowerCase().includes(pantryItem.toLowerCase()) ||
+          pantryItem.toLowerCase().includes(ingredient.toLowerCase())
+        );
       });
     });
 
-    // Rank recipes based on user ingredients
     const missingIngredients = filteredIngredients.filter((ingredient) => {
-      return !userIngredients.some((item) => {
-        return hasCommonWords(ingredient, item);
-      });
+      return !userIngredientsLowercase.some(
+        (userIngredient) =>
+          userIngredient &&
+          (ingredient.includes(userIngredient) ||
+            userIngredient.includes(ingredient))
+      );
     });
-
+    const userUsedIngredients = ingredients.filter((ingredient) => {
+      return userIngredientsLowercase.some(
+        (userIngredient) =>
+          userIngredient &&
+          (ingredient.includes(userIngredient) ||
+            userIngredient.includes(ingredient))
+      );
+    });
     if (missingIngredients.length <= 3) {
       meals.push({
         title,
@@ -132,6 +191,7 @@ export const filteredAndRankedRecipes = async (recipes, userIngredients) => {
         prepTime,
         nutrients,
         ingredients,
+        userUsedIngredients,
         missingIngredients,
         missingIngredientsCount: missingIngredients.length,
       });
@@ -246,24 +306,6 @@ export const categorizeRecipes = async (recipes) => {
     lunch: topRecipes.lunch,
     dinner: topRecipes.dinner,
   };
-};
-
-export const fetchBasedOnIngredients = async (
-  userIngredients,
-  dietaryPreferences
-) => {
-  try {
-    const recipes = await getEdamamRecipes(
-      userIngredients,
-      null,
-      null,
-      dietaryPreferences
-    );
-    return recipes;
-  } catch (error) {
-    console.log("error fetching recipes from edamam", error);
-    throw error;
-  }
 };
 
 export const fetchBasedOnMetrics = async (goal, dietaryPreferences) => {

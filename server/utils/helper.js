@@ -1,4 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Pantry from "../models/pantryModel.js";
+import Metrics from "../models/metricsModel.js";
 
 // repeated variables
 export const genderOptions = [
@@ -216,4 +218,38 @@ export const extractRecipeData = (recipe) => {
     prepTime,
     nutrients,
   };
+};
+
+// fetch user pantry data
+export const getUserPantryData = async (userId) => {
+  try {
+    if (!userId) {
+      return { error: true, message: "Unauthorized" };
+    }
+    const userPantry = await Pantry.findOne({ userId: userId });
+    if (!userPantry) {
+      return { error: true, message: "Pantry not found" };
+    }
+    return { success: true, userPantry };
+  } catch (error) {
+    console.error(error);
+    return { error: true, message: "Error fetching pantry" };
+  }
+};
+
+//fetch user metrics
+export const getUserMetricsData = async (userId) => {
+  try {
+    if (!userId) {
+      return { error: true, message: "User not found" };
+    }
+    const metrics = await Metrics.findOne({ userId: userId });
+    if (!metrics) {
+      return { error: true, message: "Metrics not found" };
+    }
+    return { success: true, metrics };
+  } catch (error) {
+    console.error(error);
+    return { error: true, message: "Error fetching metrics" };
+  }
 };

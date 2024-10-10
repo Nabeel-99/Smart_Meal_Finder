@@ -23,6 +23,11 @@ const userSchema = new mongoose.Schema(
       ref: "metrics",
       required: false,
     },
+    userPantry: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "pantry",
+      required: false,
+    },
     isNewUser: {
       type: Boolean,
       default: true,

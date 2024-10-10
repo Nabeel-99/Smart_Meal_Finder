@@ -7,24 +7,44 @@ import {
   calculateBMR,
   calculateTDEE,
   getCalorieIntake,
+  getUserMetricsData,
+  getUserPantryData,
 } from "../utils/helper.js";
 
 export const generateIngredientsBasedRecipes = async (req, res) => {
   try {
+    let userPantry = [];
+    let metrics = {};
+
+    const userId = req.userId;
     const { ingredients, dietaryPreferences } = req.body;
     if (!ingredients) {
       return res.status(400).json({ message: "Ingredients are required" });
     }
+
+    if (userId) {
+      // get user pantry and goal from metrics
+      const userPantryData = await getUserPantryData(userId);
+      const userMetricsData = await getUserMetricsData(userId);
+
+      if (userPantryData.success) {
+        userPantry = userPantryData.userPantry.items || [];
+      }
+
+      if (userMetricsData.success) {
+        metrics = userMetricsData.metrics;
+      }
+    }
+
     const recipes = await fetchBasedOnIngredients(
       ingredients,
-      dietaryPreferences
+      metrics.goal || null,
+      dietaryPreferences,
+      userPantry
     );
-    // const bestMatchingRecipe = await getBestMatchingRecipe(
-    //   recipes,
-    //   ingredients
-    // );
+
     return res.status(200).json({
-      recipe: recipes,
+      recipe: recipes.map((recipe) => recipe.title),
       message: "recipes fetched successfully",
     });
   } catch (error) {
