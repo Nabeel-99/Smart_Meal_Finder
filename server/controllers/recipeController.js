@@ -43,10 +43,9 @@ export const generateIngredientsBasedRecipes = async (req, res) => {
       userPantry
     );
 
-    return res.status(200).json({
-      recipe: recipes.map((recipe) => recipe.title),
-      message: "recipes fetched successfully",
-    });
+    return res
+      .status(200)
+      .json({ message: "recipes fetched successfully", recipes });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error fetching recipes" });

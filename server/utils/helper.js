@@ -39,7 +39,7 @@ export const mapText = {
 };
 
 export const generateInstructionsForEdamam = async (title, ingredients) => {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY3);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `title: ${title}
@@ -118,6 +118,7 @@ export const getCalorieIntake = (goal, tdee) => {
 
 export const extractRecipeData = (recipe) => {
   let calories,
+    id,
     title,
     ingredients = [],
     instructions = [],
@@ -129,7 +130,7 @@ export const extractRecipeData = (recipe) => {
     prepTime,
     nutrients;
 
-  const isSpoonacular = recipe.spoonacularSourceUrl;
+  const isSpoonacular = recipe.spoonacularSourceUrl || recipe.imageType;
   const isEdamam = recipe.recipe?.shareAs;
   const isTasty = recipe.video_url;
 
@@ -147,6 +148,7 @@ export const extractRecipeData = (recipe) => {
           unit: nutrient.unit,
         }));
     }
+    id = recipe.id;
     title = recipe.title || "Unknown Title";
     ingredients = recipe.extendedIngredients
       ? recipe.extendedIngredients.map((ingredient) => ingredient.name)
@@ -156,7 +158,7 @@ export const extractRecipeData = (recipe) => {
         ? recipe.analyzedInstructions.flatMap((instruction) =>
             instruction.steps.map((step) => step.step)
           )
-        : [];
+        : ["no instructions"];
     mealType = recipe.dishTypes || [];
     dietaryPreferences = [
       recipe.vegetarian ? "Vegetarian" : "",
@@ -197,7 +199,7 @@ export const extractRecipeData = (recipe) => {
       : [];
     instructions = recipe.instructions
       ? recipe.instructions.map((instruction) => instruction.display_text)
-      : [];
+      : ["no instructions"];
     videoLink = recipe.video_url || recipe.original_video_url || "No Video";
     image = recipe.thumbnail_url || "default_image_url";
     prepTime = recipe.prep_time_minutes || 0;
@@ -206,6 +208,7 @@ export const extractRecipeData = (recipe) => {
   }
 
   return {
+    id,
     title,
     calories,
     ingredients,

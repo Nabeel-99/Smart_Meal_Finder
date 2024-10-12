@@ -1,11 +1,16 @@
 import axios from "axios";
 import {
+  findRecipesByIngredients,
   getEdamamRecipes,
   getSpoonacularRecipes,
   getTastyAPIRecipes,
 } from "./api.js";
 import defaultPantry from "./pantry.json" assert { type: "json" };
-import { extractRecipeData, generateMealTitlesForAPI } from "./helper.js";
+import {
+  extractRecipeData,
+  generateInstructionsForEdamam,
+  generateMealTitlesForAPI,
+} from "./helper.js";
 
 // spooncular pantry
 
@@ -49,14 +54,7 @@ export const fetchDashboardRecipes = async (goal, dietaryPreferences) => {
 export const fetchAPIRecipes = async (query = [], goal, dietaryPreferences) => {
   try {
     const calories = goal || null;
-    const spoonacularTitles = await generateMealTitlesForAPI(query);
-
-    const spoonacularMealsPromises = spoonacularTitles.map((title) =>
-      getSpoonacularRecipes(title, [], calories, dietaryPreferences)
-    );
-    const spoonacularMeals = (
-      await Promise.all(spoonacularMealsPromises)
-    ).flat();
+    const spoonacularMeals = await findRecipesByIngredients(query);
     // Fetching recipes from both sources
     const [edamamMeals, tastyMeals] = await Promise.all([
       getEdamamRecipes(query, null, calories, dietaryPreferences),
@@ -98,6 +96,7 @@ export const fetchAPIRecipes = async (query = [], goal, dietaryPreferences) => {
 //   console.log("Top ranked", topRanked.length);
 // })();
 // Function to check if two ingredients share any common words
+
 export const fetchBasedOnIngredients = async (
   userIngredients,
   userGoal = null,
@@ -129,9 +128,7 @@ export const filteredAndRankedRecipes = async (
 ) => {
   const meals = [];
   const pantryToUse =
-    userPantry.items && userPantry.items.length > 0
-      ? userPantry.items
-      : defaultPantry.pantry;
+    userPantry && userPantry.length > 0 ? userPantry : defaultPantry.pantry;
   for (const recipe of recipes) {
     const {
       calories,
@@ -178,12 +175,25 @@ export const filteredAndRankedRecipes = async (
             userIngredient.includes(ingredient))
       );
     });
+    let finalInstructions = instructions;
+    if (instructions === "no instructions for edamam") {
+      try {
+        const generatedInstructions = await generateInstructionsForEdamam(
+          title,
+          ingredients
+        );
+        finalInstructions = generatedInstructions;
+      } catch (error) {
+        console.log("error generating instructions", error);
+        finalInstructions = ["instructions could not be generated"];
+      }
+    }
     if (missingIngredients.length <= 3) {
       meals.push({
         title,
         calories,
         mealType,
-        instructions,
+        instructions: finalInstructions,
         dietaryPreferences,
         videoLink,
         sourceUrl,
@@ -193,6 +203,7 @@ export const filteredAndRankedRecipes = async (
         ingredients,
         userUsedIngredients,
         missingIngredients,
+        filteredIngredients,
         missingIngredientsCount: missingIngredients.length,
       });
     }
@@ -200,6 +211,30 @@ export const filteredAndRankedRecipes = async (
 
   return meals;
 };
+// const testurl = "https://api.spoonacular.com/recipes/findByIngredients";
+// const testFetch = async (ingredients) => {
+//   const response = await axios.get(`${testurl}`, {
+//     params: {
+//       ingredients: ingredients.join(","),
+//       limitLicense: true,
+//       number: 25,
+//       apiKey: process.env.SPOONACULAR_API_KEY2,
+//     },
+//   });
+//   const filteredAndRanked = await filteredAndRankedRecipes(
+//     response.data,
+//     ingredients,
+//     []
+//   );
+
+//   console.log(filteredAndRanked.map((recipe) => recipe.title));
+//   console.log(response.data.length);
+//   console.log(filteredAndRanked);
+//   console.log("filtered recipes length", filteredAndRanked.length);
+//   return filteredAndRanked;
+// };
+
+// testFetch(["rice", "tomato paste", "fries", "bread", "nutella", "egg"]);
 // filter and rank recipes
 export const categorizeRecipes = async (recipes) => {
   const categories = {

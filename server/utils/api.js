@@ -1,7 +1,8 @@
 import axios from "axios";
+import { extractRecipeData } from "./helper.js";
 
 // api links
-const spoonacularAPI = "https://api.spoonacular.com/recipes/complexSearch";
+const spoonacularAPI = "https://api.spoonacular.com/recipes";
 const edamamAPI = "https://api.edamam.com/api/recipes/v2?&type=public";
 const tastyAPI = "https://tasty.p.rapidapi.com/recipes/list";
 
@@ -33,7 +34,7 @@ export const getSpoonacularRecipes = async (
     dietaryPreferences.length > 0 ? dietaryPreferences[0] : null;
 
   try {
-    const response = await axios.get(`${spoonacularAPI}`, {
+    const response = await axios.get(`${spoonacularAPI}/complexSearch`, {
       params: {
         number: 40,
         addRecipeInformation: true,
@@ -55,6 +56,75 @@ export const getSpoonacularRecipes = async (
     throw error;
   }
 };
+
+// spoonacular findByIngredietns
+export const findByIngredients = async (ingredients = []) => {
+  try {
+    const response = await axios.get(`${spoonacularAPI}/findByIngredients`, {
+      params: {
+        ingredients: ingredients.join(","),
+        apiKey: process.env.SPOONACULAR_API_KEY1,
+        ranking: 2,
+        number: 10,
+      },
+    });
+    const recipes = response.data;
+    return recipes;
+  } catch (error) {
+    console.log("error fetching from find by ingredeients", error);
+    throw error;
+  }
+};
+
+// spoonacular find by id
+export const findById = async (id) => {
+  try {
+    const response = await axios.get(`${spoonacularAPI}/${id}/information`, {
+      params: {
+        apiKey: process.env.SPOONACULAR_API_KEY1,
+        includeNutrition: true,
+      },
+    });
+
+    const recipes = extractRecipeData(response.data);
+    return recipes;
+  } catch (error) {
+    console.log("error fetching by id", error);
+    throw error;
+  }
+};
+
+// spooncaular findRecipesByIngredients
+export const findRecipesByIngredients = async (ingredients = []) => {
+  try {
+    const ingredientRecipes = await findByIngredients(ingredients);
+    const recipeIds = ingredientRecipes.map((recipe) => recipe.id);
+    console.log("recipe ids", recipeIds);
+    const recipeDetails = await Promise.all(
+      recipeIds.map((id) => findById(id))
+    );
+    console.log("user input", ingredients);
+    console.log(
+      "recipe details from find by id",
+      recipeDetails.map((recipe) => recipe.ingredients)
+    );
+    console.log("recipes length", recipeDetails.length);
+    return recipeDetails;
+  } catch (error) {
+    console.log("Error fetching detais", error);
+    throw error;
+  }
+};
+
+// findRecipesByIngredients([
+//   "rice",
+//   "tomato paste",
+//   "fries",
+//   "bread",
+//   "nutella",
+//   "egg",
+// ]);
+
 // edamam recipes
 export const getEdamamRecipes = async (
   ingredients = [],
