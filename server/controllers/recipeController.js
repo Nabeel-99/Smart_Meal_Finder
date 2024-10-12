@@ -63,6 +63,7 @@ export const generateMetricsBasedRecipes = async (req, res) => {
       exerciseLevel,
       dietaryPreferences,
     } = req.body;
+
     if (!gender || !age || !height || !weight || !goal || !exerciseLevel) {
       return res.status(400).json({ message: "fields are required" });
     }
@@ -71,10 +72,10 @@ export const generateMetricsBasedRecipes = async (req, res) => {
     const calorieTarget = getCalorieIntake(goal, TDEE);
 
     const allRecipes = await fetchBasedOnMetrics(goal, dietaryPreferences);
-    // const filteredRecipes = await rankRecipes(allRecipes);
+    const finalRecipes = allRecipes.slice(0, 30);
 
     return res.status(200).json({
-      recipe: filteredRecipes,
+      recipe: finalRecipes,
       message: "recipes fetched successfully",
       calorieTarget: calorieTarget,
     });

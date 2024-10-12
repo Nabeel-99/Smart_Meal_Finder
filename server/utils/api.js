@@ -5,9 +5,8 @@ import { extractRecipeData } from "./helper.js";
 const spoonacularAPI = "https://api.spoonacular.com/recipes";
 const edamamAPI = "https://api.edamam.com/api/recipes/v2?&type=public";
 const tastyAPI = "https://tasty.p.rapidapi.com/recipes/list";
-
+//     code: 402,
 export const getSpoonacularRecipes = async (
-  query = null,
   mealType = [],
   goal = null,
   dietaryPreferences = []
@@ -17,16 +16,16 @@ export const getSpoonacularRecipes = async (
   }
   const calorieRanges = {
     muscle_gain: {
-      minCalories: 200,
+      minCalories: 300,
       maxCalories: 750,
     },
     weight_loss: {
       minCalories: 200,
-      maxCalories: 500,
+      maxCalories: 400,
     },
     maintenance: {
       minCalories: 200,
-      maxCalories: 600,
+      maxCalories: 500,
     },
   };
   const { minCalories, maxCalories } = goal ? calorieRanges[goal] : {};
@@ -41,16 +40,15 @@ export const getSpoonacularRecipes = async (
         addRecipeInstructions: true,
         addRecipeNutrition: true,
         fillIngredients: true,
-        ...(query && { query: query }),
         ...(mealType.length > 0 && { type: mealType.join(",") }),
         ...(goal && { minCalories: minCalories }),
         ...(goal && { maxCalories: maxCalories }),
         ...(dietaryPref && { diet: dietaryPref }),
-        apiKey: process.env.SPOONACULAR_API_KEY3,
+        apiKey: process.env.SPOONACULAR_API_KEY1,
       },
     });
 
-    return response.data.results;
+    return response.data.results.map((recipe) => extractRecipeData(recipe));
   } catch (error) {
     console.log("error fetching from spoonaclular", error);
     throw error;
@@ -99,31 +97,16 @@ export const findRecipesByIngredients = async (ingredients = []) => {
   try {
     const ingredientRecipes = await findByIngredients(ingredients);
     const recipeIds = ingredientRecipes.map((recipe) => recipe.id);
-    console.log("recipe ids", recipeIds);
     const recipeDetails = await Promise.all(
       recipeIds.map((id) => findById(id))
     );
-    console.log("user input", ingredients);
-    console.log(
-      "recipe details from find by id",
-      recipeDetails.map((recipe) => recipe.ingredients)
-    );
-    console.log("recipes length", recipeDetails.length);
+
     return recipeDetails;
   } catch (error) {
     console.log("Error fetching detais", error);
     throw error;
   }
 };
-
-// findRecipesByIngredients([
-//   "rice",
-//   "tomato paste",
-//   "fries",
-//   "bread",
-//   "nutella",
-//   "egg",
-// ]);
 
 // edamam recipes
 export const getEdamamRecipes = async (
@@ -134,9 +117,9 @@ export const getEdamamRecipes = async (
 ) => {
   try {
     const calorieRanges = {
-      muscle_gain: "200-750",
-      weight_loss: "200-500",
-      maintenance: "200-600",
+      muscle_gain: "300-750",
+      weight_loss: "200-400",
+      maintenance: "200-500",
     };
     const calorieRange = goal ? calorieRanges[goal] : {};
     const query = ingredients.length > 0 ? ingredients.join(",") : "recipe";
@@ -155,7 +138,7 @@ export const getEdamamRecipes = async (
         ...(healthLabel && { health: healthLabel }),
       },
     });
-    return response.data.hits;
+    return response.data.hits.map((recipe) => extractRecipeData(recipe));
   } catch (error) {
     console.log("error fetching from edamam", error);
     throw error;
@@ -179,7 +162,7 @@ export const getTastyAPIRecipes = async (ingredients = []) => {
       },
     });
 
-    return response.data.results;
+    return response.data.results.map((recipe) => extractRecipeData(recipe));
   } catch (error) {
     console.error("Error occurred", error);
     throw error;

@@ -38,6 +38,7 @@ export const mapText = {
   extra_active: "Extra active",
 };
 
+//generate instructions
 export const generateInstructionsForEdamam = async (title, ingredients) => {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY3);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -55,29 +56,30 @@ export const generateInstructionsForEdamam = async (title, ingredients) => {
   }
 };
 
-export const generateMealTitlesForAPI = async (ingredients = []) => {
-  if (!Array.isArray(ingredients)) {
-    ingredients = [ingredients];
-  }
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY2);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-  const prompt = `Using the ingredients: ${ingredients.join(
-    ","
-  )}, generate a list of 5 simple meal titles. Only include the titles—no introductory phrases, explanations, or extra text. Each title should be a simple, recognizable dish with a maximum of 4 words.`;
-  try {
-    const result = await model.generateContent(prompt);
-    const titles = result.response.text();
-    const filteredTitles = titles
-      .replace(/^\d+\.\s*/gm, "")
-      .split("\n")
-      .map((title) => title.trim())
-      .filter(Boolean);
-    return filteredTitles;
-  } catch (error) {
-    console.log("error generating titles", error);
-    return ["no titles"];
-  }
-};
+// not needed for now
+// export const generateMealTitlesForAPI = async (ingredients = []) => {
+//   if (!Array.isArray(ingredients)) {
+//     ingredients = [ingredients];
+//   }
+//   const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY2);
+//   const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+//   const prompt = `Using the ingredients: ${ingredients.join(
+//     ","
+//   )}, generate a list of 5 simple meal titles. Only include the titles—no introductory phrases, explanations, or extra text. Each title should be a simple, recognizable dish with a maximum of 4 words.`;
+//   try {
+//     const result = await model.generateContent(prompt);
+//     const titles = result.response.text();
+//     const filteredTitles = titles
+//       .replace(/^\d+\.\s*/gm, "")
+//       .split("\n")
+//       .map((title) => title.trim())
+//       .filter(Boolean);
+//     return filteredTitles;
+//   } catch (error) {
+//     console.log("error generating titles", error);
+//     return ["no titles"];
+//   }
+// };
 
 // BMR Mifflin formulas
 export const calculateBMR = (gender, weight, height, age) => {
@@ -221,6 +223,19 @@ export const extractRecipeData = (recipe) => {
     prepTime,
     nutrients,
   };
+};
+
+// filter recipe calories
+export const filterRecipeCalories = (recipes = [], goal) => {
+  const caloreRanges = {
+    muscle_gain: { min: 300, max: 750 },
+    weight_loss: { min: 200, max: 400 },
+    maintenance: { min: 200, max: 500 },
+  };
+  const { min, max } = caloreRanges[goal];
+  return recipes.filter((recipe) => {
+    return recipe.calories >= min && recipe.calories <= max;
+  });
 };
 
 // fetch user pantry data
