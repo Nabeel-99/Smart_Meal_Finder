@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import IngredientsImg from "../assets/ingredients-slanted.png";
 import IngredientsImgMobile from "../assets/ingredients-slanted-mobile.png";
 import { FaInfo, FaXmark } from "react-icons/fa6";
@@ -7,17 +7,29 @@ import TextInput from "../components/formInputs/TextInput";
 import { TbCircleDotted } from "react-icons/tb";
 import Food1 from "../assets/food1.jpg";
 import SkeletonLoader from "../components/SkeletonLoader";
-import { Link } from "react-router-dom";
+import { json, Link } from "react-router-dom";
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
 import { dietPreferences } from "../../../server/utils/helper";
+import { Autocomplete, TextField } from "@mui/material";
+import ingredientsData from "../../../server/utils/ingredientsHelper.json";
+import axios from "axios";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import MealCard from "../components/MealCard";
+import { AiOutlineLoading } from "react-icons/ai";
 
 const IngredientsBased = () => {
   const [item, setItem] = useState("");
   const [ingredients, setIngredients] = useState([]);
   const [ingredientCount, setIngredientCount] = useState(6);
+  const [autocompleteValue, setAutocompleteValue] = useState(null);
+  const [selectedDietaryPreferences, setSelectedDietaryPreferences] = useState(
+    []
+  );
+  const [fetchedRecipes, setFetchedRecipes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const addIngredient = () => {
-    if (item) {
+    if (item && !ingredients.includes(item)) {
       setIngredients([...ingredients, item]);
       setItem("");
     }
@@ -37,9 +49,47 @@ const IngredientsBased = () => {
       setIngredientCount(0);
     }
   };
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const handleChecboxChange = (e) => {
+    const { id, checked } = e.target;
+    setSelectedDietaryPreferences((prev) =>
+      checked ? [...prev, id] : prev.filter((pref) => pref !== id)
+    );
   };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    localStorage.removeItem("fetchedRecipes");
+    setFetchedRecipes([]);
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        "http://localhost:8000/api/recipes/get-ingredients-recipes",
+        {
+          ingredients: ingredients,
+          dietaryPreferences: selectedDietaryPreferences,
+        },
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        const recipes = response.data.recipes;
+        localStorage.setItem("fetchRecipes", JSON.stringify(recipes));
+        setFetchedRecipes(response.data.recipes);
+      }
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const storedRecipes = localStorage.getItem("fetchRecipes");
+    if (storedRecipes) {
+      setFetchedRecipes(JSON.parse(storedRecipes));
+    }
+  }, []);
   return (
     <div className="overflow-hidden flex flex-col gap-8 pt-8 justify-center items-center">
       <div className="flex items-center gap-2 text-sm">
@@ -96,18 +146,57 @@ const IngredientsBased = () => {
             </div>
             <div className="flex flex-col lg:flex-row items-center justify-evenly w-full ">
               <div className="flex flex-col lg:flex-row order-1 lg:order-none items-center gap-6">
-                <TextInput
-                  id={"ingredients"}
-                  type={"text"}
-                  placeholder={"e.g chicken, pasta, rice...."}
-                  className="w-72"
-                  value={item}
-                  onChange={(e) => setItem(e.target.value)}
+                <Autocomplete
+                  disablePortal
+                  options={ingredientsData}
+                  getOptionLabel={(option) => option.name}
+                  sx={{
+                    width: 350,
+                    "& .MuiInputBase-root": {
+                      backgroundColor: "#171717",
+                      border: "1px solid #343333",
+                      color: "white",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#343333",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#ffffff",
+                    },
+                    "& .MuiAutocomplete-popupIndicator": {
+                      color: "#ffffff",
+                    },
+                    "& .MuiAutocomplete-groupLabel": {
+                      color: "#08090a",
+                    },
+                    "& .MuiAutocomplete-clearIndicator": {
+                      color: "#ffffff",
+                    },
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="e.g chicken,pasta,rice..."
+                      slotProps={{
+                        inputLabel: { style: { color: "#a3a3a3" } },
+                      }}
+                      sx={{
+                        "& .MuiInputBase-input": {
+                          height: 15,
+                        },
+                      }}
+                    />
+                  )}
+                  value={autocompleteValue}
+                  onChange={(event, value) => {
+                    setItem(value.name);
+                    setAutocompleteValue(null);
+                  }}
                 />
                 <button
                   onClick={addIngredient}
                   type="button"
-                  className="bg-[#D9D9D9] mb-2 px-6 h-10 rounded-xl text-black"
+                  className="bg-[#D9D9D9]  px-6 h-10 rounded-xl text-black"
                 >
                   Add
                 </button>
@@ -145,6 +234,7 @@ const IngredientsBased = () => {
                     className="transform scale-150 "
                     id={pref.id}
                     name={pref.id}
+                    onChange={handleChecboxChange}
                   />
                 </div>
               ))}
@@ -179,7 +269,11 @@ const IngredientsBased = () => {
             <div className="pt-10">
               <button
                 type="submit"
-                className="bg-[#B678F0] py-2 text-center px-6 w-44 rounded-lg"
+                disabled={loading}
+                className={`bg-[#B678F0] py-2 text-center px-6 w-44 rounded-lg ${
+                  loading ? "cursor-not-allowed bg-[#b678f096] " : ""
+                }
+              `}
               >
                 Submit
               </button>
@@ -188,20 +282,21 @@ const IngredientsBased = () => {
         </div>
         {/* showing results */}
         <div className="flex flex-col gap-3 items-center mt-24">
-          {/* <TbCircleDotted className="spin duration-2000 text-4xl" />
-          <p className="">Generating meal recommendations</p> */}
-
-          <div className="flex flex-col ">
-            {/* <SkeletonLoader count={ingredientCount} className="w-[300px]" /> */}
-            {/* <div className="flex flex-col gap-1 text-[#c7c6c6] cursor-pointer hover:text-white">
-              <img
-                src={Food1}
-                alt=""
-                className="w-[300px] h-[250px] object-cover rounded-2xl"
-              />
-              <p className="">Chicken Fried Rice</p>
-            </div> */}
-          </div>
+          {loading ? (
+            <div className="flex flex-col items-center gap-2">
+              <AiOutlineLoading3Quarters className="spin duration-2000 text-[3rem] animate-bounce" />
+              <p className="animate-pulse text-3xl">
+                Generating meal recommendations...
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3  w-full h-full gap-10">
+              {fetchedRecipes.length > 0 &&
+                fetchedRecipes.map((recipe, index) => (
+                  <MealCard key={index} meal={recipe} index={index} />
+                ))}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex flex-col px-8 gap-20 md:flex-row items-start md:items-center border-b border-b-[#343333] pt-20 mt-20 pb-20  md:justify-between md:px-16  xl:justify-around bg-gradient-to-b from-[#08090a] to-[#221300] w-full">

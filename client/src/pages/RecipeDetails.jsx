@@ -8,17 +8,30 @@ const RecipeDetails = () => {
   const { id } = useParams();
   const fetchRecipeDetails = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/api/recipes/get-recipe-details/${id}`
-      );
-      if (response.status === 200) {
-        console.log(response.data);
-        setRecipeDetails(response.data);
+      if (!isNaN(id)) {
+        const storedRecipes = JSON.parse(
+          localStorage.getItem("fetchedRecipes")
+        );
+        const localRecipe = storedRecipes[id];
+        if (localRecipe) {
+          setRecipeDetails(localRecipe);
+        } else {
+          console.log("No recipe found in localstorage");
+        }
+      } else {
+        const response = await axios.get(
+          `http://localhost:8000/api/recipes/get-recipe-details/${id}`
+        );
+        if (response.status === 200) {
+          console.log(response.data);
+          setRecipeDetails(response.data);
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
+  console.log(recipeDetails);
   useEffect(() => {
     fetchRecipeDetails();
   }, [id]);

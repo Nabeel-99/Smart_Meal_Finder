@@ -47,7 +47,7 @@ export const generateIngredientsBasedRecipes = async (req, res) => {
       .status(200)
       .json({ message: "recipes fetched successfully", recipes });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return res.status(500).json({ message: "Error fetching recipes" });
   }
 };

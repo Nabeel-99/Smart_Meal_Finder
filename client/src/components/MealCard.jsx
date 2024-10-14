@@ -1,10 +1,11 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 
-const MealCard = ({ meal }) => {
+const MealCard = ({ meal, index }) => {
+  const mealId = meal._id || index;
   return (
     <div className="">
-      <Link to={`/recipe-details/${meal._id}`}>
+      <Link to={`/recipe-details/${mealId}`}>
         <div className="pb-2">
           <img
             src={meal.image}

@@ -28,6 +28,7 @@ import Settings from "./pages/dashboard/Settings";
 import Preferences from "./pages/Preferences";
 import axios from "axios";
 import AnimationComponent from "./components/AnimationComponent";
+import PantryItems from "./pages/PantryItems";
 
 const App = () => {
   const [userData, setUserData] = useState(null);
@@ -67,6 +68,7 @@ const App = () => {
             element={<Login authenticateUser={authenticateUser} />}
           />
           <Route path="/preferences" element={<Preferences />} />
+          <Route path="/pantry" element={<PantryItems />} />
           <Route
             path="/dashboard/*"
             element={<Dashboard userData={userData} />}

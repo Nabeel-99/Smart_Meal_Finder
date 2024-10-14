@@ -146,7 +146,7 @@ const DashboardContent = ({
         {breakfast &&
           breakfastMeals.length > 0 &&
           breakfastMeals.map((meal, index) => (
-            <MealCard key={index} meal={meal} to={``} />
+            <MealCard key={index} meal={meal} />
           ))}
         {lunch &&
           lunchMeals.length > 0 &&
