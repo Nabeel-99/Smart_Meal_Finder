@@ -55,31 +55,34 @@ export const generateInstructionsForEdamam = async (title, ingredients) => {
     return ["Instructions could not be generated."];
   }
 };
+export const generateInstructionsNotInEnglish = async (instructions = []) => {
+  if (!Array.isArray(instructions)) {
+    instructions = [instructions];
+  }
 
-// not needed for now
-// export const generateMealTitlesForAPI = async (ingredients = []) => {
-//   if (!Array.isArray(ingredients)) {
-//     ingredients = [ingredients];
-//   }
-//   const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY2);
-//   const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-//   const prompt = `Using the ingredients: ${ingredients.join(
-//     ","
-//   )}, generate a list of 5 simple meal titles. Only include the titles—no introductory phrases, explanations, or extra text. Each title should be a simple, recognizable dish with a maximum of 4 words.`;
-//   try {
-//     const result = await model.generateContent(prompt);
-//     const titles = result.response.text();
-//     const filteredTitles = titles
-//       .replace(/^\d+\.\s*/gm, "")
-//       .split("\n")
-//       .map((title) => title.trim())
-//       .filter(Boolean);
-//     return filteredTitles;
-//   } catch (error) {
-//     console.log("error generating titles", error);
-//     return ["no titles"];
-//   }
-// };
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY2);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+
+  const prompt = `Are the following recipe instructions in English? Reply with "yes" if they are, or "no" if they are not: 
+  ${instructions.join("\n")}`;
+
+  try {
+    const response = await model.generateContent(prompt);
+    const aiResponse = response.response.text().trim();
+
+    if (aiResponse.toLowerCase() === "yes") {
+      return instructions;
+    } else {
+      const translationPrompt = `Translate the following set of recipe instructions to English: 
+      ${instructions.join("\n")}`;
+      const translationResult = await model.generateContent(translationPrompt);
+      return [translationResult.response.text()];
+    }
+  } catch (error) {
+    console.log("error generating instruction", error);
+    return ["no instruction"];
+  }
+};
 
 // BMR Mifflin formulas
 export const calculateBMR = (gender, weight, height, age) => {
@@ -173,6 +176,7 @@ export const extractRecipeData = (recipe) => {
     videoLink = "will come back to this";
   } else if (isEdamam) {
     if (recipe.recipe) {
+      id = recipe.recipe.uri;
       calories = recipe.recipe.calories / recipe.recipe.yield || 0;
       title = recipe.recipe.label || "Unknown Title";
       ingredients = recipe.recipe.ingredients
@@ -192,6 +196,7 @@ export const extractRecipeData = (recipe) => {
         filteredNutrition[key] = value;
       }
     });
+    id = recipe.id;
     calories = recipe.nutrition.calories || 0;
     title = recipe.name || "Unknown Title";
     ingredients = recipe.sections

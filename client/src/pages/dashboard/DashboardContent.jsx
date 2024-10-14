@@ -146,15 +146,17 @@ const DashboardContent = ({
         {breakfast &&
           breakfastMeals.length > 0 &&
           breakfastMeals.map((meal, index) => (
-            <MealCard key={index} meal={meal} />
+            <MealCard key={index} meal={meal} showInput={true} />
           ))}
         {lunch &&
           lunchMeals.length > 0 &&
-          lunchMeals.map((meal, index) => <MealCard key={index} meal={meal} />)}
+          lunchMeals.map((meal, index) => (
+            <MealCard key={index} meal={meal} showInput={true} />
+          ))}
         {dinner &&
           dinnerMeals.length > 0 &&
           dinnerMeals.map((meal, index) => (
-            <MealCard key={index} meal={meal} />
+            <MealCard key={index} meal={meal} showInput={true} />
           ))}
         {/* <div className="">
           <div className="pb-2">

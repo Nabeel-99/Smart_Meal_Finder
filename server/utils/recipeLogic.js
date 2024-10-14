@@ -9,6 +9,7 @@ import defaultPantry from "./pantry.json" assert { type: "json" };
 import {
   filterRecipeCalories,
   generateInstructionsForEdamam,
+  generateInstructionsNotInEnglish,
 } from "./helper.js";
 
 // fetch dashboard specific recipes
@@ -77,7 +78,8 @@ export const fetchBasedOnIngredients = async (
       userIngredients,
       userPantry
     );
-    return topRanked;
+    const finalRecipes = filterRecipeCalories(topRanked, userGoal);
+    return finalRecipes;
   } catch (error) {
     console.log("error fetching", error);
     throw error;
@@ -120,6 +122,7 @@ export const filteredAndRankedRecipes = async (
     userPantry && userPantry.length > 0 ? userPantry : defaultPantry.pantry;
   for (const recipe of recipes) {
     const {
+      id,
       calories,
       title,
       ingredients,
@@ -179,7 +182,9 @@ export const filteredAndRankedRecipes = async (
           finalInstructions = ["instructions could not be generated"];
         }
       }
+
       meals.push({
+        id,
         title,
         calories,
         mealType,
@@ -212,6 +217,7 @@ export const categorizeRecipes = async (recipes) => {
 
   for (const recipe of recipes) {
     const {
+      id,
       calories,
       title,
       ingredients,
@@ -235,6 +241,7 @@ export const categorizeRecipes = async (recipes) => {
         !assigned
       ) {
         categories.breakfast.push({
+          id,
           title,
           ingredients,
           instructions,
@@ -256,6 +263,7 @@ export const categorizeRecipes = async (recipes) => {
         (mealType.includes("snack") && !assigned)
       ) {
         categories.lunch.push({
+          id,
           title,
           ingredients,
           instructions,
@@ -278,6 +286,7 @@ export const categorizeRecipes = async (recipes) => {
         (mealType.includes("soup") && !assigned)
       ) {
         categories.dinner.push({
+          id,
           title,
           ingredients,
           instructions,

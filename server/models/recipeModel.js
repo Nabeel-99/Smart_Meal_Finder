@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const recipeSchema = new mongoose.Schema(
   {
@@ -20,7 +20,7 @@ const recipeSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: true,
+      required: false,
     },
     dietaryPreferences: {
       type: [String],
@@ -37,6 +37,30 @@ const recipeSchema = new mongoose.Schema(
     calories: {
       type: Number,
       required: true,
+    },
+    prepTime: {
+      type: String,
+      required: false,
+    },
+    nutrients: {
+      type: mongoose.Schema.Types.Mixed,
+      required: false,
+    },
+    filteredIngredients: {
+      type: [String],
+      required: false,
+    },
+    userUsedIngredients: {
+      type: [String],
+      required: false,
+    },
+    missingIngredients: {
+      type: [String],
+      required: false,
+    },
+    missingIngredientsCount: {
+      type: Number,
+      required: false,
     },
   },
   { timestamps: true }

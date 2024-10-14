@@ -10,6 +10,7 @@ import {
   getUserMetricsData,
   getUserPantryData,
 } from "../utils/helper.js";
+import SavedRecipe from "../models/savedRecipeModel.js";
 
 export const generateIngredientsBasedRecipes = async (req, res) => {
   try {
@@ -94,6 +95,36 @@ export const getRecipeDetails = async (req, res) => {
     }
     return res.status(200).json(foundRecipe);
   } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// save recipe
+export const saveRecipe = async (req, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { recipeDetails } = req.body;
+
+    let exisitingRecipe = await Recipe.findOne({ title: recipeDetails.title });
+    if (exisitingRecipe) {
+      return res.status(400).json({ message: "Recipe already exists" });
+    }
+    const newRecipe = new Recipe({
+      ...recipeDetails,
+    });
+    await newRecipe.save();
+    const savedRecipe = new SavedRecipe({
+      userId,
+      recipeId: newRecipe._id,
+    });
+    await savedRecipe.save();
+
+    return res.status(200).json({ message: "Recipe saved successfully" });
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -70,11 +70,18 @@ const IngredientsBased = () => {
         },
         { withCredentials: true }
       );
-      console.log(response.data);
+
       if (response.status === 200) {
         const recipes = response.data.recipes;
-        localStorage.setItem("fetchRecipes", JSON.stringify(recipes));
-        setFetchedRecipes(response.data.recipes);
+        const validRecipes = recipes.filter(
+          (recipe) =>
+            recipe &&
+            Array.isArray(recipe.userUsedIngredients) &&
+            recipe.userUsedIngredients.length > 0
+        );
+
+        localStorage.setItem("fetchRecipes", JSON.stringify(validRecipes));
+        setFetchedRecipes(validRecipes);
       }
     } catch (error) {
       console.error(error);
@@ -84,6 +91,7 @@ const IngredientsBased = () => {
     }
   };
 
+  console.log("recipes length:", fetchedRecipes.length);
   useEffect(() => {
     const storedRecipes = localStorage.getItem("fetchRecipes");
     if (storedRecipes) {
@@ -291,10 +299,23 @@ const IngredientsBased = () => {
             </div>
           ) : (
             <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3  w-full h-full gap-10">
-              {fetchedRecipes.length > 0 &&
-                fetchedRecipes.map((recipe, index) => (
-                  <MealCard key={index} meal={recipe} index={index} />
-                ))}
+              {fetchedRecipes.length > 0 ? (
+                [...fetchedRecipes]
+                  .sort(
+                    (a, b) =>
+                      a.missingIngredientsCount - b.missingIngredientsCount
+                  )
+                  .map((recipe, index) => (
+                    <MealCard
+                      key={index}
+                      meal={recipe}
+                      showInput={false}
+                      showMissingIngredients={true}
+                    />
+                  ))
+              ) : (
+                <p className=""></p>
+              )}
             </div>
           )}
         </div>
