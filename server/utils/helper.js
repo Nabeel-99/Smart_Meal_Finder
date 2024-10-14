@@ -207,7 +207,7 @@ export const extractRecipeData = (recipe) => {
     instructions = recipe.instructions
       ? recipe.instructions.map((instruction) => instruction.display_text)
       : ["no instructions"];
-    videoLink = recipe.video_url || recipe.original_video_url || "No Video";
+    videoLink = recipe.original_video_url || "No Video";
     image = recipe.thumbnail_url || "default_image_url";
     prepTime = recipe.prep_time_minutes || 0;
     nutrients = filteredNutrition;
@@ -237,6 +237,12 @@ export const filterRecipeCalories = (recipes = [], goal) => {
     weight_loss: { min: 200, max: 400 },
     maintenance: { min: 200, max: 500 },
   };
+
+  if (!caloreRanges[goal]) {
+    console.error(`Invalid goal: ${goal}`);
+    return recipes; // Return all recipes or handle as needed
+  }
+
   const { min, max } = caloreRanges[goal];
   return recipes.filter((recipe) => {
     return recipe.calories >= min && recipe.calories <= max;

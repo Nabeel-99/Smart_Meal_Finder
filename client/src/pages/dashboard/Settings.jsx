@@ -7,7 +7,7 @@ import {
   genderOptions,
   goalOptions,
 } from "../../../../server/utils/helper";
-const Settings = () => {
+const Settings = ({ userData }) => {
   const [name, setName] = useState("");
   const [isChangingName, setIsChangingName] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
@@ -67,7 +67,9 @@ const Settings = () => {
                 </form>
               </div>
             ) : (
-              <p>Farouk Nabeel</p>
+              <p>
+                {userData.firstName} {userData.lastName}
+              </p>
             )}
 
             <button onClick={showInput} className="text-blue-400 text-sm">
@@ -76,7 +78,7 @@ const Settings = () => {
           </div>
           <div className="flex flex-col items-start gap-4">
             <div className="text-lg">Email</div>
-            <p>nabeelfarouk@gmail.com</p>
+            <p>{userData.email}</p>
             <button className="text-blue-400 text-sm">Change email</button>
           </div>
           <div className="flex flex-col border-b border-b-[#343333] pb-4 items-start gap-4">

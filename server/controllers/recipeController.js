@@ -18,12 +18,12 @@ export const generateIngredientsBasedRecipes = async (req, res) => {
     let metrics = {};
 
     const userId = req.userId;
-    const { ingredients, dietaryPreferences } = req.body;
+    const { ingredients, dietaryPreferences, isConnected } = req.body;
     if (!ingredients) {
       return res.status(400).json({ message: "Ingredients are required" });
     }
 
-    if (userId) {
+    if (isConnected && userId) {
       // get user pantry and goal from metrics
       const userPantryData = await getUserPantryData(userId);
       const userMetricsData = await getUserMetricsData(userId);
@@ -36,7 +36,9 @@ export const generateIngredientsBasedRecipes = async (req, res) => {
         metrics = userMetricsData.metrics;
       }
     }
-
+    console.log(isConnected);
+    console.log(userPantry);
+    console.log(metrics);
     const recipes = await fetchBasedOnIngredients(
       ingredients,
       metrics.goal || null,
@@ -126,5 +128,24 @@ export const saveRecipe = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getSavedRecipes = async (req, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const savedRecipeEntries = await SavedRecipe.find({ userId: userId });
+    if (!savedRecipeEntries) {
+      return res.status(404).json({ message: "No saved recipes found" });
+    }
+    const savedRecipeIds = savedRecipeEntries.map((entry) => entry.recipeId);
+    const savedRecipes = await Recipe.find({ _id: { $in: savedRecipeIds } });
+    return res.status(200).json(savedRecipes);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };

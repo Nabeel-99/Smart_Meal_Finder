@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CiGrid41 } from "react-icons/ci";
 import { HiBars3 } from "react-icons/hi2";
 import { LuArrowDownWideNarrow } from "react-icons/lu";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import SkeletonLoader from "../../components/SkeletonLoader";
-
+import axios from "axios";
 const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
   const [viewOptions, setViewOptions] = useState(false);
   const showOptions = () => setViewOptions(!viewOptions);
+  const fetchSavedRecipes = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/recipes/get-saved-recipes",
+        { withCredentials: true }
+      );
+      console.log(response.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchSavedRecipes();
+  }, []);
   return (
     <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
       <div className="flex gap-4 lg:items-center sticky top-[69px] z-10 pt-8 pb-4 bg-[#171717]  justify-between">

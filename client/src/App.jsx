@@ -42,6 +42,7 @@ const App = () => {
       });
       if (response.status === 200) {
         setUserData(response.data.user);
+        console.log("user data", userData);
       }
     } catch (error) {
       console.log("Auth error", error);
@@ -75,7 +76,10 @@ const App = () => {
           ></Route>
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/ingredients-based" element={<IngredientsBased />} />
+          <Route
+            path="/ingredients-based"
+            element={<IngredientsBased userData={userData} />}
+          />
           <Route path="/metrics-based" element={<MetricsBased />} />
           <Route path="/recipe-details/:id" element={<RecipeDetails />} />
         </Routes>

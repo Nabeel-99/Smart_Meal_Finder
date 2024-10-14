@@ -3,12 +3,18 @@ import Food1 from "../assets/food1.jpg";
 import { FaBookmark, FaVideo, FaYoutube } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { generateInstructionsNotInEnglish } from "../../../server/utils/helper";
-import { response } from "express";
+import AutohideSnackbar from "../components/AutoHideSnackbar";
+import ReactPlayer from "react-player";
+import ModalComponent from "../components/ModalComponent";
+
 const RecipeDetails = () => {
   const [recipeDetails, setRecipeDetails] = useState(null);
+  const [displayMsg, setDisplayMsg] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const [message, setMessage] = useState("");
   const { id } = useParams();
 
+  const handleShowVideo = () => setShowVideo(true);
   const fetchRecipeDetails = async () => {
     const storedRecipes = localStorage.getItem("fetchRecipes");
 
@@ -38,22 +44,30 @@ const RecipeDetails = () => {
     }
   };
 
-  // const saveRecipe = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       "http://localhost:8000/api/recipes/save-recipe",
-  //       {
-  //         ...recipeDetails,
-  //       },
-  //       {
-  //         withCredentials: true,
-  //       }
-  //     );
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const saveRecipe = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/recipes/save-recipe",
+        {
+          recipeDetails,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.status === 200) {
+        setMessage("Recipe saved successfully");
+        setDisplayMsg(true);
+      }
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+      if (error.response && error.response.status === 400) {
+        setMessage("You’ve already saved this recipe.");
+        setDisplayMsg(true);
+      }
+    }
+  };
 
   useEffect(() => {
     fetchRecipeDetails();
@@ -61,20 +75,38 @@ const RecipeDetails = () => {
 
   return (
     <div className="flex flex-col gap-8 pt-8 pb-44 justify-center items-center px-4">
+      {displayMsg && (
+        <AutohideSnackbar
+          displayMsg={displayMsg}
+          setDisplayMsg={setDisplayMsg}
+          message={message}
+        />
+      )}
       <div className="flex flex-col items-center justify-center bg-[#0E0F10] w-full md:min-w-[200px] md:max-w-[400px] p-4 lg:min-w-[200px] lg:max-w-[500px] min-h-[100px] border border-[#343333] rounded-xl gap-2">
         <div className="text-xl text-center font-bold">
           {recipeDetails?.title}
         </div>
+
         <div className="flex items-center gap-6">
-          {recipeDetails?.videoLink && (
-            <button className="flex items-center border px-3 py-1 rounded-md bg-[#dadada] text-black gap-2">
+          {showVideo && recipeDetails?.videoLink && (
+            <button
+              onClick={handleShowVideo}
+              className="flex items-center border px-3 py-1 rounded-md bg-[#dadada] text-black gap-2"
+            >
               Watch Video
               <FaYoutube className="text-xl text-red-500" />
             </button>
           )}
+          {showVideo && (
+            <ModalComponent
+              showVideo={showVideo}
+              setShowVideo={setShowVideo}
+              url={recipeDetails.videoLink}
+            />
+          )}
           <button
-            // onClick={saveRecipe}
-            className="flex py-1 items-center border px-3 rounded-md bg-[#dadada] hover:bg-[#dddbdb] text-black gap-2"
+            onClick={saveRecipe}
+            className="flex py-1 items-center border px-3 rounded-md bg-[#dadada] hover:bg-[#ffffff] text-black gap-2"
           >
             Save Recipe
             <FaBookmark className="text-xl" />

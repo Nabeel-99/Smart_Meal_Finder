@@ -119,7 +119,7 @@ const Dashboard = ({ userData }) => {
             />
           }
         />
-        <Route path="settings" element={<Settings />} />
+        <Route path="settings" element={<Settings userData={userData} />} />
       </Routes>
     );
   };
@@ -210,7 +210,7 @@ const Dashboard = ({ userData }) => {
           />
         )}
 
-        <div className="lg:hidden pt-6 pl-6 flex items-center text-sm gap-4 border-b pb-3 border-b-[#343333] fixed bg-[#171717] z-30 w-full">
+        <div className="lg:hidden pt-6 pl-6 flex items-center text-sm gap-4 border-b pb-3 border-b-[#343333] fixed bg-[#171717] z-50 w-full">
           <div>
             <button onClick={showSideMenu} className="">
               {sideMenu ? (

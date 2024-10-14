@@ -8,6 +8,7 @@ import {
   generateIngredientsBasedRecipes,
   generateMetricsBasedRecipes,
   getRecipeDetails,
+  getSavedRecipes,
   saveRecipe,
 } from "../controllers/recipeController.js";
 import jwt from "jsonwebtoken";
@@ -37,6 +38,7 @@ router.post(
   generateIngredientsBasedRecipes
 );
 router.post("/get-metrics-recipes", generateMetricsBasedRecipes);
-// router.post("/save-recipe", verifyUser, saveRecipe);
+router.post("/save-recipe", verifyUser, saveRecipe);
+router.get("/get-saved-recipes", verifyUser, getSavedRecipes);
 
 export default router;

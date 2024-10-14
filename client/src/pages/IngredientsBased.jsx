@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import IngredientsImg from "../assets/ingredients-slanted.png";
 import IngredientsImgMobile from "../assets/ingredients-slanted-mobile.png";
 import { FaInfo, FaXmark } from "react-icons/fa6";
@@ -7,7 +7,7 @@ import TextInput from "../components/formInputs/TextInput";
 import { TbCircleDotted } from "react-icons/tb";
 import Food1 from "../assets/food1.jpg";
 import SkeletonLoader from "../components/SkeletonLoader";
-import { json, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
 import { dietPreferences } from "../../../server/utils/helper";
 import { Autocomplete, TextField } from "@mui/material";
@@ -17,9 +17,10 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import MealCard from "../components/MealCard";
 import { AiOutlineLoading } from "react-icons/ai";
 
-const IngredientsBased = () => {
+const IngredientsBased = ({ userData }) => {
   const [item, setItem] = useState("");
   const [ingredients, setIngredients] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [ingredientCount, setIngredientCount] = useState(6);
   const [autocompleteValue, setAutocompleteValue] = useState(null);
   const [selectedDietaryPreferences, setSelectedDietaryPreferences] = useState(
@@ -27,7 +28,11 @@ const IngredientsBased = () => {
   );
   const [fetchedRecipes, setFetchedRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [isConnected, SetIsConnected] = useState(false);
+  const cardRef = useRef();
+  const handleToggle = () => {
+    SetIsConnected(!isConnected);
+  };
   const addIngredient = () => {
     if (item && !ingredients.includes(item)) {
       setIngredients([...ingredients, item]);
@@ -67,6 +72,7 @@ const IngredientsBased = () => {
         {
           ingredients: ingredients,
           dietaryPreferences: selectedDietaryPreferences,
+          isConnected: isConnected,
         },
         { withCredentials: true }
       );
@@ -82,6 +88,7 @@ const IngredientsBased = () => {
 
         localStorage.setItem("fetchRecipes", JSON.stringify(validRecipes));
         setFetchedRecipes(validRecipes);
+        cardRef.current.scrollIntoView({ behavior: "smooth" });
       }
     } catch (error) {
       console.error(error);
@@ -92,6 +99,15 @@ const IngredientsBased = () => {
   };
 
   console.log("recipes length:", fetchedRecipes.length);
+
+  useEffect(() => {
+    if (userData) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [userData]);
+
   useEffect(() => {
     const storedRecipes = localStorage.getItem("fetchRecipes");
     if (storedRecipes) {
@@ -127,19 +143,35 @@ const IngredientsBased = () => {
       </div>
       <div className="flex flex-col gap-6 items-center   w-full px-2 lg:px-44">
         <div className="flex justify-center w-full lg:justify-end  lg:w-2/3">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col items-end w-96 md:w-2/3 gap-2">
             <div className="flex items-center gap-2">
-              <p>Use your body metrics</p>
+              <p>Connect your pantry and metrics</p>
               <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className=" sr-only peer" />
+                <input
+                  type="checkbox"
+                  className=" sr-only peer"
+                  checked={isConnected}
+                  onChange={handleToggle}
+                  disabled={!isLoggedIn}
+                />
                 <div className="w-11 h-6 bg-[#4B4B4B] peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-[#343333] rounded-full peer peer-checked:bg-green-600 transition-colors duration-300"></div>
                 <div className="absolute w-5 h-5 bg-white rounded-full shadow-md left-0.5 peer-checked:translate-x-full transition-transform duration-300"></div>
               </label>
             </div>
-            <div className="flex gap-1 items-center">
-              <FaCircleInfo className="" />
+            <div className="flex gap-4 items-center">
+              <FaCircleInfo className="text-xl " />
               <p className="text-sm italic text-[#A3A3A3]">
-                This requires creating an account
+                {isLoggedIn ? (
+                  <span className="text-[0.8rem]">
+                    This utilizes your pantry and metrics data
+                    <span className="block">
+                      {" "}
+                      to enhance your recipe suggestions.
+                    </span>
+                  </span>
+                ) : (
+                  "This requires creating an account"
+                )}
               </p>
             </div>
           </div>
@@ -289,7 +321,7 @@ const IngredientsBased = () => {
           </form>
         </div>
         {/* showing results */}
-        <div className="flex flex-col gap-3 items-center mt-24">
+        <div ref={cardRef} className="flex flex-col gap-3 items-center mt-24">
           {loading ? (
             <div className="flex flex-col items-center gap-2">
               <AiOutlineLoading3Quarters className="spin duration-2000 text-[3rem] animate-bounce" />
