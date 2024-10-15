@@ -5,17 +5,50 @@ import { LuArrowDownWideNarrow } from "react-icons/lu";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import SkeletonLoader from "../../components/SkeletonLoader";
 import axios from "axios";
+import MealCard from "../../components/MealCard";
+import DialogComponent from "../../components/DialogComponent";
 const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
   const [viewOptions, setViewOptions] = useState(false);
+  const [savedMeals, setSavedMeals] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
   const showOptions = () => setViewOptions(!viewOptions);
   const fetchSavedRecipes = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         "http://localhost:8000/api/recipes/get-saved-recipes",
         { withCredentials: true }
       );
       console.log(response.data);
-    } catch (error) {}
+      setSavedMeals(response.data);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const deleteRecipe = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/api/recipes/delete-recipe/${id}`,
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        setShowDialog(false);
+        setSelectedId(null);
+        fetchSavedRecipes();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const openDialog = (id) => {
+    setSelectedId(id);
+    setShowDialog(true);
   };
 
   useEffect(() => {
@@ -55,12 +88,30 @@ const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
           </div>
         </div>
       </div>
-      <SkeletonLoader
-        count={12}
-        className="w-full"
-        isGridView={gridView}
-        isListView={listView}
-      />
+
+      {loading ? (
+        <SkeletonLoader count={savedMeals?.length} />
+      ) : savedMeals.length > 0 ? (
+        <MealCard
+          meals={savedMeals}
+          isGridView={gridView}
+          isListView={listView}
+          showTrash={true}
+          openDialog={openDialog}
+        />
+      ) : (
+        <div>
+          <p className="text-sm text-left text-[#808080]">No saved meals</p>
+        </div>
+      )}
+      {showDialog && (
+        <DialogComponent
+          showDialog={showDialog}
+          setShowDialog={setShowDialog}
+          handleYes={deleteRecipe}
+          selectedId={selectedId}
+        />
+      )}
     </div>
   );
 };

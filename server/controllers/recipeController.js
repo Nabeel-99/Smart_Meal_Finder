@@ -149,3 +149,30 @@ export const getSavedRecipes = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const deleteRecipe = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const recipeId = await SavedRecipe.findOneAndDelete({ recipeId: id });
+    if (!recipeId) {
+      return res
+        .status(404)
+        .json({ message: "Recipe not found in SavedRecipe model" });
+    }
+    const recipeData = await Recipe.findByIdAndDelete(id);
+    if (!recipeData) {
+      return res
+        .status(404)
+        .json({ message: "Recipe not found in Recipe model" });
+    }
+
+    return res.status(200).json({ message: "Recipe deleted successfully." });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

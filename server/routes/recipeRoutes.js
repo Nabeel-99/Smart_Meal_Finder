@@ -5,6 +5,7 @@ import {
   prepareDashboardRecipes,
 } from "../controllers/dashboardController.js";
 import {
+  deleteRecipe,
   generateIngredientsBasedRecipes,
   generateMetricsBasedRecipes,
   getRecipeDetails,
@@ -40,5 +41,6 @@ router.post(
 router.post("/get-metrics-recipes", generateMetricsBasedRecipes);
 router.post("/save-recipe", verifyUser, saveRecipe);
 router.get("/get-saved-recipes", verifyUser, getSavedRecipes);
+router.delete("/delete-recipe/:id", verifyUser, deleteRecipe);
 
 export default router;

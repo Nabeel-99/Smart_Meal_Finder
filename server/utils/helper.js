@@ -26,6 +26,10 @@ export const exerciseOptions = [
   { label: "Very Active", value: "very_active" },
   { label: "Extra Active", value: "extra_active" },
 ];
+export const themeOptions = ["Light", "Dark", "System theme"].map((theme) => ({
+  label: theme,
+  value: theme.toLowerCase(),
+}));
 
 export const mapText = {
   maintenance: "Maintenance",
@@ -176,7 +180,7 @@ export const extractRecipeData = (recipe) => {
     videoLink = "will come back to this";
   } else if (isEdamam) {
     if (recipe.recipe) {
-      id = recipe.recipe.uri;
+      id = `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       calories = recipe.recipe.calories / recipe.recipe.yield || 0;
       title = recipe.recipe.label || "Unknown Title";
       ingredients = recipe.recipe.ingredients

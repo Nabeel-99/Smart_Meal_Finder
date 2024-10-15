@@ -142,23 +142,32 @@ const DashboardContent = ({
           </div>
         </div>
       </div>
-      <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3  w-full h-full gap-10">
-        {breakfast &&
-          breakfastMeals.length > 0 &&
-          breakfastMeals.map((meal, index) => (
-            <MealCard key={index} meal={meal} showInput={true} />
-          ))}
-        {lunch &&
-          lunchMeals.length > 0 &&
-          lunchMeals.map((meal, index) => (
-            <MealCard key={index} meal={meal} showInput={true} />
-          ))}
-        {dinner &&
-          dinnerMeals.length > 0 &&
-          dinnerMeals.map((meal, index) => (
-            <MealCard key={index} meal={meal} showInput={true} />
-          ))}
-        {/* <div className="">
+
+      {breakfast && breakfastMeals.length > 0 && (
+        <MealCard
+          meals={breakfastMeals}
+          showInput={true}
+          isGridView={gridView}
+          isListView={listView}
+        />
+      )}
+      {lunch && lunchMeals.length > 0 && (
+        <MealCard
+          meals={lunchMeals}
+          showInput={true}
+          isGridView={gridView}
+          isListView={listView}
+        />
+      )}
+      {dinner && dinnerMeals.length > 0 && (
+        <MealCard
+          meals={dinnerMeals}
+          showInput={true}
+          isGridView={gridView}
+          isListView={listView}
+        />
+      )}
+      {/* <div className="">
           <div className="pb-2">
             <img
               src={""}
@@ -174,7 +183,7 @@ const DashboardContent = ({
             <div>600 calories</div>
           </div>
         </div> */}
-      </div>
+
       {/* <SkeletonLoader
         count={12}
         className="w-full"

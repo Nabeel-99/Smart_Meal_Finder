@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TextInput from "../../components/formInputs/TextInput";
 import SelectInput from "../../components/formInputs/SelectInput";
 import {
@@ -6,14 +6,48 @@ import {
   exerciseOptions,
   genderOptions,
   goalOptions,
+  themeOptions,
 } from "../../../../server/utils/helper";
-const Settings = ({ userData }) => {
-  const [name, setName] = useState("");
+import axios from "axios";
+import { FaEyeSlash, FaEye } from "react-icons/fa6";
+const Settings = ({ userData, fetchUserData }) => {
+  const [firstName, setFirstName] = useState(userData.firstName);
+  const [lastName, setLastName] = useState(userData.lastName);
+  const [email, setEmail] = useState(userData.email);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isChangingName, setIsChangingName] = useState(false);
-  const [changePassword, setChangePassword] = useState(false);
+  const [isChangingEmail, setIsChangingEmail] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isAccount, setIsAccount] = useState(true);
   const [isPreferenecs, setIsPreferences] = useState(false);
   const [userPreferences, setUserPreferences] = useState(false);
+  const [userMetrics, setUserMetrics] = useState(null);
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
+  const [exerciseLevel, setExerciseLevel] = useState("moderately_active");
+  const [goal, setGoal] = useState("weight_loss");
+  const [selectedDietaryPreferences, setSelectedDietaryPreferences] = useState(
+    []
+  );
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [emailSuccess, setEmailSuccess] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showEmailSuccess, setShowEmailSuccess] = useState(false);
+  const [showPasswordSuccess, setShowPasswordSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [showEmailError, setShowEmailError] = useState(false);
+  const [showPasswordError, setShowPasswordError] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false);
   const showAccount = () => {
     setIsAccount(true);
     setIsPreferences(false);
@@ -24,13 +58,128 @@ const Settings = ({ userData }) => {
   };
 
   const toggleEditPreferences = () => setUserPreferences(!userPreferences);
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
 
-  const showPasswordFields = () => setChangePassword(true);
-  const closePasswordFields = () => setChangePassword(false);
+  const toggleConfirmPasswordVisibility = () => {
+    setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
+  };
+  const showPasswordFields = () => setIsChangingPassword(true);
+  const closePasswordFields = () => setIsChangingPassword(false);
   const showInput = () => setIsChangingName(!isChangingName);
+  const showEmailInput = () => setIsChangingEmail(!isChangingEmail);
 
-  const themeOptions = ["Light", "Dark", "System theme"];
+  const updateAccount = async (e) => {
+    e.preventDefault();
+    if (password) {
+      if (password !== confirmPassword) {
+        setShowPasswordError(true);
+        setPasswordError("Passwords do not match");
+        setTimeout(() => {
+          setPasswordError("");
+        }, 3000);
+        return;
+      }
+    }
+    const updatedData = {};
+    if (firstName !== userData.firstName) updatedData.firstName = firstName;
+    if (lastName !== userData.lastName) updatedData.lastName = lastName;
+    if (email !== userData.email) updatedData.email = email;
+    if (password) updatedData.password = password;
+    try {
+      setLoading(true);
+      const response = await axios.patch(
+        "http://localhost:8000/api/auth/update",
+        updatedData,
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        setIsChangingName(false);
+        setIsChangingEmail(false);
+        setIsChangingPassword(false);
 
+        if (updatedData.firstName || updatedData.lastName) {
+          setSuccess("Name updated successfully.");
+          setShowSuccess(true);
+        } else if (updatedData.email) {
+          setEmailSuccess("Email updated successfully.");
+          setShowEmailSuccess(true);
+        } else if (updatedData.password) {
+          setPasswordSuccess("Password updated successfully.");
+          setShowPasswordSuccess(true);
+        }
+
+        await fetchUserData();
+        setTimeout(() => {
+          setSuccess("");
+          setEmailSuccess("");
+          setPasswordSuccess("");
+          setShowEmailSuccess(false);
+          setShowPasswordSuccess(false);
+          setShowSuccess(false);
+        }, 3000);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+      if (error.response && error.response.status === 400) {
+        setError("This email already exists");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDietaryPreferenceChange = (e) => {
+    const { id, checked } = e.target;
+    setSelectedDietaryPreferences((prev) =>
+      checked ? [...prev, id] : prev.filter((pref) => pref !== id)
+    );
+  };
+
+  const fetchUserMetrics = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/users/get-user-metrics",
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        setUserMetrics(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const updatePreferences = async (e) => {
+    e.preventDefault();
+    const updateData = {};
+    if (age) updateData.age = age;
+    if (gender) updateData.gender = gender;
+    if (height) updateData.height = height;
+    if (weight) updateData.weight = weight;
+    if (exerciseLevel) updateData.exerciseLevel = exerciseLevel;
+    if (selectedDietaryPreferences)
+      updateData.dietaryPrefences = selectedDietaryPreferences;
+    try {
+      const response = await axios.patch(
+        "http://localhost:8000/api/users/update-metrics",
+        updateData,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserMetrics();
+  }, []);
   return (
     <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
       <div className="flex sticky top-[69px] pt-8 lg:pt-4 z-20 bg-[#171717] items-center border-b border-b-[#343333] pb-3 gap-10">
@@ -54,22 +203,47 @@ const Settings = ({ userData }) => {
             <div className="text-lg">Name</div>
             {isChangingName ? (
               <div className="">
-                <form className="flex flex-col  items-start lg:flex-row lg:items-center gap-3 lg:gap-8">
+                <form
+                  onSubmit={updateAccount}
+                  className="flex flex-col  items-start lg:flex-row lg:items-center gap-3 lg:gap-8"
+                >
                   <TextInput
-                    className="w-72"
+                    label={"First name"}
+                    className="w-64"
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                   />
-                  <button className="px-3 py-1 mb-2 bg-green-600 hover:bg-green-700 rounded-md">
+                  <TextInput
+                    label={"Last name"}
+                    className="w-64"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                  <button
+                    type="submit"
+                    className="px-3 py-1 mt-2 bg-green-600 hover:bg-green-700 rounded-md"
+                  >
                     Save
                   </button>
                 </form>
               </div>
             ) : (
-              <p>
-                {userData.firstName} {userData.lastName}
-              </p>
+              <div className="flex gap-4 items-center">
+                <p>
+                  {userData.firstName} {userData.lastName}
+                </p>
+                {showSuccess && (
+                  <div
+                    className={`text-green-500 text-sm mt-1 transition-opacity ease-in-out  duration-1000 ${
+                      showSuccess ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    {success}
+                  </div>
+                )}
+              </div>
             )}
 
             <button onClick={showInput} className="text-blue-400 text-sm">
@@ -78,35 +252,123 @@ const Settings = ({ userData }) => {
           </div>
           <div className="flex flex-col items-start gap-4">
             <div className="text-lg">Email</div>
-            <p>{userData.email}</p>
-            <button className="text-blue-400 text-sm">Change email</button>
+            {showError && (
+              <div
+                className={`text-red-500 text-sm mt-1 transition-opacity ease-in-out  duration-1000 ${
+                  showError ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {error}
+              </div>
+            )}
+            {isChangingEmail ? (
+              <form
+                onSubmit={updateAccount}
+                className="flex flex-col  items-start lg:flex-row lg:items-center gap-3 lg:gap-8"
+              >
+                <TextInput
+                  className="w-64"
+                  type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="px-3 py-1 mb-2 bg-green-600 hover:bg-green-700 rounded-md"
+                >
+                  Save
+                </button>
+              </form>
+            ) : (
+              <div className="flex gap-4 items-center">
+                <p>{userData.email}</p>
+                {showEmailSuccess && (
+                  <div
+                    className={`text-green-500 text-sm mt-1 transition-opacity ease-in-out  duration-1000 ${
+                      showEmailSuccess ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    {emailSuccess}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button onClick={showEmailInput} className="text-blue-400 text-sm">
+              {" "}
+              {isChangingEmail ? "Cancel" : "Change email"}
+            </button>
           </div>
           <div className="flex flex-col border-b border-b-[#343333] pb-4 items-start gap-4">
             <div className="text-lg">Password</div>
-            <button
-              onClick={showPasswordFields}
-              className="text-blue-400 text-sm"
-            >
-              Change password
-            </button>
-            {changePassword && (
-              <form className="mt-7">
-                <TextInput
-                  label={"New Password"}
-                  htmlFor={"new-password"}
-                  id={"new-password"}
-                  type={"password"}
-                  labelClassName="lg:text-sm"
-                  className="lg:w-96"
-                />
-                <TextInput
-                  label={"Confirm Password"}
-                  htmlFor={"confirm-password"}
-                  id={"confirm-password"}
-                  type={"password"}
-                  labelClassName="lg:text-sm"
-                  className="lg:w-96"
-                />
+            <div className="flex gap-2 items-center">
+              <button
+                onClick={showPasswordFields}
+                className="text-blue-400 text-sm"
+              >
+                Change password
+              </button>
+              {showPasswordSuccess && (
+                <div
+                  className={`text-green-500 text-sm mt-1 transition-opacity ease-in-out  duration-1000 ${
+                    showPasswordSuccess ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  {passwordSuccess}
+                </div>
+              )}
+            </div>
+
+            {isChangingPassword && (
+              <form onSubmit={updateAccount} className="mt-3">
+                {showPasswordError && (
+                  <div
+                    className={`text-red-500 text-sm mt-1 pb-2 transition-opacity ease-in-out  duration-1000 ${
+                      showPasswordError ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    {passwordError}
+                  </div>
+                )}
+                <div className="relative">
+                  <TextInput
+                    label={"New Password"}
+                    htmlFor={"new-password"}
+                    id={"new-password"}
+                    type={isPasswordVisible ? "text" : "password"}
+                    labelClassName="lg:text-sm"
+                    className="lg:w-72 pr-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-10"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <TextInput
+                    label={"Confirm Password"}
+                    htmlFor={"confirm-password"}
+                    id={"confirm-password"}
+                    type={isConfirmPasswordVisible ? "text" : "password"}
+                    labelClassName="lg:text-sm"
+                    className="lg:w-72 pr-10"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-10"
+                    onClick={toggleConfirmPasswordVisibility}
+                  >
+                    {isConfirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 <div className="flex items-center gap-6">
                   <button
                     onClick={closePasswordFields}
@@ -117,7 +379,7 @@ const Settings = ({ userData }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-3 py-1 bg-green-600 rounded-md"
+                    className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded-md"
                   >
                     Save
                   </button>
@@ -143,11 +405,14 @@ const Settings = ({ userData }) => {
           <button onClick={toggleEditPreferences} className="text-blue-400">
             {userPreferences ? "Cancel" : "Edit preferences"}
           </button>
-          <form>
+          <form onSubmit={updatePreferences}>
             <div className="grid  lg:grid-cols-2 lg:gap-10">
               <TextInput
                 label={"Age"}
                 type={"number"}
+                min={0}
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
                 disabled={!userPreferences}
                 className={`${userPreferences ? "" : "cursor-not-allowed"}`}
               />
@@ -155,36 +420,54 @@ const Settings = ({ userData }) => {
                 label={"Gender"}
                 id={"gender"}
                 options={genderOptions}
-                className={`${userPreferences ? "" : "cursor-not-allowed"}`}
+                className={`${
+                  userPreferences ? "cursor-pointer" : "cursor-not-allowed"
+                }`}
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
                 disabled={!userPreferences}
               />
               <TextInput
                 label={"Height (cm)"}
                 type={"number"}
+                min={0}
                 disabled={!userPreferences}
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
                 className={`${userPreferences ? "" : "cursor-not-allowed"}`}
               />
               <SelectInput
                 label={"Goal"}
                 id={"goal"}
                 options={goalOptions}
-                className={`${userPreferences ? "" : "cursor-not-allowed"}`}
+                className={`${
+                  userPreferences ? "cursor-pointer" : "cursor-not-allowed"
+                }`}
                 disabled={!userPreferences}
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
               />
 
               <TextInput
                 label={"Weight (kg)"}
                 type={"number"}
+                value={weight}
+                min={0}
                 disabled={!userPreferences}
                 className={`${userPreferences ? "" : "cursor-not-allowed"}`}
+                onChange={(e) => setWeight(e.target.value)}
               />
 
               <SelectInput
                 label={"Exercise Level"}
                 id={"exercise-level"}
                 options={exerciseOptions}
-                className={`${userPreferences ? "" : "cursor-not-allowed"}`}
+                className={`${
+                  userPreferences ? "cursor-pointer" : "cursor-not-allowed"
+                }`}
                 disabled={!userPreferences}
+                value={exerciseLevel}
+                onChange={(e) => setExerciseLevel(e.target.value)}
               />
             </div>
             <div className=" flex flex-col gap-3">
@@ -199,6 +482,8 @@ const Settings = ({ userData }) => {
                     className="transform scale-150 "
                     id={pref.id}
                     name={pref.id}
+                    onChange={handleDietaryPreferenceChange}
+                    disabled={!dietPreferences}
                   />
                 </div>
               ))}

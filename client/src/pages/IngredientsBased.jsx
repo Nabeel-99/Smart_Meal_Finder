@@ -30,6 +30,9 @@ const IngredientsBased = ({ userData }) => {
   const [loading, setLoading] = useState(false);
   const [isConnected, SetIsConnected] = useState(false);
   const cardRef = useRef();
+
+  let gridView = true;
+
   const handleToggle = () => {
     SetIsConnected(!isConnected);
   };
@@ -99,7 +102,9 @@ const IngredientsBased = ({ userData }) => {
   };
 
   console.log("recipes length:", fetchedRecipes.length);
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   useEffect(() => {
     if (userData) {
       setIsLoggedIn(true);
@@ -279,7 +284,7 @@ const IngredientsBased = ({ userData }) => {
                 </div>
               ))}
             </div>
-            <div className="pt-4 border-t border-t-[#343333]">
+            {/* <div className="pt-4 border-t border-t-[#343333]">
               <div className="flex items-center justify-center gap-4">
                 <button
                   onClick={decrementCount}
@@ -305,7 +310,7 @@ const IngredientsBased = ({ userData }) => {
                   <BiSolidRightArrow className="text-2xl" />
                 </button>
               </div>
-            </div>
+            </div> */}
             <div className="pt-10">
               <button
                 type="submit"
@@ -329,47 +334,40 @@ const IngredientsBased = ({ userData }) => {
                 Generating meal recommendations...
               </p>
             </div>
-          ) : (
-            <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3  w-full h-full gap-10">
-              {fetchedRecipes.length > 0 ? (
-                [...fetchedRecipes]
-                  .sort(
-                    (a, b) =>
-                      a.missingIngredientsCount - b.missingIngredientsCount
-                  )
-                  .map((recipe, index) => (
-                    <MealCard
-                      key={index}
-                      meal={recipe}
-                      showInput={false}
-                      showMissingIngredients={true}
-                    />
-                  ))
-              ) : (
-                <p className=""></p>
+          ) : fetchedRecipes.length > 0 ? (
+            <MealCard
+              meals={[...fetchedRecipes].sort(
+                (a, b) => a.missingIngredientsCount - b.missingIngredientsCount
               )}
-            </div>
+              showInput={false}
+              isGridView={gridView}
+              showMissingIngredients={true}
+            />
+          ) : (
+            <p className=""></p>
           )}
         </div>
       </div>
-      <div className="flex flex-col px-8 gap-20 md:flex-row items-start md:items-center border-b border-b-[#343333] pt-20 mt-20 pb-20  md:justify-between md:px-16  xl:justify-around bg-gradient-to-b from-[#08090a] to-[#221300] w-full">
-        <div>
-          <h2 className="text-2xl  md:text-3xl xl:text-6xl tracking-tighter">
-            Want meal recommendations?{" "}
-            <span className="block">
-              Discover the best choices just for You!
-            </span>
-          </h2>
+      {!isLoggedIn && (
+        <div className="flex flex-col px-8 gap-20 md:flex-row items-start md:items-center border-b border-b-[#343333] pt-20 mt-20 pb-20  md:justify-between md:px-16  xl:justify-around bg-gradient-to-b from-[#08090a] to-[#221300] w-full">
+          <div>
+            <h2 className="text-2xl  md:text-3xl xl:text-6xl tracking-tighter">
+              Want meal recommendations?{" "}
+              <span className="block">
+                Discover the best choices just for You!
+              </span>
+            </h2>
+          </div>
+          <div>
+            <Link
+              to={"/"}
+              className="bg-[#e6e6e6] text-black rounded-md px-4 py-2"
+            >
+              Get Started
+            </Link>
+          </div>
         </div>
-        <div>
-          <Link
-            to={"/"}
-            className="bg-[#e6e6e6] text-black rounded-md px-4 py-2"
-          >
-            Get Started
-          </Link>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

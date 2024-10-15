@@ -26,7 +26,7 @@ import Settings from "./Settings";
 import { Routes, Route } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import axios from "axios";
-const Dashboard = ({ userData }) => {
+const Dashboard = ({ userData, fetchUserData }) => {
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState(false);
   const [sideMenu, setSideMenu] = useState(false);
@@ -119,7 +119,12 @@ const Dashboard = ({ userData }) => {
             />
           }
         />
-        <Route path="settings" element={<Settings userData={userData} />} />
+        <Route
+          path="settings"
+          element={
+            <Settings userData={userData} fetchUserData={fetchUserData} />
+          }
+        />
       </Routes>
     );
   };

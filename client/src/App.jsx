@@ -72,7 +72,9 @@ const App = () => {
           <Route path="/pantry" element={<PantryItems />} />
           <Route
             path="/dashboard/*"
-            element={<Dashboard userData={userData} />}
+            element={
+              <Dashboard userData={userData} fetchUserData={authenticateUser} />
+            }
           ></Route>
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
