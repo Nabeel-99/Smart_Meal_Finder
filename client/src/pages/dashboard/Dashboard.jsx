@@ -60,9 +60,11 @@ const Dashboard = ({ userData, fetchUserData }) => {
       );
       if (response.status === 200) {
         setUserMetrics(response.data.metrics);
+        console.log("user metrics", response.data);
       }
       if (response.status === 404) {
         console.log("User has no metrics");
+
         setUserMetrics("You haven't set your preferences yet.");
       }
     } catch (error) {
@@ -122,7 +124,12 @@ const Dashboard = ({ userData, fetchUserData }) => {
         <Route
           path="settings"
           element={
-            <Settings userData={userData} fetchUserData={fetchUserData} />
+            <Settings
+              userData={userData}
+              refreshUserData={fetchUserData}
+              userMetrics={userMetrics}
+              refreshSideMenu={getUserMetrics}
+            />
           }
         />
       </Routes>
@@ -163,7 +170,6 @@ const Dashboard = ({ userData, fetchUserData }) => {
       );
 
       if (response.status === 200) {
-        console.log(response.data);
         setDashboardRecipes(response.data);
         return;
       }
@@ -187,6 +193,14 @@ const Dashboard = ({ userData, fetchUserData }) => {
       setLoading(false);
     }, 2000);
   }, []);
+
+  useEffect(() => {
+    if (userMetrics) {
+      const refetchData = async () => await fetchUserData();
+      refetchData();
+      console.log("User metrics updated", userMetrics);
+    }
+  }, [userMetrics]);
 
   useEffect(() => {
     if (sideMenu) {

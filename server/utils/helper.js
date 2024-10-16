@@ -186,7 +186,7 @@ export const extractRecipeData = (recipe) => {
       ingredients = recipe.recipe.ingredients
         ? recipe.recipe.ingredients.map((ingredient) => ingredient.food)
         : [];
-      instructions = "no instructions for edamam";
+      instructions = ["no instructions for edamam"];
       mealType = recipe.recipe.mealType || [];
       dietaryPreferences = recipe.recipe.healthLabels || [];
       image = recipe.recipe.image || "default_image_url";

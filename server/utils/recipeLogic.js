@@ -78,8 +78,12 @@ export const fetchBasedOnIngredients = async (
       userIngredients,
       userPantry
     );
-    const finalRecipes = filterRecipeCalories(topRanked, userGoal);
-    return finalRecipes;
+    console.log("all recipes", recipes.length);
+    console.log("top ranked", topRanked.length);
+
+    // const finalRecipes = filterRecipeCalories(topRanked, userGoal);
+    // console.log("final recipes,", finalRecipes.length);
+    return topRanked;
   } catch (error) {
     console.log("error fetching", error);
     throw error;
@@ -102,8 +106,9 @@ export const fetchBasedOnMetrics = async (goal, dietaryPreferences) => {
       ...edamamRecipes,
       ...tastyRecipes,
     ];
-
-    const filteredRecipes = filterRecipeCalories(allRecipes, calories);
+    const shuffledRecipes = allRecipes.sort(() => Math.random() - 0.5);
+    console.log(shuffledRecipes.map((recipe) => recipe.sourceUrl));
+    const filteredRecipes = filterRecipeCalories(shuffledRecipes, calories);
 
     return filteredRecipes;
   } catch (error) {

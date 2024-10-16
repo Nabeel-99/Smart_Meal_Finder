@@ -10,17 +10,21 @@ const MealCard = ({
   isGridView,
   isListView,
   openDialog,
+  sourceType,
 }) => {
+  console.log("sourceType", sourceType);
   console.log(meals);
-
   return (
     <>
-      <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3 gap-10 pb-24">
+      <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3 gap-10">
         {meals.map(
           (meal, index) =>
             isGridView && (
               <div className="" key={index}>
-                <Link to={`/recipe-details/${meal._id || meal.id}`}>
+                <Link
+                  to={`/recipe-details/${meal._id || meal.id}`}
+                  state={{ source: sourceType }}
+                >
                   <div className="pb-2">
                     <img
                       src={meal.image}
@@ -69,7 +73,12 @@ const MealCard = ({
               <div className="flex flex-col gap-6 w-full" key={index}>
                 <div className="flex justify-between w-full">
                   <div className="flex w-full gap-4">
-                    <Link to={`/recipe-details/${meal._id}`}>
+                    <Link
+                      to={{
+                        pathname: `/recipe-details/${meal._id || meal.id}`,
+                        state: { source: sourceType },
+                      }}
+                    >
                       <img
                         src={meal.image}
                         alt=""

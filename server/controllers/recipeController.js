@@ -6,6 +6,7 @@ import Recipe from "../models/recipeModel.js";
 import {
   calculateBMR,
   calculateTDEE,
+  generateInstructionsForEdamam,
   getCalorieIntake,
   getUserMetricsData,
   getUserPantryData,
@@ -36,16 +37,16 @@ export const generateIngredientsBasedRecipes = async (req, res) => {
         metrics = userMetricsData.metrics;
       }
     }
-    console.log(isConnected);
-    console.log(userPantry);
-    console.log(metrics);
+    // console.log(isConnected);
+    // console.log(userPantry);
+    // console.log(metrics);
     const recipes = await fetchBasedOnIngredients(
       ingredients,
       metrics.goal || null,
       dietaryPreferences,
       userPantry
     );
-
+    // console.log("recipe length:", recipes.length);
     return res
       .status(200)
       .json({ message: "recipes fetched successfully", recipes });
@@ -65,6 +66,7 @@ export const generateMetricsBasedRecipes = async (req, res) => {
       goal,
       exerciseLevel,
       dietaryPreferences,
+      numberOfRecipes,
     } = req.body;
 
     if (!gender || !age || !height || !weight || !goal || !exerciseLevel) {
@@ -75,10 +77,23 @@ export const generateMetricsBasedRecipes = async (req, res) => {
     const calorieTarget = getCalorieIntake(goal, TDEE);
 
     const allRecipes = await fetchBasedOnMetrics(goal, dietaryPreferences);
-    const finalRecipes = allRecipes.slice(0, 30);
-
+    const slicedRecipes = allRecipes.slice(0, numberOfRecipes);
+    const finalRecipes = await Promise.all(
+      slicedRecipes.map(async (recipe) => {
+        if (recipe.instructions === "no instructions for edamam") {
+          return {
+            ...recipe,
+            instructions: await generateInstructionsForEdamam(
+              recipe.title,
+              recipe.ingredients
+            ),
+          };
+        }
+        return recipe;
+      })
+    );
     return res.status(200).json({
-      recipe: finalRecipes,
+      recipes: finalRecipes,
       message: "recipes fetched successfully",
       calorieTarget: calorieTarget,
     });

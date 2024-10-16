@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from "react";
 import Food1 from "../assets/food1.jpg";
 import { FaBookmark, FaVideo, FaYoutube } from "react-icons/fa6";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import AutohideSnackbar from "../components/AutoHideSnackbar";
 import ReactPlayer from "react-player";
 import ModalComponent from "../components/ModalComponent";
 
 const RecipeDetails = () => {
-  const [recipeDetails, setRecipeDetails] = useState(null);
+  const [recipeDetails, setRecipeDetails] = useState({});
   const [displayMsg, setDisplayMsg] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [message, setMessage] = useState("");
   const { id } = useParams();
-
+  const location = useLocation();
+  const source = location.state?.source;
   const handleShowVideo = () => setShowVideo(true);
+  console.log("source", source);
   const fetchRecipeDetails = async () => {
-    const storedRecipes = localStorage.getItem("fetchRecipes");
-
-    if (storedRecipes) {
+    console.log(source);
+    if (source) {
+      const storedRecipes = localStorage.getItem(source);
       const recipes = JSON.parse(storedRecipes);
       const foundRecipe = recipes.find(
         (r) => r.id.toString() === id.toString()
@@ -74,6 +76,7 @@ const RecipeDetails = () => {
   }, [id]);
 
   return (
+    // <div>hey</div>
     <div className="flex flex-col gap-8 pt-8 pb-44 justify-center items-center px-4">
       {displayMsg && (
         <AutohideSnackbar
@@ -152,22 +155,23 @@ const RecipeDetails = () => {
               </ul>
             </div>
           </div>
-          {recipeDetails?.missingIngredients.length > 0 && (
-            <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#343333] max-h-[200px] rounded-2xl">
-              <div className="bg-[#181818] border-b rounded-t-2xl border-b-[#343333]">
-                <h2 className="px-6 py-2">Missing Ingredients</h2>
+          {recipeDetails.missingIngredients &&
+            recipeDetails.missingIngredients?.length > 0 && (
+              <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#343333] max-h-[200px] rounded-2xl">
+                <div className="bg-[#181818] border-b rounded-t-2xl border-b-[#343333]">
+                  <h2 className="px-6 py-2">Missing Ingredients</h2>
+                </div>
+                <div className="px-6 overflow-y-scroll pt-4  ">
+                  <ul className="list-disc">
+                    {recipeDetails?.missingIngredients?.map((item, index) => (
+                      <li key={index} className="pb-2 flex items-center w-full">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <div className="px-6 overflow-y-scroll pt-4  ">
-                <ul className="list-disc">
-                  {recipeDetails?.missingIngredients.map((item, index) => (
-                    <li key={index} className="pb-2 flex items-center w-full">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
       <div className="flex flex-col w-full md:w-[600px] lg:w-auto justify-center lg:flex-row gap-10">
@@ -177,11 +181,12 @@ const RecipeDetails = () => {
           </div>
           <div className="px-6 overflow-y-scroll pt-4">
             <ul className="list-disc">
-              {recipeDetails?.instructions.map((instruction, index) => (
-                <li key={index} className="pb-2">
-                  {instruction}
-                </li>
-              ))}
+              {recipeDetails.instructions &&
+                recipeDetails.instructions.map((instruction, index) => (
+                  <li key={index} className="pb-2">
+                    {instruction}
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
@@ -191,11 +196,12 @@ const RecipeDetails = () => {
           </div>
           <div className="px-6 overflow-y-scroll pt-4">
             <ul className="list-disc">
-              {recipeDetails?.ingredients.map((ingredient, index) => (
-                <li key={index} className="pb-2">
-                  {ingredient}
-                </li>
-              ))}
+              {recipeDetails.ingredients &&
+                recipeDetails.ingredients.map((ingredient, index) => (
+                  <li key={index} className="pb-2">
+                    {ingredient}
+                  </li>
+                ))}
             </ul>
           </div>
         </div>

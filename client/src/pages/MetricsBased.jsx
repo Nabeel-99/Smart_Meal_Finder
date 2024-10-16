@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MetricsImg from "../assets/background-metrics.png";
 import MetricsBg from "../assets/background-circle.svg";
 import { FaInfo, FaXmark } from "react-icons/fa6";
@@ -16,17 +16,52 @@ import {
   genderOptions,
   goalOptions,
 } from "../../../server/utils/helper";
+import axios from "axios";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import MealCard from "../components/MealCard";
 
-const MetricsBased = () => {
-  const [item, setItem] = useState("");
-  const [ingredients, setIngredients] = useState([]);
-  const [ingredientCount, setIngredientCount] = useState(6);
+const MetricsBased = ({ userData }) => {
+  let gridView = true;
+  const [ingredientCount, setIngredientCount] = useState(24);
   const [gender, setGender] = useState("");
   const [goal, setGoal] = useState("");
   const [age, setAge] = useState(0);
   const [height, setHeight] = useState(0);
   const [weight, setWeight] = useState(0);
   const [exerciseLevel, setExerciseLevel] = useState("");
+  const [selectedDietaryPreferences, setSelectedDietaryPreferences] = useState(
+    []
+  );
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fetchedRecipes, setFetchedRecipes] = useState([]);
+  const getUserMetrics = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/users/get-user-metrics",
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        console.log("user metrics", response.data);
+        const metrics = response.data.metrics;
+        setAge(metrics.age || "");
+        setHeight(metrics.height || "");
+        setWeight(metrics.weight || "");
+        setGender(metrics.gender || "");
+        setGoal(metrics.goal || "");
+        setExerciseLevel(metrics.exerciseLevel || "");
+        setSelectedDietaryPreferences(metrics.dietaryPreferences || []);
+      }
+      if (response.status === 404) {
+        console.log("User has no metrics");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const incrementCount = () => {
     setIngredientCount(ingredientCount + 1);
@@ -40,9 +75,62 @@ const MetricsBased = () => {
       setIngredientCount(0);
     }
   };
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const handleChecboxChange = (e) => {
+    const { id, checked } = e.target;
+    setSelectedDietaryPreferences((prev) =>
+      checked ? [...prev, id] : prev.filter((pref) => pref !== id)
+    );
   };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        "http://localhost:8000/api/recipes/get-metrics-recipes",
+        {
+          gender: gender,
+          age: age,
+          height: height,
+          weight: weight,
+          goal: goal,
+          exerciseLevel: exerciseLevel,
+          dietaryPreferences: selectedDietaryPreferences,
+          numberOfRecipes: ingredientCount,
+        },
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        const recipes = response.data.recipes;
+        localStorage.setItem("metricsBased", JSON.stringify(recipes));
+        setFetchedRecipes(recipes);
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getUserMetrics();
+  }, []);
+
+  useEffect(() => {
+    if (userData) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    const storedRecipes = localStorage.getItem("metricsBased");
+    if (storedRecipes) {
+      setFetchedRecipes(JSON.parse(storedRecipes));
+    }
+  }, []);
   return (
     <div className="overflow-hidden flex flex-col gap-8 pt-8 justify-center items-center">
       <div className="flex items-center gap-2 pt-20 text-sm">
@@ -83,7 +171,7 @@ const MetricsBased = () => {
                 options={genderOptions}
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-72"
+                className="w-72 cursor-pointer"
               />
               <TextInput
                 label={"Age"}
@@ -92,7 +180,7 @@ const MetricsBased = () => {
                 type={"number"}
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="w-72"
+                className="w-72 cursor-pointer"
               />
             </div>
             <div className="text-sm border-b pb-2 border-b-[#343333] w-full">
@@ -107,7 +195,7 @@ const MetricsBased = () => {
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 type={"number"}
-                className="w-72"
+                className="w-72 cursor-pointer"
               />
               <TextInput
                 label={"Weight(kg)"}
@@ -117,7 +205,7 @@ const MetricsBased = () => {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 type={"number"}
-                className="w-72"
+                className="w-72 cursor-pointer"
               />
               <SelectInput
                 label={"Goal"}
@@ -125,7 +213,7 @@ const MetricsBased = () => {
                 options={goalOptions}
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                className="w-72"
+                className="w-72 cursor-pointer"
               />
               <SelectInput
                 label={"Exercise Level"}
@@ -133,7 +221,7 @@ const MetricsBased = () => {
                 options={exerciseOptions}
                 value={exerciseLevel}
                 onChange={(e) => setExerciseLevel(e.target.value)}
-                className="w-72"
+                className="w-72 cursor-pointer"
               />
             </div>
 
@@ -152,6 +240,8 @@ const MetricsBased = () => {
                     className="transform scale-150 "
                     id={pref.id}
                     name={pref.id}
+                    checked={selectedDietaryPreferences.includes(pref.id)}
+                    onChange={handleChecboxChange}
                   />
                 </div>
               ))}
@@ -169,7 +259,7 @@ const MetricsBased = () => {
                   label={"Specify number of recipes"}
                   type={"number"}
                   min={0}
-                  max={9}
+                  max={30}
                   value={ingredientCount}
                   onChange={(e) => setIngredientCount(e.target.value)}
                   className=" px-3"
@@ -187,7 +277,11 @@ const MetricsBased = () => {
             <div className="pt-10 flex items-center w-full ">
               <button
                 type="submit"
-                className="bg-[#B678F0] py-2 text-center px-6 w-full lg:w-44 rounded-lg"
+                disabled={loading}
+                className={`bg-[#B678F0] py-2 text-center px-6 w-44 rounded-lg ${
+                  loading ? "cursor-not-allowed bg-[#b678f096] " : ""
+                }
+              `}
               >
                 Submit
               </button>
@@ -196,40 +290,47 @@ const MetricsBased = () => {
         </div>
         {/* showing results */}
         <div className="flex flex-col gap-3 items-center mt-24">
-          {/* <TbCircleDotted className="spin duration-2000 text-4xl" />
-          <p className="">Generating meal recommendations</p> */}
-
-          <div className="flex flex-col ">
-            {/* <SkeletonLoader count={ingredientCount} className='w-[300px]' /> */}
-            {/* <div className="flex flex-col gap-1 text-[#c7c6c6] cursor-pointer hover:text-white">
-              <img
-                src={Food1}
-                alt=""
-                className="w-[300px] h-[250px] object-cover rounded-2xl"
-              />
-              <p className="">Chicken Fried Rice</p>
-            </div> */}
+          {loading ? (
+            <div className="flex flex-col items-center gap-2">
+              <AiOutlineLoading3Quarters className="spin duration-2000 text-[3rem] animate-bounce" />
+              <p className="animate-pulse text-3xl">
+                Generating meal recommendations...
+              </p>
+            </div>
+          ) : fetchedRecipes.length > 0 ? (
+            <MealCard
+              meals={[...fetchedRecipes].sort(
+                (a, b) => a.calories - b.calories
+              )}
+              showInput={false}
+              isGridView={gridView}
+              sourceType={"metricsBased"}
+            />
+          ) : (
+            <p className=""></p>
+          )}
+        </div>
+      </div>
+      {!isLoggedIn && (
+        <div className="flex flex-col px-8 gap-20 md:flex-row items-start md:items-center border-b border-b-[#343333] pt-20 mt-20 pb-20  md:justify-between md:px-16  xl:justify-around bg-gradient-to-b from-[#08090a] to-[#221300] w-full">
+          <div>
+            <h2 className="text-2xl  md:text-3xl xl:text-6xl tracking-tighter">
+              Want meal recommendations?{" "}
+              <span className="block">
+                Discover the best choices just for You!
+              </span>
+            </h2>
+          </div>
+          <div>
+            <Link
+              to={"/"}
+              className="bg-[#e6e6e6] text-black rounded-md px-4 py-2"
+            >
+              Get Started
+            </Link>
           </div>
         </div>
-      </div>
-      <div className="flex flex-col px-8 gap-20 md:flex-row items-start md:items-center border-b border-b-[#343333] pt-20 mt-20 pb-20  md:justify-between md:px-16  xl:justify-around bg-gradient-to-b from-[#08090a] to-[#221300] w-full">
-        <div>
-          <h2 className="text-2xl  md:text-3xl xl:text-6xl tracking-tighter">
-            Want meal recommendations?{" "}
-            <span className="block">
-              Discover the best choices just for You!
-            </span>
-          </h2>
-        </div>
-        <div>
-          <Link
-            to={"/"}
-            className="bg-[#e6e6e6] text-black rounded-md px-4 py-2"
-          >
-            Get Started
-          </Link>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

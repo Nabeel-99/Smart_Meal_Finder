@@ -112,19 +112,23 @@ const SideMenu = ({ showPreferences, preferences, userData, userMetrics }) => {
             </div>
           </div>
           {preferences && (
-            <div className="flex px-3   pb-4 text-sm ">
+            <div className="flex px-3 pb-4 text-sm">
               <div className="w-5"></div>
               <ul className="flex flex-col gap-2">
-                <li className="">Age: {userMetrics.age}</li>
+                <li>Age: {userMetrics.age}</li>
                 <li>Goal: {mapText[userMetrics.goal]}</li>
                 <li>Weight: {userMetrics.weight} kg</li>
                 <li>Height: {userMetrics.height} cm</li>
                 <li>
                   Diet:{" "}
                   {userMetrics.dietaryPreferences.length > 0 ? (
-                    userMetrics.dietaryPreferences.map((diet, index) => (
-                      <span key={index}>{diet}</span>
-                    ))
+                    <ul className="list-disc pl-5">
+                      {userMetrics.dietaryPreferences.map((diet, index) => (
+                        <li key={index} className="pl-1">
+                          {diet}
+                        </li>
+                      ))}
+                    </ul>
                   ) : (
                     <span>None</span>
                   )}

@@ -28,13 +28,14 @@ const IngredientsBased = ({ userData }) => {
   );
   const [fetchedRecipes, setFetchedRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isConnected, SetIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState("");
   const cardRef = useRef();
 
   let gridView = true;
 
   const handleToggle = () => {
-    SetIsConnected(!isConnected);
+    setIsConnected(!isConnected);
   };
   const addIngredient = () => {
     if (item && !ingredients.includes(item)) {
@@ -45,18 +46,7 @@ const IngredientsBased = ({ userData }) => {
   const removeIngredient = (ingredient) => {
     setIngredients(ingredients.filter((item) => item !== ingredient));
   };
-  const incrementCount = () => {
-    setIngredientCount(ingredientCount + 1);
-    if (ingredientCount >= 9) {
-      setIngredientCount(9);
-    }
-  };
-  const decrementCount = () => {
-    setIngredientCount(ingredientCount - 1);
-    if (ingredientCount <= 0) {
-      setIngredientCount(0);
-    }
-  };
+
   const handleChecboxChange = (e) => {
     const { id, checked } = e.target;
     setSelectedDietaryPreferences((prev) =>
@@ -66,8 +56,17 @@ const IngredientsBased = ({ userData }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    localStorage.removeItem("fetchedRecipes");
+    localStorage.removeItem("ingredientsBased");
     setFetchedRecipes([]);
+    localStorage.setItem("isToggled", JSON.stringify(isConnected));
+    if (ingredients.length <= 0) {
+      setError("Ingredients are required");
+      setTimeout(() => {
+        setError("");
+      }, 3000);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const response = await axios.post(
@@ -89,7 +88,7 @@ const IngredientsBased = ({ userData }) => {
             recipe.userUsedIngredients.length > 0
         );
 
-        localStorage.setItem("fetchRecipes", JSON.stringify(validRecipes));
+        localStorage.setItem("ingredientsBased", JSON.stringify(validRecipes));
         setFetchedRecipes(validRecipes);
         cardRef.current.scrollIntoView({ behavior: "smooth" });
       }
@@ -101,10 +100,16 @@ const IngredientsBased = ({ userData }) => {
     }
   };
 
-  console.log("recipes length:", fetchedRecipes.length);
+  useEffect(() => {
+    const savedToggleState = localStorage.getItem("isConnected");
+    if (savedToggleState) {
+      setIsConnected(JSON.parse(savedToggleState));
+    }
+  }, []);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   useEffect(() => {
     if (userData) {
       setIsLoggedIn(true);
@@ -114,7 +119,7 @@ const IngredientsBased = ({ userData }) => {
   }, [userData]);
 
   useEffect(() => {
-    const storedRecipes = localStorage.getItem("fetchRecipes");
+    const storedRecipes = localStorage.getItem("ingredientsBased");
     if (storedRecipes) {
       setFetchedRecipes(JSON.parse(storedRecipes));
     }
@@ -247,6 +252,15 @@ const IngredientsBased = ({ userData }) => {
                 </button>
               </div>
             </div>
+            {error && (
+              <div
+                className={`text-red-500 text-sm mt-1 transition-opacity ease-in-out  duration-1000 ${
+                  error ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {error}
+              </div>
+            )}
             <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4  max-h-44 overflow-auto">
               {ingredients.length > 0 &&
                 ingredients.map((ingredient, index) => (
@@ -342,6 +356,7 @@ const IngredientsBased = ({ userData }) => {
               showInput={false}
               isGridView={gridView}
               showMissingIngredients={true}
+              sourceType={"ingredientsBased"}
             />
           ) : (
             <p className=""></p>

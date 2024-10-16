@@ -33,6 +33,14 @@ import PantryItems from "./pages/PantryItems";
 const App = () => {
   const [userData, setUserData] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "system");
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      return storedTheme === "dark";
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
   const authenticateUser = async () => {
     if (isFetching) return;
     setIsFetching(true);
@@ -42,7 +50,6 @@ const App = () => {
       });
       if (response.status === 200) {
         setUserData(response.data.user);
-        console.log("user data", userData);
       }
     } catch (error) {
       console.log("Auth error", error);
@@ -50,7 +57,57 @@ const App = () => {
       setIsFetching(false);
     }
   };
+  // app theme
+  const applyTheme = (theme) => {
+    const root = document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
+  const systemMode = () => {
+    const isSystemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    setIsDarkMode(isSystemDark);
+    localStorage.removeItem("theme");
+    applyTheme(isSystemDark ? "dark" : "light");
+  };
+
+  const updateTheme = (selectedTheme) => {
+    setTheme(selectedTheme);
+    if (selectedTheme === "light") {
+      applyTheme("light");
+      setIsDarkMode(false);
+    } else if (selectedTheme === "dark") {
+      applyTheme("dark");
+      setIsDarkMode(true);
+    } else {
+      systemMode();
+    }
+  };
+  useEffect(() => {
+    if (theme === "system") {
+      systemMode();
+    } else {
+      applyTheme(theme);
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e) => {
+      if (theme === "system") {
+        applyTheme(e.matches ? "dark" : "light");
+      }
+    };
+    mediaQuery.addEventListener("change", handleChange);
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, [theme]);
   useEffect(() => {
     authenticateUser();
   }, []);
@@ -82,7 +139,10 @@ const App = () => {
             path="/ingredients-based"
             element={<IngredientsBased userData={userData} />}
           />
-          <Route path="/metrics-based" element={<MetricsBased />} />
+          <Route
+            path="/metrics-based"
+            element={<MetricsBased userData={userData} />}
+          />
           <Route path="/recipe-details/:id" element={<RecipeDetails />} />
         </Routes>
         <MaybeShowComponent>

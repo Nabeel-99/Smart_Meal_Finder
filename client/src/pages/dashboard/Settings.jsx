@@ -10,7 +10,13 @@ import {
 } from "../../../../server/utils/helper";
 import axios from "axios";
 import { FaEyeSlash, FaEye } from "react-icons/fa6";
-const Settings = ({ userData, fetchUserData }) => {
+
+const Settings = ({
+  userData,
+  refreshUserData,
+  userMetrics,
+  refreshSideMenu,
+}) => {
   const [firstName, setFirstName] = useState(userData.firstName);
   const [lastName, setLastName] = useState(userData.lastName);
   const [email, setEmail] = useState(userData.email);
@@ -21,18 +27,22 @@ const Settings = ({ userData, fetchUserData }) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isAccount, setIsAccount] = useState(true);
   const [isPreferenecs, setIsPreferences] = useState(false);
-  const [userPreferences, setUserPreferences] = useState(false);
-  const [userMetrics, setUserMetrics] = useState(null);
-  const [gender, setGender] = useState("");
-  const [age, setAge] = useState("");
-  const [weight, setWeight] = useState("");
-  const [height, setHeight] = useState("");
-  const [exerciseLevel, setExerciseLevel] = useState("moderately_active");
-  const [goal, setGoal] = useState("weight_loss");
-  const [selectedDietaryPreferences, setSelectedDietaryPreferences] = useState(
-    []
+  const [isChangingPreferences, setIsChangingPreferences] = useState(false);
+  const [gender, setGender] = useState(userMetrics.gender || "");
+  const [age, setAge] = useState(userMetrics.age || "");
+  const [weight, setWeight] = useState(userMetrics.weight || "");
+  const [height, setHeight] = useState(userMetrics.height || "");
+  const [exerciseLevel, setExerciseLevel] = useState(
+    userMetrics.exerciseLevel || "moderately_active"
   );
-
+  const [goal, setGoal] = useState(userMetrics.goal || "maintenance");
+  const [selectedDietaryPreferences, setSelectedDietaryPreferences] = useState(
+    userMetrics.dietaryPreferences || []
+  );
+  const [preferenceSuccess, setPreferenceSuccess] = useState("");
+  const [preferenceError, setPreferenceError] = useState("");
+  const [showPreferenceSuccess, setShowPreferenceSuccess] = useState("");
+  const [showPreferenceError, setShowPreferenceError] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [emailSuccess, setEmailSuccess] = useState("");
@@ -42,12 +52,15 @@ const Settings = ({ userData, fetchUserData }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showEmailSuccess, setShowEmailSuccess] = useState(false);
   const [showPasswordSuccess, setShowPasswordSuccess] = useState(false);
+
   const [showError, setShowError] = useState(false);
   const [showEmailError, setShowEmailError] = useState(false);
   const [showPasswordError, setShowPasswordError] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+  const [loading, setLoading] = useState(false);
+
   const showAccount = () => {
     setIsAccount(true);
     setIsPreferences(false);
@@ -57,7 +70,8 @@ const Settings = ({ userData, fetchUserData }) => {
     setIsAccount(false);
   };
 
-  const toggleEditPreferences = () => setUserPreferences(!userPreferences);
+  const toggleEditPreferences = () =>
+    setIsChangingPreferences(!isChangingPreferences);
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
@@ -111,7 +125,7 @@ const Settings = ({ userData, fetchUserData }) => {
           setShowPasswordSuccess(true);
         }
 
-        await fetchUserData();
+        await refreshUserData();
         setTimeout(() => {
           setSuccess("");
           setEmailSuccess("");
@@ -139,20 +153,6 @@ const Settings = ({ userData, fetchUserData }) => {
     );
   };
 
-  const fetchUserMetrics = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8000/api/users/get-user-metrics",
-        { withCredentials: true }
-      );
-      console.log(response.data);
-      if (response.status === 200) {
-        setUserMetrics(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const updatePreferences = async (e) => {
     e.preventDefault();
     const updateData = {};
@@ -160,10 +160,12 @@ const Settings = ({ userData, fetchUserData }) => {
     if (gender) updateData.gender = gender;
     if (height) updateData.height = height;
     if (weight) updateData.weight = weight;
+    if (goal) updateData.goal = goal;
     if (exerciseLevel) updateData.exerciseLevel = exerciseLevel;
     if (selectedDietaryPreferences)
-      updateData.dietaryPrefences = selectedDietaryPreferences;
+      updateData.dietaryPreferences = selectedDietaryPreferences;
     try {
+      setLoading(true);
       const response = await axios.patch(
         "http://localhost:8000/api/users/update-metrics",
         updateData,
@@ -172,14 +174,36 @@ const Settings = ({ userData, fetchUserData }) => {
         }
       );
       console.log(response.data);
+      if (response.status === 200) {
+        setIsChangingPreferences(false);
+        setPreferenceSuccess("Preferences updated successfully.");
+        setShowPreferenceSuccess(true);
+        setTimeout(() => {
+          setShowPreferenceSuccess(false);
+          setPreferenceSuccess("");
+        }, 3000);
+        await refreshSideMenu();
+      }
     } catch (error) {
       console.log(error);
+      if (
+        error.response &&
+        error.response.status >= 404 &&
+        error.response.status <= 500
+      ) {
+        setError("error updating preferences");
+        setPreferenceError("Error updating preferences.");
+        setShowPreferenceError(true);
+        setTimeout(() => {
+          setShowPreferenceError(false);
+          setPreferenceSuccess("");
+        }, 3000);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchUserMetrics();
-  }, []);
   return (
     <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
       <div className="flex sticky top-[69px] pt-8 lg:pt-4 z-20 bg-[#171717] items-center border-b border-b-[#343333] pb-3 gap-10">
@@ -403,9 +427,18 @@ const Settings = ({ userData, fetchUserData }) => {
       {isPreferenecs && (
         <div className="flex flex-col items-start gap-4">
           <button onClick={toggleEditPreferences} className="text-blue-400">
-            {userPreferences ? "Cancel" : "Edit preferences"}
+            {isChangingPreferences ? "Cancel" : "Edit preferences"}
           </button>
           <form onSubmit={updatePreferences}>
+            {showPreferenceError && (
+              <div
+                className={`text-red-500 text-sm mt-1 pb-2 transition-opacity ease-in-out  duration-1000 ${
+                  showPreferenceError ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {preferenceError}
+              </div>
+            )}
             <div className="grid  lg:grid-cols-2 lg:gap-10">
               <TextInput
                 label={"Age"}
@@ -413,37 +446,45 @@ const Settings = ({ userData, fetchUserData }) => {
                 min={0}
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                disabled={!userPreferences}
-                className={`${userPreferences ? "" : "cursor-not-allowed"}`}
+                disabled={!isChangingPreferences}
+                className={`${
+                  isChangingPreferences ? "" : "cursor-not-allowed"
+                }`}
               />
               <SelectInput
                 label={"Gender"}
                 id={"gender"}
                 options={genderOptions}
                 className={`${
-                  userPreferences ? "cursor-pointer" : "cursor-not-allowed"
+                  isChangingPreferences
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed"
                 }`}
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                disabled={!userPreferences}
+                disabled={!isChangingPreferences}
               />
               <TextInput
                 label={"Height (cm)"}
                 type={"number"}
                 min={0}
-                disabled={!userPreferences}
+                disabled={!isChangingPreferences}
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
-                className={`${userPreferences ? "" : "cursor-not-allowed"}`}
+                className={`${
+                  isChangingPreferences ? "" : "cursor-not-allowed"
+                }`}
               />
               <SelectInput
                 label={"Goal"}
                 id={"goal"}
                 options={goalOptions}
                 className={`${
-                  userPreferences ? "cursor-pointer" : "cursor-not-allowed"
+                  isChangingPreferences
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed"
                 }`}
-                disabled={!userPreferences}
+                disabled={!isChangingPreferences}
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
               />
@@ -453,8 +494,10 @@ const Settings = ({ userData, fetchUserData }) => {
                 type={"number"}
                 value={weight}
                 min={0}
-                disabled={!userPreferences}
-                className={`${userPreferences ? "" : "cursor-not-allowed"}`}
+                disabled={!isChangingPreferences}
+                className={`${
+                  isChangingPreferences ? "" : "cursor-not-allowed"
+                }`}
                 onChange={(e) => setWeight(e.target.value)}
               />
 
@@ -463,9 +506,11 @@ const Settings = ({ userData, fetchUserData }) => {
                 id={"exercise-level"}
                 options={exerciseOptions}
                 className={`${
-                  userPreferences ? "cursor-pointer" : "cursor-not-allowed"
+                  isChangingPreferences
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed"
                 }`}
-                disabled={!userPreferences}
+                disabled={!isChangingPreferences}
                 value={exerciseLevel}
                 onChange={(e) => setExerciseLevel(e.target.value)}
               />
@@ -482,13 +527,23 @@ const Settings = ({ userData, fetchUserData }) => {
                     className="transform scale-150 "
                     id={pref.id}
                     name={pref.id}
+                    checked={selectedDietaryPreferences.includes(pref.id)}
                     onChange={handleDietaryPreferenceChange}
-                    disabled={!dietPreferences}
+                    disabled={!isChangingPreferences}
                   />
                 </div>
               ))}
             </div>
-            {userPreferences && (
+            {showPreferenceSuccess && (
+              <div
+                className={`text-green-500 text-sm mt-6 transition-opacity ease-in-out  duration-1000 ${
+                  showPreferenceSuccess ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {preferenceSuccess}
+              </div>
+            )}
+            {isChangingPreferences && (
               <div className="flex items-center mt-10 gap-6">
                 <button
                   onClick={toggleEditPreferences}
