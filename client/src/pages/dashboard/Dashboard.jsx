@@ -26,6 +26,8 @@ import Settings from "./Settings";
 import { Routes, Route } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import axios from "axios";
+import PantryPage from "./PantryPage";
+
 const Dashboard = ({ userData, fetchUserData }) => {
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState(false);
@@ -81,6 +83,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
     if (location.pathname === "/dashboard/my-cooking-choices")
       return "My Cooking Choices";
     if (location.pathname === "/dashboard/settings") return "Settings";
+    if (location.pathname === "/dashboard/pantry") return "Pantry";
   };
   const renderContentView = () => {
     return (
@@ -92,6 +95,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
               showOptions={showOptions}
               showGridView={showGridView}
               showListView={showListView}
+              setViewOptions={setViewOptions}
               viewOptions={viewOptions}
               gridView={gridView}
               listView={listView}
@@ -132,6 +136,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
             />
           }
         />
+        <Route path="pantry" element={<PantryPage />} />
       </Routes>
     );
   };

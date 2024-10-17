@@ -4,8 +4,8 @@ import React from "react";
 const DialogComponent = ({
   showDialog,
   setShowDialog,
-  handleYes,
-  selectedId,
+  handleAction,
+  title,
 }) => {
   const handleClose = () => setShowDialog(false);
   return (
@@ -21,12 +21,10 @@ const DialogComponent = ({
           },
         }}
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Are you sure you want to delete?"}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogActions>
           <button
-            onClick={() => handleYes(selectedId)}
+            onClick={handleAction}
             className="rounded-md py-2 px-3 bg-[#444444] hover:bg-[#646464] transition-all duration-150"
           >
             Yes

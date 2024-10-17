@@ -16,7 +16,17 @@
   -moz-osx-font-smoothing: grayscale;
   /* scroll-behavior: smooth; */
 }
+.transition-container {
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  overflow: hidden;
+  opacity: 0;
+  max-height: 0;
+}
 
+.transition-container.expanded {
+  opacity: 1;
+  max-height: 500px; /* Adjust this value based on your expected content size */
+}
 /* a {
   font-weight: 500;
   color: #646cff;

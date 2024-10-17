@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CiGrid41 } from "react-icons/ci";
 import { HiBars3 } from "react-icons/hi2";
 import { LuArrowDownWideNarrow } from "react-icons/lu";
@@ -6,6 +6,7 @@ import { SiGreasyfork } from "react-icons/si";
 import SkeletonLoader from "../../components/SkeletonLoader";
 import { Link } from "react-router-dom";
 import MealCard from "../../components/MealCard";
+import PopperComponent from "../../components/PopperComponent";
 
 const DashboardContent = ({
   showOptions,
@@ -15,15 +16,39 @@ const DashboardContent = ({
   gridView,
   listView,
   dashboardRecipes,
+  setViewOptions,
 }) => {
   let breakfastMeals = dashboardRecipes.recipes?.breakfast || [];
   let lunchMeals = dashboardRecipes.recipes?.lunch || [];
   let dinnerMeals = dashboardRecipes.recipes?.dinner || [];
   let calorieTargetTotal = Number(dashboardRecipes?.calorieTarget) || 0;
+
   const [breakfast, setBreakfast] = useState(true);
   const [lunch, setLunch] = useState(false);
   const [dinner, setDinner] = useState(false);
+  const [selectedRecipes, setSelectedRecipes] = useState(
+    JSON.parse(localStorage.getItem("checkedMeals")) || []
+  );
+  const [caloriesConsumed, setCaloriesConsumed] = useState(
+    Number(localStorage.getItem("caloriesConsumed")) || 0
+  );
+  const anchorRef = useRef(null);
+  const handleChecboxChange = (meal) => {
+    const calories = meal.calories;
+    const isSelected = selectedRecipes.includes(meal._id);
 
+    if (!isSelected) {
+      setCaloriesConsumed((prev) => prev + calories);
+      setSelectedRecipes((prev) => [...prev, meal._id]);
+    } else {
+      setCaloriesConsumed((prev) => prev - calories);
+      setSelectedRecipes((prev) => prev.filter((id) => id !== meal._id));
+    }
+  };
+  const uncheckAllRecipes = () => {
+    setSelectedRecipes([]);
+    setCaloriesConsumed(0);
+  };
   const showBreakfast = () => {
     setBreakfast(true);
     setLunch(false);
@@ -39,7 +64,12 @@ const DashboardContent = ({
     setLunch(false);
     setDinner(true);
   };
+  const caloriePercentage = (caloriesConsumed / calorieTargetTotal) * 100;
 
+  useEffect(() => {
+    localStorage.setItem("caloriesConsumed", caloriesConsumed);
+    localStorage.setItem("checkedMeals", JSON.stringify(selectedRecipes));
+  }, [caloriesConsumed, selectedRecipes]);
   return (
     <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
       <div className="flex flex-col xl:flex-row lg:items-center gap-4 w-full lg:gap-10">
@@ -61,16 +91,20 @@ const DashboardContent = ({
         </div>
         <div className="flex flex-col xl:flex-row items-center w-full gap-3">
           <div className="font-semibold">Calories Target</div>
-          <div className="border border-[#343333] pl-1 w-full xl:w-96 h-10 flex items-center rounded-full">
-            <div className="xl:w-64 h-8   rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-green-500 flex items-center justify-center">
-              <div className="text-sm font-bold">
-                400/{calorieTargetTotal.toFixed(0)} calories
+          <div className="border border-[#343333] pl-1 w-full xl:w-96 h-10  flex items-center rounded-full">
+            <div
+              style={{ width: `${caloriePercentage}%` }}
+              className="h-8 rounded-full bg-gradient-to-r from-red-500  via-orange-400 via-10%  to-green-600 to-90% flex items-center justify-center transition-all duration-500 ease-in-out"
+            >
+              <div className="text-sm font-bold w-full text-nowrap text-center">
+                {caloriesConsumed.toFixed(0)}/{calorieTargetTotal.toFixed(0)}{" "}
+                calories
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="flex flex-col w-full sticky top-[60px] lg:top-[69px] z-10 bg-[#171717] pb-3 lg:pb-5  h-full gap-4">
+      <div className="flex flex-col w-full sticky top-[60px] lg:top-[40px] z-10 bg-[#171717] pb-3 lg:pb-5  h-full gap-4">
         <div className="text-xl lg:text-3xl font-bold pt-6 lg:pt-8">
           Personalized Meal Suggestions for You
         </div>
@@ -103,33 +137,26 @@ const DashboardContent = ({
               </button>
             </div>
             <div className="lg:hidden flex items-center  gap-2">
-              <button onClick={showOptions}>
+              <button ref={anchorRef} onClick={showOptions}>
                 <LuArrowDownWideNarrow />
               </button>
               {viewOptions && (
-                <div className="absolute right-0 top-28 p-4 bg-[#08090a] px-6 border border-[#343333] flex flex-col gap-4 rounded-md">
-                  <button
-                    onClick={showGridView}
-                    className="flex items-center text-sm gap-4"
-                  >
-                    <CiGrid41 />
-                    Grid view
-                  </button>
-                  <button
-                    onClick={showListView}
-                    className="flex items-center text-sm gap-4"
-                  >
-                    <HiBars3 className="text-" />
-                    List View
-                  </button>
-                </div>
+                <PopperComponent
+                  viewOptions={viewOptions}
+                  anchorRef={anchorRef}
+                  showGridView={showGridView}
+                  showListView={showListView}
+                  setViewOptions={setViewOptions}
+                />
               )}
             </div>
           </div>
           <div className="flex items-center gap-10">
-            <div className="text-sm border py-2 border-[#343333] bg-[#2e2e2e] font-semibold  px-4 rounded-md">
-              Regenerate breakfast meals
-            </div>
+            {selectedRecipes.length > 0 && (
+              <div className="text-sm border py-2 border-[#343333] bg-[#2e2e2e] font-semibold  px-4 rounded-md">
+                <button onClick={uncheckAllRecipes}>Uncheck All</button>
+              </div>
+            )}
             <div className="hidden lg:flex items-center gap-2">
               <button onClick={showGridView}>
                 <CiGrid41 />
@@ -149,6 +176,8 @@ const DashboardContent = ({
           showInput={true}
           isGridView={gridView}
           isListView={listView}
+          handleChecboxChange={handleChecboxChange}
+          selectedRecipes={selectedRecipes}
         />
       )}
       {lunch && lunchMeals.length > 0 && (
@@ -157,6 +186,8 @@ const DashboardContent = ({
           showInput={true}
           isGridView={gridView}
           isListView={listView}
+          handleChecboxChange={handleChecboxChange}
+          selectedRecipes={selectedRecipes}
         />
       )}
       {dinner && dinnerMeals.length > 0 && (
@@ -165,6 +196,8 @@ const DashboardContent = ({
           showInput={true}
           isGridView={gridView}
           isListView={listView}
+          handleChecboxChange={handleChecboxChange}
+          selectedRecipes={selectedRecipes}
         />
       )}
       {/* <div className="">

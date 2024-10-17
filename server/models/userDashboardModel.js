@@ -45,12 +45,7 @@ const userDashboardSchema = new mongoose.Schema(
         },
       ],
     },
-    selectedRecipes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "recipe",
-      },
-    ],
+
     calorieTarget: {
       type: Number,
       default: null,

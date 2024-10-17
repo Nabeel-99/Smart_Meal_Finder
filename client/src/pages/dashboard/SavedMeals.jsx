@@ -108,8 +108,8 @@ const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
         <DialogComponent
           showDialog={showDialog}
           setShowDialog={setShowDialog}
-          handleYes={deleteRecipe}
-          selectedId={selectedId}
+          handleAction={() => deleteRecipe(selectedId)}
+          title={"Are you sure you want to delete?"}
         />
       )}
     </div>

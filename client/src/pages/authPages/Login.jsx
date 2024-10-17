@@ -25,7 +25,7 @@ const Login = ({ authenticateUser }) => {
         { withCredentials: true }
       );
       if (response.status === 200) {
-        authenticateUser();
+        await authenticateUser();
         const isNewUser = response.data.isNewUser;
         setLoading(true);
         setTimeout(() => {

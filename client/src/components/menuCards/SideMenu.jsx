@@ -7,6 +7,7 @@ import {
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { mapText } from "../../../../server/utils/helper";
+import { TbFridge } from "react-icons/tb";
 
 const SideMenu = ({ showPreferences, preferences, userData, userMetrics }) => {
   const navigate = useNavigate();
@@ -79,6 +80,16 @@ const SideMenu = ({ showPreferences, preferences, userData, userMetrics }) => {
               }}
             >
               Settings
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <TbFridge className="w-6 text-[#e5e7eb]" />
+            <button
+              onClick={() => {
+                navigate("/dashboard/pantry");
+              }}
+            >
+              Pantry
             </button>
           </div>
           <div

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaTrash } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
-
+import axios from "axios";
 const MealCard = ({
   meals,
   showInput = false,
@@ -11,9 +11,9 @@ const MealCard = ({
   isListView,
   openDialog,
   sourceType,
+  handleChecboxChange,
+  selectedRecipes,
 }) => {
-  console.log("sourceType", sourceType);
-  console.log(meals);
   return (
     <>
       <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3 gap-10">
@@ -41,7 +41,13 @@ const MealCard = ({
                         ? meal.title.slice(0, 23).concat("...")
                         : meal.title}
                     </div>
-                    {showInput && <input type="checkbox" />}
+                    {showInput && (
+                      <input
+                        type="checkbox"
+                        checked={selectedRecipes.includes(meal._id)}
+                        onChange={() => handleChecboxChange(meal)}
+                      />
+                    )}
                   </div>
                   <div className="text-sm ">
                     {meal.calories.toFixed(0)} calories
@@ -82,7 +88,7 @@ const MealCard = ({
                       <img
                         src={meal.image}
                         alt=""
-                        className={`h-44  w-full md:w-96  lg:w-72 rounded-md bg-[#595959] border border-[#7d7d7d]`}
+                        className={`h-full  w-full md:w-96  lg:w-72 rounded-md bg-[#595959] border border-[#7d7d7d]`}
                       />
                     </Link>
                     <div className="flex flex-col gap-2 w-full">
@@ -91,7 +97,14 @@ const MealCard = ({
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    {showInput && <input type="checkbox" />}
+                    {showInput && (
+                      <input
+                        type="checkbox"
+                        checked={selectedRecipes.includes(meal._id)}
+                        onChange={() => handleChecboxChange(meal)}
+                      />
+                    )}
+
                     {showTrash && (
                       <button
                         onClick={() => openDialog(meal._id)}

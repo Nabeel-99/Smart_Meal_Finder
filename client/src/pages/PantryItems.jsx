@@ -76,15 +76,17 @@ const PantryItems = () => {
 
   return (
     <div className="flex flex-col gap-20  w-full h-full  px-8 lg:px-24">
-      <div className="flex flex-col gap-8 pt-32 md:pt-28  lg:gap-0 lg:flex-row items-center justify-between h-full  ">
-        <div className="flex flex-col items-center w-full md:w-1/2 lg:w-auto  pb-24  h-full lg:justify-center gap-2">
+      <div className="flex flex-col  pt-32 md:pt-28  lg:gap-10 lg:flex-row items-center justify-between h-full  ">
+        <div className="flex flex-col items-center w-full lg:w-auto  pb-24  xl:h-full lg:justify-center gap-2">
           <div className="flex flex-col  w-full gap-4">
             <h1 className="text-4xl lg:text-6xl font-bold tracking-tight">
-              Let's Get Your<span className="block">Pantry Ready</span>
+              Let's Get Your<span className="lg:block">Pantry Ready</span>
             </h1>
             <p className="">
               We suggest choosing a few items for your pantry to{" "}
-              <span className="block">help us customize your experience. </span>
+              <span className="lg:block">
+                help us customize your experience.{" "}
+              </span>
             </p>
           </div>
           <div className="flex flex-col mt-4 justify-start gap-4 items-start w-full">
@@ -96,7 +98,7 @@ const PantryItems = () => {
                 checked={allSelected}
               />
             </div>
-            <div className=" gap-2 grid grid-cols-3 items-start justify-start w-[500px]">
+            <div className=" gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 items-center xl:items-start justify-center xl:justify-start w-full xl:w-[400px]">
               {pantryItems.pantry.map((pantry, index) => (
                 <div className="flex  items-center" key={pantry}>
                   <label className="w-32 ">
@@ -114,7 +116,7 @@ const PantryItems = () => {
                 </div>
               ))}
             </div>
-            <div className="mt-4 flex items-center gap-2">
+            <div className="mt-4 flex flex-col lg:flex-row items-center w-full gap-4">
               <Autocomplete
                 disablePortal
                 options={ingredientsData}
@@ -165,11 +167,11 @@ const PantryItems = () => {
               </button>
             </div>
 
-            <div className="flex justify-between  mt-6 gap-3 w-full h-full">
+            <div className="flex flex-col items-center lg:flex-row lg:justify-between  mt-6 gap-3 w-full h-full">
               <button
                 onClick={savePantryItems}
                 disabled={loading}
-                className="bg-[#B678F0] py-1 text-center w-44 flex items-center justify-center  rounded-md"
+                className="bg-[#B678F0] py-1 text-center w-full md:w-64  lg:w-44 flex items-center justify-center  rounded-md"
               >
                 {loading ? (
                   <AiOutlineLoading3Quarters className="spin text-2xl" />
@@ -190,10 +192,10 @@ const PantryItems = () => {
           </div>
         </div>
 
-        <div className=" w-[0.08px] h-full bg-[#343333]"></div>
-        <div className=" rounded-md bg-[#222121] h-96 p-8 w-[650px] max-w-[650px] overflow-auto  ">
+        <div className="hidden xl:block w-[0.08px] h-full bg-[#343333]"></div>
+        <div className=" rounded-md bg-[#222121] h-[600px] max-h-[650px] p-8 w-full xl:w-[650px] xl:max-w-[650px] overflow-auto  ">
           {" "}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
             {selectedItems.length > 0 &&
               selectedItems.map((item, index) => (
                 <div

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Link as ScrollToLink } from "react-scroll";
 import { SiGreasyfork } from "react-icons/si";
 import { FaBarsStaggered, FaXmark } from "react-icons/fa6";
@@ -10,11 +10,14 @@ const Navbar = ({ userData }) => {
   const pathNames = ["/ingredients-based", "/metrics-based"];
   const [isBurgerMenu, setIsBurgerMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
   const toggleMenu = () => setIsBurgerMenu(!isBurgerMenu);
 
   useEffect(() => {
     if (userData) {
       setIsLoggedIn(true);
+      navigate("/dashboard");
     } else {
       setIsLoggedIn(false);
     }

@@ -70,7 +70,7 @@ export const updateMetrics = async (req, res) => {
       updatedData,
       { new: true }
     );
-    if (!updateMetrics) {
+    if (!updatedMetrics) {
       return res.status(404).json({ message: "User metrics not found" });
     }
     return res.status(200).json({
@@ -118,7 +118,7 @@ export const createPantry = async (req, res) => {
     await newPantry.save();
     return res
       .status(200)
-      .json({ message: "pantry created successfully!", items });
+      .json({ message: "pantry created successfully!", newPantry });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -134,11 +134,19 @@ export const updatePantry = async (req, res) => {
       return res.status(404).json({ message: "Pantry not found" });
     }
     const { items } = req.body;
-    userPantry.items = items;
-    await userPantry.save();
+    const updatedPantry = await Pantry.findOneAndUpdate(
+      { userId: userId },
+      { items },
+      {
+        new: true,
+      }
+    );
+    if (!updatedPantry) {
+      return res.status(404).json({ message: "Pantry not found" });
+    }
     return res
       .status(200)
-      .json({ message: "pantry updated successfully!", items });
+      .json({ message: "pantry updated successfully!", updatedPantry });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
