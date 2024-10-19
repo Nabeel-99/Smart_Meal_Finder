@@ -17,7 +17,6 @@ const Navbar = ({ userData }) => {
   useEffect(() => {
     if (userData) {
       setIsLoggedIn(true);
-      navigate("/dashboard");
     } else {
       setIsLoggedIn(false);
     }

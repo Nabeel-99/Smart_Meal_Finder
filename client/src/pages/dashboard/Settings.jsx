@@ -86,6 +86,7 @@ const Settings = ({
 
   const updateAccount = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (password) {
       if (password !== confirmPassword) {
         setShowPasswordError(true);
@@ -102,7 +103,6 @@ const Settings = ({
     if (email !== userData.email) updatedData.email = email;
     if (password) updatedData.password = password;
     try {
-      setLoading(true);
       const response = await axios.patch(
         "http://localhost:8000/api/auth/update",
         updatedData,
@@ -155,6 +155,7 @@ const Settings = ({
 
   const updatePreferences = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const updateData = {};
     if (age) updateData.age = age;
     if (gender) updateData.gender = gender;
@@ -165,7 +166,6 @@ const Settings = ({
     if (selectedDietaryPreferences)
       updateData.dietaryPreferences = selectedDietaryPreferences;
     try {
-      setLoading(true);
       const response = await axios.patch(
         "http://localhost:8000/api/users/update-metrics",
         updateData,

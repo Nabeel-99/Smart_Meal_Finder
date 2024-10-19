@@ -33,8 +33,8 @@ const PantryPage = () => {
   };
   const updatePantry = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await axios.patch(
         "http://localhost:8000/api/users/update-pantry",
         {

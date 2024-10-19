@@ -68,13 +68,13 @@ export const requestResetPassword = async (req, res) => {
 // resetPassword
 export const resetPassword = async (req, res) => {
   try {
-    const { token, new_password, confirm_password } = req.body;
+    const { token, newPassword, confirmPassword } = req.body;
     const { error } = validateResetPassword(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
     // comparing passwords
-    if (new_password !== confirm_password) {
+    if (newPassword !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
     // verifying token
@@ -89,7 +89,7 @@ export const resetPassword = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
-    const hashPassword = await bcrypt.hash(new_password, salt);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
     user.password = hashPassword;
 
     await user.save();

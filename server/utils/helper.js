@@ -144,19 +144,19 @@ export const extractRecipeData = (recipe) => {
   const isTasty = recipe.video_url;
 
   if (isSpoonacular) {
-    if (recipe.nutrition) {
-      calories =
-        recipe.nutrition.nutrients.find(
-          (nutrient) => nutrient.name === "Calories"
-        )?.amount || 0;
-      nutrients = recipe.nutrition.nutrients
+    calories =
+      recipe.nutrition.nutrients.find(
+        (nutrient) => nutrient.name === "Calories"
+      )?.amount || 0;
+    nutrients =
+      recipe.nutrition.nutrients
         .filter((nutrient) => nutrient.amount > 0)
         .map((nutrient) => ({
           name: nutrient.name,
           amount: nutrient.amount,
           unit: nutrient.unit,
-        }));
-    }
+        })) || [];
+    prepTime = recipe.readyInMinutes || 0;
     id = recipe.id;
     title = recipe.title || "Unknown Title";
     ingredients = recipe.extendedIngredients
@@ -186,12 +186,21 @@ export const extractRecipeData = (recipe) => {
       ingredients = recipe.recipe.ingredients
         ? recipe.recipe.ingredients.map((ingredient) => ingredient.food)
         : [];
+      prepTime = recipe.recipe.totalTime || 0;
       instructions = ["no instructions for edamam"];
       mealType = recipe.recipe.mealType || [];
       dietaryPreferences = recipe.recipe.healthLabels || [];
       image = recipe.recipe.image || "default_image_url";
       sourceUrl = recipe.recipe.shareAs || "Unknown Source";
       videoLink = "will come back to this";
+      nutrients =
+        Object.values(recipe.recipe.totalNutrients)
+          .filter((nutrient) => nutrient.quantity > 0)
+          .map((nutrient) => ({
+            name: nutrient.label,
+            amount: nutrient.quantity,
+            unit: nutrient.unit,
+          })) || [];
     }
   } else if (isTasty) {
     const filteredNutrition = {};

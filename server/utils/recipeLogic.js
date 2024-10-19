@@ -31,7 +31,9 @@ export const fetchDashboardRecipes = async (goal, dietaryPreferences) => {
     const dinnerRecipes = [...spoonacularDinner];
 
     const allRecipes = [...breakfastRecipes, ...lunchRecipes, ...dinnerRecipes];
-    return allRecipes;
+    const shuffleRecipes = allRecipes.sort(() => Math.random() - 0.5);
+
+    return shuffleRecipes;
   } catch (error) {
     console.log("Error fetching Recipes from APIS", error);
     throw error;
@@ -235,7 +237,7 @@ export const categorizeRecipes = async (recipes) => {
       prepTime,
       nutrients,
     } = recipe;
-
+    console.log(nutrients);
     if (existingRecipes.has(title)) continue;
 
     let assigned = false;
@@ -310,7 +312,7 @@ export const categorizeRecipes = async (recipes) => {
     }
   }
 
-  const limit = 18;
+  const limit = 24;
   const topRecipes = {
     breakfast: categories.breakfast.slice(0, limit),
     lunch: categories.lunch.slice(0, limit),

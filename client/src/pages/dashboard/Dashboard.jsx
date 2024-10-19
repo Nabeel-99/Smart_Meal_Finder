@@ -27,6 +27,7 @@ import { Routes, Route } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import axios from "axios";
 import PantryPage from "./PantryPage";
+import DialogComponent from "../../components/DialogComponent";
 
 const Dashboard = ({ userData, fetchUserData }) => {
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,12 @@ const Dashboard = ({ userData, fetchUserData }) => {
   const [userMetrics, setUserMetrics] = useState(null);
   const [dashboardRecipes, setDashboardRecipes] = useState([]);
   const [fetchingInProgress, setFetchingInProgress] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const navigate = useNavigate();
+
+  const openDialog = () => {
+    setShowDialog(true);
+  };
 
   const showListView = () => {
     setListView(true);
@@ -52,6 +59,26 @@ const Dashboard = ({ userData, fetchUserData }) => {
   const showOptions = () => setViewOptions(!viewOptions);
   const showSideMenu = () => setSideMenu(!sideMenu);
   const showPreferences = () => setPreferences(!preferences);
+  const location = useLocation();
+
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/logout",
+        null,
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        window.location = "/";
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getUserMetrics = async () => {
     setLoading(true);
@@ -76,7 +103,25 @@ const Dashboard = ({ userData, fetchUserData }) => {
     }
   };
 
-  const location = useLocation();
+  const fetchUserDashboardRecipes = async () => {
+    if (fetchingInProgress) return;
+    setFetchingInProgress(true);
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/recipes/dashboard-recipes",
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        console.log(response.data);
+        setDashboardRecipes(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setFetchingInProgress(false);
+    }
+  };
+
   const getCurrentView = () => {
     if (location.pathname === "/dashboard") return "Dashboard";
     if (location.pathname === "/dashboard/saved-meals") return "Saved Meals";
@@ -85,6 +130,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
     if (location.pathname === "/dashboard/settings") return "Settings";
     if (location.pathname === "/dashboard/pantry") return "Pantry";
   };
+
   const renderContentView = () => {
     return (
       <Routes>
@@ -141,50 +187,6 @@ const Dashboard = ({ userData, fetchUserData }) => {
     );
   };
 
-  const fetchUserDashboardRecipes = async () => {
-    if (fetchingInProgress) return;
-    setFetchingInProgress(true);
-
-    try {
-      try {
-        console.log("creating dashboard recipes..");
-        const newResponse = await axios.post(
-          "http://localhost:8000/api/recipes/prepare-dashboard-recipes",
-          {},
-          { withCredentials: true }
-        );
-
-        if (newResponse.status === 200) {
-          console.log("New dashboard created successfully");
-          setDashboardRecipes(newResponse.data);
-          return;
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 409) {
-          console.log("Dashboard already exists, fetching existing one");
-        } else {
-          console.log("Error creating dashboard recipes", error);
-          return;
-        }
-      }
-
-      // Fetch existing dashboard recipes
-      const response = await axios.get(
-        "http://localhost:8000/api/recipes/dashboard-recipes",
-        { withCredentials: true }
-      );
-
-      if (response.status === 200) {
-        setDashboardRecipes(response.data);
-        return;
-      }
-    } catch (error) {
-      console.log("Error fetching dashboard recipes", error);
-    } finally {
-      setFetchingInProgress(false);
-    }
-  };
-
   useEffect(() => {
     getUserMetrics();
   }, []);
@@ -231,6 +233,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
             userMetrics={userMetrics}
             showPreferences={showPreferences}
             preferences={preferences}
+            openDialog={openDialog}
           />
         )}
 
@@ -254,6 +257,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
             showPreferences={showPreferences}
             preferences={preferences}
             setSideMenu={setSideMenu}
+            openDialog={openDialog}
           />
         )}
         <div className="bg-[#171717] lg:pl-64 flex flex-col min-h-screen pb-8 w-full">
@@ -263,6 +267,14 @@ const Dashboard = ({ userData, fetchUserData }) => {
           {renderContentView()}
         </div>
       </div>
+      {showDialog && (
+        <DialogComponent
+          showDialog={showDialog}
+          setShowDialog={setShowDialog}
+          handleAction={handleLogout}
+          title={"Arer you sure you want to log out?"}
+        />
+      )}
     </>
   );
 };

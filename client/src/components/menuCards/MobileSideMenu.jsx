@@ -16,31 +16,10 @@ const MobileSideMenu = ({
   userMetrics,
   preferences,
   setSideMenu,
+  openDialog,
 }) => {
-  const [loading, setLoading] = useState(false);
-  const [showDialog, setShowDialog] = useState(false);
-  const openDialog = () => {
-    setShowDialog(true);
-  };
   const navigate = useNavigate();
-  const handleLogout = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/auth/logout",
-        null,
-        { withCredentials: true }
-      );
-      console.log(response.data);
-      if (response.status === 200) {
-        window.location = "/";
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
   return (
     <>
       <div className="flex lg:hidden flex-col  pt-20 justify-between  w-full z-40  bg-[#171717] h-full fixed ">
@@ -184,14 +163,6 @@ const MobileSideMenu = ({
           </button>
         </div>
       </div>
-      {showDialog && (
-        <DialogComponent
-          showDialog={showDialog}
-          setShowDialog={setShowDialog}
-          handleAction={handleLogout}
-          title={"Arer you sure you want to log out?"}
-        />
-      )}
     </>
   );
 };

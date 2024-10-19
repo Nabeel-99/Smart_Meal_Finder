@@ -15,8 +15,8 @@ const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
   const [selectedId, setSelectedId] = useState(null);
   const showOptions = () => setViewOptions(!viewOptions);
   const fetchSavedRecipes = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await axios.get(
         "http://localhost:8000/api/recipes/get-saved-recipes",
         { withCredentials: true }

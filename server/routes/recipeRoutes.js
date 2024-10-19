@@ -1,9 +1,6 @@
 import express from "express";
 import { verifyUser } from "../controllers/authController.js";
-import {
-  getDashboardRecipes,
-  prepareDashboardRecipes,
-} from "../controllers/dashboardController.js";
+import { manageDashboardRecipes } from "../controllers/dashboardController.js";
 import {
   deleteRecipe,
   generateIngredientsBasedRecipes,
@@ -30,8 +27,7 @@ const checkIfUserHasPantry = async (req, res, next) => {
 };
 const router = express.Router();
 
-router.post("/prepare-dashboard-recipes", verifyUser, prepareDashboardRecipes);
-router.get("/dashboard-recipes", verifyUser, getDashboardRecipes);
+router.get("/dashboard-recipes", verifyUser, manageDashboardRecipes);
 router.get("/get-recipe-details/:id", getRecipeDetails);
 router.post(
   "/get-ingredients-recipes",

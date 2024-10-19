@@ -59,7 +59,7 @@ const Preferences = () => {
       if (response.status === 200) {
         setLoading(true);
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/pantry");
           setLoading(false);
         }, 3000);
       }

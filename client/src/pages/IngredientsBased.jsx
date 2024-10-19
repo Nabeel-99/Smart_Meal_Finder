@@ -56,6 +56,7 @@ const IngredientsBased = ({ userData }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     localStorage.removeItem("ingredientsBased");
     setFetchedRecipes([]);
     localStorage.setItem("isToggled", JSON.stringify(isConnected));
@@ -68,7 +69,6 @@ const IngredientsBased = ({ userData }) => {
       return;
     }
     try {
-      setLoading(true);
       const response = await axios.post(
         "http://localhost:8000/api/recipes/get-ingredients-recipes",
         {

@@ -119,7 +119,7 @@ const App = () => {
           <Navbar userData={userData} />
         </MaybeShowComponent>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home userData={userData} />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route
             path="/login"
@@ -133,8 +133,9 @@ const App = () => {
               <Dashboard userData={userData} fetchUserData={authenticateUser} />
             }
           ></Route>
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+
           <Route
             path="/ingredients-based"
             element={<IngredientsBased userData={userData} />}

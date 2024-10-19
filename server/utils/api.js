@@ -6,6 +6,12 @@ const spoonacularAPI = "https://api.spoonacular.com/recipes";
 const edamamAPI = "https://api.edamam.com/api/recipes/v2?&type=public";
 const tastyAPI = "https://tasty.p.rapidapi.com/recipes/list";
 //     code: 402,
+const spoonacularAPIkeys = [
+  process.env.SPOONACULAR_API_KEY1,
+  process.env.SPOONACULAR_API_KEY2,
+  process.env.SPOONACULAR_API_KEY3,
+];
+
 export const getSpoonacularRecipes = async (
   mealType = [],
   goal = null,
@@ -31,65 +37,82 @@ export const getSpoonacularRecipes = async (
   const { minCalories, maxCalories } = goal ? calorieRanges[goal] : {};
   const dietaryPref =
     dietaryPreferences.length > 0 ? dietaryPreferences[0] : null;
+  for (const key of spoonacularAPIkeys) {
+    try {
+      const response = await axios.get(`${spoonacularAPI}/complexSearch`, {
+        params: {
+          number: 40,
+          addRecipeInformation: true,
+          addRecipeInstructions: true,
+          addRecipeNutrition: true,
+          fillIngredients: true,
+          ...(mealType.length > 0 && { type: mealType.join(",") }),
+          ...(goal && { minCalories: minCalories }),
+          ...(goal && { maxCalories: maxCalories }),
+          ...(dietaryPref && { diet: dietaryPref }),
+          apiKey: key,
+        },
+      });
 
-  try {
-    const response = await axios.get(`${spoonacularAPI}/complexSearch`, {
-      params: {
-        number: 40,
-        addRecipeInformation: true,
-        addRecipeInstructions: true,
-        addRecipeNutrition: true,
-        fillIngredients: true,
-        ...(mealType.length > 0 && { type: mealType.join(",") }),
-        ...(goal && { minCalories: minCalories }),
-        ...(goal && { maxCalories: maxCalories }),
-        ...(dietaryPref && { diet: dietaryPref }),
-        apiKey: process.env.SPOONACULAR_API_KEY1,
-      },
-    });
-
-    return response.data.results.map((recipe) => extractRecipeData(recipe));
-  } catch (error) {
-    console.log("error fetching from spoonaclular", error);
-    throw error;
+      return response.data.results.map((recipe) => extractRecipeData(recipe));
+    } catch (error) {
+      if (error.response && error.response.status === 402) {
+        console.log(`API key ${key} has reached its limit, trying second one`);
+        continue;
+      }
+      console.log("error fetching from spoonaclular", error);
+      throw error;
+    }
   }
+  throw new Error("All API keys reached their limit.");
 };
 
 // spoonacular findByIngredietns
 export const findByIngredients = async (ingredients = []) => {
-  try {
-    const response = await axios.get(`${spoonacularAPI}/findByIngredients`, {
-      params: {
-        ingredients: ingredients.join(","),
-        apiKey: process.env.SPOONACULAR_API_KEY1,
-        ranking: 2,
-        number: 10,
-      },
-    });
-    const recipes = response.data;
-    return recipes;
-  } catch (error) {
-    console.log("error fetching from find by ingredeients", error);
-    throw error;
+  for (const key of spoonacularAPIkeys) {
+    try {
+      const response = await axios.get(`${spoonacularAPI}/findByIngredients`, {
+        params: {
+          ingredients: ingredients.join(","),
+          apiKey: key,
+          ranking: 2,
+          number: 10,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 402) {
+        console.log(`API Key ${key} reached its limit. Trying next key...`);
+        continue;
+      }
+      console.log("Error fetching from findByIngredients", error);
+      throw error;
+    }
   }
+  throw new Error("All API keys reached their limit.");
 };
 
 // spoonacular find by id
 export const findById = async (id) => {
-  try {
-    const response = await axios.get(`${spoonacularAPI}/${id}/information`, {
-      params: {
-        apiKey: process.env.SPOONACULAR_API_KEY1,
-        includeNutrition: true,
-      },
-    });
-
-    const recipes = extractRecipeData(response.data);
-    return recipes;
-  } catch (error) {
-    console.log("error fetching by id", error);
-    throw error;
+  for (const key of spoonacularAPIkeys) {
+    try {
+      const response = await axios.get(`${spoonacularAPI}/${id}/information`, {
+        params: {
+          apiKey: key,
+          includeNutrition: true,
+        },
+      });
+      return extractRecipeData(response.data);
+    } catch (error) {
+      if (error.response && error.response.status === 402) {
+        console.log(`API Key ${key} reached its limit. Trying next key...`);
+        continue;
+      }
+      console.log("Error fetching by id", error);
+      throw error;
+    }
   }
+  throw new Error("All API keys reached their limit.");
 };
 
 // spooncaular findRecipesByIngredients

@@ -4,12 +4,19 @@ import { Link, useNavigate } from "react-router-dom";
 import TextInput from "../../components/formInputs/TextInput";
 import axios from "axios";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 const Login = ({ authenticateUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+  useState(false);
+
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
@@ -37,29 +44,18 @@ const Login = ({ authenticateUser }) => {
           setLoading(false);
         }, 3000);
       }
-      if (response.status === 400) {
-        setLoading(false);
-        setError("Invalid email or password");
-        setTimeout(() => {
-          setError("");
-        }, 10000);
-      }
     } catch (error) {
       setLoading(false);
       if (
         error.response &&
-        (error.response.status > 400 || error.response.status <= 500)
+        error.response.status >= 400 &&
+        error.response.status <= 500
       ) {
-        setError("Invalid email or password");
+        setError(error.response.data.message);
         setTimeout(() => {
           setError("");
         }, 10000);
         console.log(error);
-      } else {
-        setError("Invalid email or password");
-        setTimeout(() => {
-          setError("");
-        }, 10000);
       }
     }
   };
@@ -91,7 +87,7 @@ const Login = ({ authenticateUser }) => {
         </div>
         <div className=" w-[0.08px] h-full bg-[#343333]"></div>
         <div className="w-full md:w-1/2 lg:w-auto">
-          {error && <div className="text-red-500 pb-4">{error}</div>}
+          {error && <div className="text-red-500 lg:w-96 pb-4">{error}</div>}
           <form onSubmit={onSubmit} className="">
             <TextInput
               label={"Email"}
@@ -103,16 +99,25 @@ const Login = ({ authenticateUser }) => {
               labelClassName="lg:text-lg"
               className="lg:w-96"
             />
-            <TextInput
-              label={"Password"}
-              htmlFor={"password"}
-              id={"password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              type={"password"}
-              labelClassName="lg:text-lg"
-              className="lg:w-96"
-            />
+            <div className="relative">
+              <TextInput
+                label={"Confirm Password"}
+                htmlFor={"confirm-password"}
+                id={"confirm-password"}
+                type={isPasswordVisible ? "text" : "password"}
+                labelClassName="lg:text-sm"
+                className="lg:w-96 pr-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-10"
+                onClick={togglePasswordVisibility}
+              >
+                {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
             <div className="flex justify-end pb-4">
               <Link to={"/forgot-password"}>Forgot password?</Link>
             </div>
