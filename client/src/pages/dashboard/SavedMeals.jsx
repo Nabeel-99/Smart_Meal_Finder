@@ -56,7 +56,7 @@ const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
   }, []);
   return (
     <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
-      <div className="flex gap-4 lg:items-center sticky top-[69px] z-10 pt-8 pb-4 bg-[#171717]  justify-between">
+      <div className="flex gap-4 lg:items-center sticky top-[69px] z-10 pt-8 pb-4 bg-[#0c0c0c]  justify-between">
         <div className="flex items-center justify-between   gap-4">
           <div className="relative text-sm">Saved</div>
         </div>
@@ -67,7 +67,7 @@ const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
             </button>
 
             {viewOptions && (
-              <div className="absolute right-10 top-10 p-4 bg-[#08090a] px-6 w-44 border border-[#343333] flex flex-col gap-4 rounded-md">
+              <div className="absolute right-10 top-10 p-4 bg-[#08090a] px-6 w-44 border border-[#1d1d1d] flex flex-col gap-4 rounded-md">
                 <button className="flex items-center text-sm gap-4">
                   Alphabetical
                 </button>

@@ -103,7 +103,7 @@ const MetricsBased = ({ userData }) => {
       console.log(response.data);
       if (response.status === 200) {
         const recipes = response.data.recipes;
-        localStorage.setItem("metricsBased", JSON.stringify(recipes));
+        sessionStorage.setItem("metricsBased", JSON.stringify(recipes));
         setFetchedRecipes(recipes);
       }
     } catch (error) {
@@ -126,7 +126,7 @@ const MetricsBased = ({ userData }) => {
   }, [userData]);
 
   useEffect(() => {
-    const storedRecipes = localStorage.getItem("metricsBased");
+    const storedRecipes = sessionStorage.getItem("metricsBased");
     if (storedRecipes) {
       setFetchedRecipes(JSON.parse(storedRecipes));
     }
@@ -155,7 +155,7 @@ const MetricsBased = ({ userData }) => {
       </div>
 
       <div className="flex flex-col gap-6 items-center  w-full px-2 lg:px-44">
-        <div className=" lg:relative border border-[#343333] w-96  md:w-auto   rounded-xl py-2 px-2 bg-[#0E0F10] min-h-[700px] h-full  ">
+        <div className=" lg:relative border border-[#1d1d1d] w-96  md:w-auto   rounded-xl py-2 px-2 bg-[#0E0F10] min-h-[700px] h-full  ">
           <form
             onSubmit={onSubmit}
             className="flex flex-col gap-8 p-8 lg:px-14 items-start justify-center "

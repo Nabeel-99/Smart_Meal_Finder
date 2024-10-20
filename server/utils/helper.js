@@ -44,7 +44,7 @@ export const mapText = {
 
 //generate instructions
 export const generateInstructionsForEdamam = async (title, ingredients) => {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY3);
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY2);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const prompt = `title: ${title}

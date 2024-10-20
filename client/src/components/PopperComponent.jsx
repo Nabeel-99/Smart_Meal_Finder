@@ -27,7 +27,7 @@ const PopperComponent = ({
       placement="bottom-start"
     >
       <ClickAwayListener onClickAway={handleClose}>
-        <MenuList className="absolute right-0 top-10 p-4 bg-[#08090a] border border-[#343333] flex flex-col gap-4 rounded-md">
+        <MenuList className="absolute right-0 top-10 p-4 bg-[#08090a] border border-[#1d1d1d] flex flex-col gap-4 rounded-md">
           <MenuItem
             onClick={showGridView}
             className="flex items-center text-sm gap-4"

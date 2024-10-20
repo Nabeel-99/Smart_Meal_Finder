@@ -196,7 +196,7 @@ const PantryPage = () => {
         )}
 
         <div
-          className={` rounded-md bg-[#222121] max-h-[650px] p-8 w-full  overflow-auto  `}
+          className={` rounded-md bg-[#0f0f0f] max-h-[650px] p-8 w-full border border-[#1d1d1d] overflow-auto  `}
         >
           {" "}
           <div

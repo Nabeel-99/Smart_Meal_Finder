@@ -76,14 +76,14 @@ const DashboardContent = ({
         <div className="flex flex-col gap-5  md:grid grid-cols-2 w-full items-center lg:gap-10">
           <Link
             to={"/ingredients-based"}
-            className="border border-[#343333] bg-[#2e2e2e] hover:bg-[#5a4bc8] w-full rounded-lg h-20 xl:w-64 flex items-center justify-center gap-3"
+            className="border border-[#1d1d1d] bg-[#2e2e2e] hover:bg-[#5a4bc8] w-full rounded-lg h-20 xl:w-64 flex items-center justify-center gap-3"
           >
             <SiGreasyfork className="text-3xl " />
             <div className="font-semibold">Get Meal By Ingredients</div>
           </Link>
           <Link
             to={"/metrics-based"}
-            className="border border-[#343333] bg-[#2e2e2e] hover:bg-[#d08824] w-full rounded-lg h-20 xl:w-64 flex items-center justify-center gap-3"
+            className="border border-[#1d1d1d] bg-[#2e2e2e] hover:bg-[#d08824] w-full rounded-lg h-20 xl:w-64 flex items-center justify-center gap-3"
           >
             <SiGreasyfork className="text-3xl" />
             <div className="font-semibold">Get Meal By Body Metrics</div>
@@ -91,7 +91,7 @@ const DashboardContent = ({
         </div>
         <div className="flex flex-col xl:flex-row items-center w-full gap-3">
           <div className="font-semibold">Calories Target</div>
-          <div className="border border-[#343333] pl-1 w-full xl:w-96 h-10  flex items-center rounded-full">
+          <div className="border border-[#1d1d1d] pl-1 w-full xl:w-96 h-10  flex items-center rounded-full">
             <div
               style={{ width: `${caloriePercentage}%` }}
               className="h-8 rounded-full bg-gradient-to-r from-red-500  via-orange-400 via-10%  to-green-600 to-90% flex items-center justify-center transition-all duration-500 ease-in-out"
@@ -104,8 +104,8 @@ const DashboardContent = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-col w-full sticky top-[60px] lg:top-[40px] z-10 bg-[#171717] pb-3 lg:pb-5  h-full gap-4">
-        <div className="text-xl lg:text-3xl font-bold pt-6 lg:pt-8">
+      <div className="flex flex-col w-full sticky top-[60px] lg:top-[40px] z-10 bg-[#0c0c0c] pb-3 lg:pb-5  h-full gap-4">
+        <div className="text-xl lg:text-3xl font-bold pt-6 lg:pt-10">
           Personalized Meal Suggestions for You
         </div>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center  lg:justify-between">
@@ -114,7 +114,7 @@ const DashboardContent = ({
               <button
                 onClick={showBreakfast}
                 className={` px-3 py-1  rounded-md ${
-                  breakfast ? "border border-[#343333] bg-[#2e2e2e]" : ""
+                  breakfast ? "border border-[#1d1d1d] bg-[#2e2e2e]" : ""
                 }`}
               >
                 Breakfast
@@ -122,7 +122,7 @@ const DashboardContent = ({
               <button
                 onClick={showLunch}
                 className={` px-3 py-1  rounded-md ${
-                  lunch ? "border border-[#343333] bg-[#2e2e2e]" : ""
+                  lunch ? "border border-[#1d1d1d] bg-[#2e2e2e]" : ""
                 }`}
               >
                 Lunch
@@ -130,7 +130,7 @@ const DashboardContent = ({
               <button
                 onClick={showDinner}
                 className={` px-3 py-1  rounded-md ${
-                  dinner ? "border border-[#343333] bg-[#2e2e2e]" : ""
+                  dinner ? "border border-[#1d1d1d] bg-[#2e2e2e]" : ""
                 }`}
               >
                 Dinner
@@ -153,7 +153,7 @@ const DashboardContent = ({
           </div>
           <div className="flex items-center gap-10">
             {selectedRecipes.length > 0 && (
-              <div className="text-sm border py-2 border-[#343333] bg-[#2e2e2e] font-semibold  px-4 rounded-md">
+              <div className="text-sm border py-2 border-[#1d1d1d] bg-[#2e2e2e] font-semibold  px-4 rounded-md">
                 <button onClick={uncheckAllRecipes}>Uncheck All</button>
               </div>
             )}

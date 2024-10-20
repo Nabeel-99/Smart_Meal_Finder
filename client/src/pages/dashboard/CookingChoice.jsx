@@ -19,7 +19,7 @@ const CookingChoice = ({ showGridView, showListView, gridView, listView }) => {
               Sort by <MdOutlineKeyboardArrowDown />
             </button>
             {viewOptions && (
-              <div className="absolute right-10 top-10 p-4 bg-[#08090a] px-6 w-44 border border-[#343333] flex flex-col gap-4 rounded-md">
+              <div className="absolute right-10 top-10 p-4 bg-[#08090a] px-6 w-44 border border-[#1d1d1d] flex flex-col gap-4 rounded-md">
                 <button className="flex items-center text-sm gap-4">
                   Alphabetical
                 </button>

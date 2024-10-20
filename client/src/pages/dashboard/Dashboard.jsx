@@ -226,7 +226,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
   }
   return (
     <>
-      <div className="flex flex-col lg:flex-row bg-[#171717] w-full  gap-10">
+      <div className="flex flex-col lg:flex-row bg-[#08090a] w-full  gap-10">
         {userData && userMetrics && (
           <SideMenu
             userData={userData}
@@ -237,7 +237,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
           />
         )}
 
-        <div className="lg:hidden pt-6 pl-6 flex items-center text-sm gap-4 border-b pb-3 border-b-[#343333] fixed bg-[#171717] z-50 w-full">
+        <div className="lg:hidden pt-6 pl-6 flex items-center text-sm gap-4 border-b pb-3 border-b-[#343333] fixed bg-[#0c0c0c] z-50 w-full">
           <div>
             <button onClick={showSideMenu} className="">
               {sideMenu ? (
@@ -260,8 +260,8 @@ const Dashboard = ({ userData, fetchUserData }) => {
             openDialog={openDialog}
           />
         )}
-        <div className="bg-[#171717] lg:pl-64 flex flex-col min-h-screen pb-8 w-full">
-          <div className="hidden lg:block fixed bg-[#171717] pt-6 pb-6 border-b border-b-[#343333] z-30 w-full">
+        <div className="bg-[#0c0c0c] lg:pl-64 flex flex-col min-h-screen pb-8 w-full">
+          <div className="hidden lg:block fixed bg-[#0c0c0c] pt-6 pb-6 border-b border-b-[#1d1d1d] z-30 w-full">
             <div className="px-10 text-sm">{getCurrentView()}</div>
           </div>
           {renderContentView()}

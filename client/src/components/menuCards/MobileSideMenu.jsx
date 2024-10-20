@@ -22,7 +22,7 @@ const MobileSideMenu = ({
 
   return (
     <>
-      <div className="flex lg:hidden flex-col  pt-20 justify-between  w-full z-40  bg-[#171717] h-full fixed ">
+      <div className="flex lg:hidden flex-col  pt-20 justify-between  w-full z-40  bg-[#08090a] h-full fixed ">
         <div className="px-2">
           <div className="flex px-5 items-center text-lg gap-4">
             <div className="w-6 h-6 rounded-full text-center flex items-center justify-center bg-[#B678F0]">

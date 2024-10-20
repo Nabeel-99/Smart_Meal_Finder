@@ -83,8 +83,6 @@ export const fetchBasedOnIngredients = async (
     console.log("all recipes", recipes.length);
     console.log("top ranked", topRanked.length);
 
-    // const finalRecipes = filterRecipeCalories(topRanked, userGoal);
-    // console.log("final recipes,", finalRecipes.length);
     return topRanked;
   } catch (error) {
     console.log("error fetching", error);
@@ -148,7 +146,7 @@ export const filteredAndRankedRecipes = async (
     const userIngredientsLowercase = userIngredients.map((ingredient) =>
       ingredient.toLowerCase()
     );
-    //filter out ingredients that match partially
+    //filtering out partially matched ingredients
     const filteredIngredients = recipeIngredients.filter((ingredient) => {
       return !pantryToUse.some((pantryItem) => {
         return (
@@ -177,7 +175,10 @@ export const filteredAndRankedRecipes = async (
     let finalInstructions = instructions;
 
     if (missingIngredients.length <= 3) {
-      if (instructions === "no instructions for edamam") {
+      if (
+        Array.isArray(instructions) &&
+        instructions.includes("no instructions for edamam")
+      ) {
         try {
           const generatedInstructions = await generateInstructionsForEdamam(
             title,

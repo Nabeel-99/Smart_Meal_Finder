@@ -77,7 +77,7 @@ const Navbar = ({ userData }) => {
         <div className="hidden lg:flex items-center z-50 gap-4 border border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10">
           <Link
             to={"/login"}
-            className="border flex items-center justify-center rounded-lg border-[#343333] bg-[#29292a] w-20 h-8 "
+            className="border flex items-center justify-center rounded-lg border-[#1d1d1d] bg-[#29292a] w-20 h-8 "
           >
             Log in
           </Link>
@@ -106,7 +106,7 @@ const Navbar = ({ userData }) => {
           <div className="flex items-center gap-2">
             <Link
               to={"/login"}
-              className="border flex items-center justify-center rounded-lg border-[#343333] bg-[#29292a] w-20 h-8 "
+              className="border flex items-center justify-center rounded-lg border-[#1d1d1d] bg-[#29292a] w-20 h-8 "
             >
               Log in
             </Link>

@@ -21,7 +21,7 @@ const TextInput = ({
       </label>
 
       <input
-        className={`bg-[#171717] border  border-[#343333] rounded-lg px-3 py-2 ${className}`}
+        className={`bg-[#171717] border  border-[#1d1d1d] rounded-lg px-3 py-2 ${className}`}
         id={id}
         min={min}
         max={max}

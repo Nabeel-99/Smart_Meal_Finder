@@ -85,7 +85,7 @@ const Login = ({ authenticateUser }) => {
             <SiGreasyfork className="text-2xl lg:text-8xl backdrop-blur-lg" />
           </div>
         </div>
-        <div className=" w-[0.08px] h-full bg-[#343333]"></div>
+        <div className=" w-[0.8px] h-full bg-[#343333]"></div>
         <div className="w-full md:w-1/2 lg:w-auto">
           {error && <div className="text-red-500 lg:w-96 pb-4">{error}</div>}
           <form onSubmit={onSubmit} className="">

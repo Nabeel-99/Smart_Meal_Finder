@@ -57,9 +57,9 @@ const IngredientsBased = ({ userData }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    localStorage.removeItem("ingredientsBased");
+    sessionStorage.removeItem("ingredientsBased");
     setFetchedRecipes([]);
-    localStorage.setItem("isToggled", JSON.stringify(isConnected));
+    sessionStorage.setItem("isToggled", JSON.stringify(isConnected));
     if (ingredients.length <= 0) {
       setError("Ingredients are required");
       setTimeout(() => {
@@ -88,7 +88,10 @@ const IngredientsBased = ({ userData }) => {
             recipe.userUsedIngredients.length > 0
         );
 
-        localStorage.setItem("ingredientsBased", JSON.stringify(validRecipes));
+        sessionStorage.setItem(
+          "ingredientsBased",
+          JSON.stringify(validRecipes)
+        );
         setFetchedRecipes(validRecipes);
         cardRef.current.scrollIntoView({ behavior: "smooth" });
       }
@@ -101,7 +104,7 @@ const IngredientsBased = ({ userData }) => {
   };
 
   useEffect(() => {
-    const savedToggleState = localStorage.getItem("isConnected");
+    const savedToggleState = sessionStorage.getItem("isConnected");
     if (savedToggleState) {
       setIsConnected(JSON.parse(savedToggleState));
     }
@@ -119,7 +122,7 @@ const IngredientsBased = ({ userData }) => {
   }, [userData]);
 
   useEffect(() => {
-    const storedRecipes = localStorage.getItem("ingredientsBased");
+    const storedRecipes = sessionStorage.getItem("ingredientsBased");
     if (storedRecipes) {
       setFetchedRecipes(JSON.parse(storedRecipes));
     }
@@ -186,7 +189,7 @@ const IngredientsBased = ({ userData }) => {
             </div>
           </div>
         </div>
-        <div className=" lg:relative border border-[#343333] w-96  md:w-2/3 rounded-xl py-2 px-2 bg-[#0E0F10] min-h-[700px] h-full  ">
+        <div className=" lg:relative border border-[#1d1d1d] w-96  md:w-2/3 rounded-xl py-2 px-2 bg-[#0E0F10] min-h-[700px] h-full  ">
           <form
             onSubmit={onSubmit}
             className="flex flex-col gap-8 p-8 items-center justify-center "
@@ -226,7 +229,7 @@ const IngredientsBased = ({ userData }) => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="e.g chicken,pasta,rice..."
+                      label="e.g rice,chicken, ..."
                       slotProps={{
                         inputLabel: { style: { color: "#a3a3a3" } },
                       }}

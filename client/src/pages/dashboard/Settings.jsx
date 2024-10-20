@@ -205,8 +205,8 @@ const Settings = ({
   };
 
   return (
-    <div className="flex flex-col h-full gap-8 pt-28 px-6 lg:px-10">
-      <div className="flex sticky top-[69px] pt-8 lg:pt-4 z-20 bg-[#171717] items-center border-b border-b-[#343333] pb-3 gap-10">
+    <div className="flex flex-col h-full gap-8 pt-20 px-6 lg:px-10">
+      <div className="flex sticky top-[60px] pt-8 lg:pt-4 z-20 bg-[#0c0c0c] items-center border-b border-b-[#343333] pb-3 gap-10">
         <button
           onClick={showAccount}
           className={`${isAccount ? "" : "text-[#959595]"}`}

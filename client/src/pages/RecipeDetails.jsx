@@ -20,7 +20,7 @@ const RecipeDetails = () => {
   const fetchRecipeDetails = async () => {
     console.log(source);
     if (source) {
-      const storedRecipes = localStorage.getItem(source);
+      const storedRecipes = sessionStorage.getItem(source);
       const recipes = JSON.parse(storedRecipes);
       const foundRecipe = recipes.find(
         (r) => r.id.toString() === id.toString()
@@ -85,7 +85,7 @@ const RecipeDetails = () => {
           message={message}
         />
       )}
-      <div className="flex flex-col items-center justify-center bg-[#0E0F10] w-full md:min-w-[200px] md:max-w-[400px] p-4 lg:min-w-[200px] lg:max-w-[500px] min-h-[100px] border border-[#343333] rounded-xl gap-2">
+      <div className="flex flex-col items-center justify-center bg-[#0E0F10] w-full md:min-w-[200px] md:max-w-[400px] p-4 lg:min-w-[200px] lg:max-w-[500px] min-h-[100px] border border-[#1d1d1d] rounded-xl gap-2">
         <div className="text-xl text-center font-bold">
           {recipeDetails?.title}
         </div>
@@ -125,7 +125,7 @@ const RecipeDetails = () => {
           />
         </div>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#343333] max-h-[300px] rounded-2xl">
+          <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#1d1d1d] max-h-[300px] rounded-2xl">
             <div className="bg-[#181818] border-b rounded-t-2xl border-b-[#343333]">
               <h2 className="px-6 py-2">Nutritional Information</h2>
             </div>
@@ -138,9 +138,9 @@ const RecipeDetails = () => {
                   <li key={index} className="pb-2 flex items-center w-full">
                     {Array.isArray(recipeDetails?.nutrients) ? (
                       <>
-                        <span className="w-32">{nutrient.name}:</span>
+                        <span className="w-52">{nutrient.name}:</span>
                         <span>
-                          {nutrient.amount}
+                          {nutrient.amount.toFixed(0)}
                           <span className="pl-1">{nutrient.unit}</span>
                         </span>
                       </>
@@ -157,7 +157,7 @@ const RecipeDetails = () => {
           </div>
           {recipeDetails.missingIngredients &&
             recipeDetails.missingIngredients?.length > 0 && (
-              <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#343333] max-h-[200px] rounded-2xl">
+              <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#1d1d1d] max-h-[200px] rounded-2xl">
                 <div className="bg-[#181818] border-b rounded-t-2xl border-b-[#343333]">
                   <h2 className="px-6 py-2">Missing Ingredients</h2>
                 </div>
@@ -175,7 +175,7 @@ const RecipeDetails = () => {
         </div>
       </div>
       <div className="flex flex-col w-full md:w-[600px] lg:w-auto justify-center lg:flex-row gap-10">
-        <div className="flex flex-col bg-[#0E0F10] overflow-y-scroll gap-1 w-full h-[380px] md:w-[600px] md:h-[400px] lg:w-[500px] lg:h-[400px] xl:w-[700px] xl:h-[500px] border order-1 lg:order-none border-[#343333] rounded-2xl">
+        <div className="flex flex-col bg-[#0E0F10] overflow-y-scroll gap-1 w-full h-[380px] md:w-[600px] md:h-[400px] lg:w-[500px] lg:h-[400px] xl:w-[700px] xl:h-[500px] border order-1 lg:order-none border-[#1d1d1d] rounded-2xl">
           <div className="bg-[#181818] border-b rounded-t-2xl border-b-[#343333]">
             <h2 className="px-6 py-2">Steps to Prepare</h2>
           </div>
@@ -190,7 +190,7 @@ const RecipeDetails = () => {
             </ul>
           </div>
         </div>
-        <div className="flex flex-col bg-[#0E0F10] overflow-y-scroll gap-1 min-w-80 w-full lg:max-w-96 border border-[#343333] rounded-2xl">
+        <div className="flex flex-col bg-[#0E0F10] overflow-y-scroll gap-1 min-w-80 w-full lg:max-w-96 border border-[#1d1d1d] rounded-2xl">
           <div className="bg-[#181818] border-b rounded-t-2xl border-b-[#343333]">
             <h2 className="px-6 py-2">Ingredients</h2>
           </div>
