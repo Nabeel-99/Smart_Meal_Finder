@@ -13,6 +13,11 @@ const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+
+  const openDialog = (id) => {
+    setSelectedId(id);
+    setShowDialog(true);
+  };
   const showOptions = () => setViewOptions(!viewOptions);
   const fetchSavedRecipes = async () => {
     setLoading(true);
@@ -45,10 +50,6 @@ const SavedMeals = ({ showGridView, showListView, gridView, listView }) => {
     } catch (error) {
       console.log(error);
     }
-  };
-  const openDialog = (id) => {
-    setSelectedId(id);
-    setShowDialog(true);
   };
 
   useEffect(() => {

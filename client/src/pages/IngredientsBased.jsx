@@ -378,7 +378,7 @@ const IngredientsBased = ({ userData }) => {
           </div>
           <div>
             <Link
-              to={"/"}
+              to={"/login"}
               className="bg-[#e6e6e6] text-black rounded-md px-4 py-2"
             >
               Get Started

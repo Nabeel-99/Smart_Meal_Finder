@@ -19,6 +19,11 @@ export const dietPreferences = [
   { name: "Dairy-free", id: "dairy-free" },
   { name: "Nut-free", id: "nut-free" },
 ];
+export const mealCategories = [
+  { label: "Breakfast", value: "breakfast" },
+  { label: "Lunch", value: "lunch" },
+  { label: "Dinner", value: "dinner" },
+];
 export const exerciseOptions = [
   { label: "Sedentary", value: "sedentary" },
   { label: "Lightly Active", value: "lightly_active" },

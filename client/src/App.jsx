@@ -119,7 +119,7 @@ const App = () => {
           <Navbar userData={userData} />
         </MaybeShowComponent>
         <Routes>
-          <Route path="/" element={<Home userData={userData} />} />
+          <Route path="/home" element={<Home userData={userData} />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route
             path="/login"
@@ -128,7 +128,7 @@ const App = () => {
           <Route path="/preferences" element={<Preferences />} />
           <Route path="/pantry" element={<PantryItems />} />
           <Route
-            path="/dashboard/*"
+            path="/*"
             element={
               <Dashboard userData={userData} fetchUserData={authenticateUser} />
             }

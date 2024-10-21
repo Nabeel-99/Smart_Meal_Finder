@@ -10,39 +10,23 @@ import { CiGrid41 } from "react-icons/ci";
 import { HiBars3 } from "react-icons/hi2";
 
 const PopperComponent = ({
-  viewOptions,
-  showGridView,
-  showListView,
-  setViewOptions,
+  viewPopper,
+  setViewPopper,
   anchorRef,
+  children,
 }) => {
   const handleClose = () => {
-    setViewOptions(false);
+    setViewPopper(false);
   };
 
   return (
     <Popper
-      open={viewOptions}
+      open={viewPopper}
       anchorEl={anchorRef.current}
       placement="bottom-start"
     >
       <ClickAwayListener onClickAway={handleClose}>
-        <MenuList className="absolute right-0 top-10 p-4 bg-[#08090a] border border-[#1d1d1d] flex flex-col gap-4 rounded-md">
-          <MenuItem
-            onClick={showGridView}
-            className="flex items-center text-sm gap-4"
-          >
-            <CiGrid41 />
-            Grid view
-          </MenuItem>
-          <MenuItem
-            onClick={showListView}
-            className="flex items-center text-sm gap-4"
-          >
-            <HiBars3 />
-            List View
-          </MenuItem>
-        </MenuList>
+        <div> {children}</div>
       </ClickAwayListener>
     </Popper>
   );

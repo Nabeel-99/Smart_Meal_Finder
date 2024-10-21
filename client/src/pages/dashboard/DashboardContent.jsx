@@ -7,6 +7,7 @@ import SkeletonLoader from "../../components/SkeletonLoader";
 import { Link } from "react-router-dom";
 import MealCard from "../../components/MealCard";
 import PopperComponent from "../../components/PopperComponent";
+import { MenuItem, MenuList } from "@mui/material";
 
 const DashboardContent = ({
   showOptions,
@@ -142,12 +143,27 @@ const DashboardContent = ({
               </button>
               {viewOptions && (
                 <PopperComponent
-                  viewOptions={viewOptions}
+                  viewPopper={viewOptions}
                   anchorRef={anchorRef}
-                  showGridView={showGridView}
-                  showListView={showListView}
-                  setViewOptions={setViewOptions}
-                />
+                  setViewPopper={setViewOptions}
+                >
+                  <MenuList className="absolute right-0 top-10 p-4 bg-[#08090a] border border-[#1d1d1d] flex flex-col gap-4 rounded-md">
+                    <MenuItem
+                      onClick={showGridView}
+                      className="flex items-center text-sm gap-4"
+                    >
+                      <CiGrid41 />
+                      Grid view
+                    </MenuItem>
+                    <MenuItem
+                      onClick={showListView}
+                      className="flex items-center text-sm gap-4"
+                    >
+                      <HiBars3 />
+                      List View
+                    </MenuItem>
+                  </MenuList>
+                </PopperComponent>
               )}
             </div>
           </div>

@@ -429,7 +429,7 @@ const Settings = ({
           <button onClick={toggleEditPreferences} className="text-blue-400">
             {isChangingPreferences ? "Cancel" : "Edit preferences"}
           </button>
-          <form onSubmit={updatePreferences}>
+          <form onSubmit={updatePreferences} className="w-full">
             {showPreferenceError && (
               <div
                 className={`text-red-500 text-sm mt-1 pb-2 transition-opacity ease-in-out  duration-1000 ${
@@ -439,7 +439,7 @@ const Settings = ({
                 {preferenceError}
               </div>
             )}
-            <div className="grid  lg:grid-cols-2 lg:gap-10">
+            <div className="grid lg:grid-cols-2 lg:gap-6 lg:w-[500px]">
               <TextInput
                 label={"Age"}
                 type={"number"}
@@ -448,7 +448,9 @@ const Settings = ({
                 onChange={(e) => setAge(e.target.value)}
                 disabled={!isChangingPreferences}
                 className={`${
-                  isChangingPreferences ? "" : "cursor-not-allowed"
+                  isChangingPreferences
+                    ? ""
+                    : "cursor-not-allowed w-full lg:w-52 "
                 }`}
               />
               <SelectInput
@@ -458,7 +460,7 @@ const Settings = ({
                 className={`${
                   isChangingPreferences
                     ? "cursor-pointer"
-                    : "cursor-not-allowed"
+                    : "cursor-not-allowed lg:w-52"
                 }`}
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
@@ -472,7 +474,7 @@ const Settings = ({
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 className={`${
-                  isChangingPreferences ? "" : "cursor-not-allowed"
+                  isChangingPreferences ? "" : "cursor-not-allowed lg:w-52"
                 }`}
               />
               <SelectInput
@@ -482,7 +484,7 @@ const Settings = ({
                 className={`${
                   isChangingPreferences
                     ? "cursor-pointer"
-                    : "cursor-not-allowed"
+                    : "cursor-not-allowed lg:w-52"
                 }`}
                 disabled={!isChangingPreferences}
                 value={goal}
@@ -496,7 +498,7 @@ const Settings = ({
                 min={0}
                 disabled={!isChangingPreferences}
                 className={`${
-                  isChangingPreferences ? "" : "cursor-not-allowed"
+                  isChangingPreferences ? "" : "cursor-not-allowed lg:w-52"
                 }`}
                 onChange={(e) => setWeight(e.target.value)}
               />
@@ -508,7 +510,7 @@ const Settings = ({
                 className={`${
                   isChangingPreferences
                     ? "cursor-pointer"
-                    : "cursor-not-allowed"
+                    : "cursor-not-allowed lg:w-52"
                 }`}
                 disabled={!isChangingPreferences}
                 value={exerciseLevel}

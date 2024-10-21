@@ -34,7 +34,7 @@ const Navbar = ({ userData }) => {
     <div className="flex justify-center text-md z-50 items-center pt-6 px-6 lg:pt-10 lg:px-10">
       <div className="">
         <Link
-          to={"/"}
+          to={"/home"}
           className="hidden lg:flex fixed top-7 lg:top-12  z-50  left-8 lg:left-24"
         >
           {" "}
@@ -42,7 +42,7 @@ const Navbar = ({ userData }) => {
         </Link>
       </div>
       <div className="hidden lg:flex  justify-center  items-center  gap-10 border border-[#302d2d] bg-[#08090A] rounded-xl w-[328px] h-[55px] ">
-        <Link to="/" duration={500} smooth="true">
+        <Link to="/home" duration={500} smooth="true">
           Home
         </Link>
         {pathNames.every((path) => !location.pathname.startsWith(path)) && (
@@ -68,7 +68,7 @@ const Navbar = ({ userData }) => {
       </div>
       {isLoggedIn ? (
         <Link
-          to={"/dashboard"}
+          to={"/"}
           className="hidden lg:flex items-center z-50 gap-4 border bg-[#dadada] text-black hover:bg-[#483ba3] hover:text-white transition-all duration-300 border-[#302d2d]  backdrop-blur-lg rounded-xl px-6 h-[55px] fixed right-10"
         >
           Dashboard
@@ -97,7 +97,7 @@ const Navbar = ({ userData }) => {
         }  backdrop-blur-lg pb-4`}
       >
         <div className="pl-4">
-          <Link to={"/"} className="">
+          <Link to={"/home"} className="">
             {" "}
             <SiGreasyfork className="text-2xl lg:text-4xl" />
           </Link>

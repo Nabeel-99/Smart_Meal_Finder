@@ -4,36 +4,37 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import ReactPlayer from "react-player";
-import { height } from "@mui/system";
+import { height, width } from "@mui/system";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 600,
-
+  width: {
+    sm: 500,
+    md: 720,
+    lg: 960,
+    xl: 1080,
+  },
   bgcolor: "black",
   border: "2px solid #1f1f1f",
   boxShadow: 24,
-  p: 4,
 };
 
-const ModalComponent = ({ showVideo, setShowVideo, url }) => {
-  const handleClose = () => setShowVideo(false);
+const ModalComponent = ({ showModal, setShowModal, children }) => {
+  const handleClose = () => setShowModal(false);
 
   return (
     <div>
       <Modal
         keepMounted
-        open={showVideo}
+        open={showModal}
         onClose={handleClose}
         aria-labelledby="keep-mounted-modal-title"
         aria-describedby="keep-mounted-modal-description"
       >
-        <Box sx={style}>
-          <ReactPlayer url={url} controls width="100%" height="300px" />
-        </Box>
+        <Box sx={style}>{children}</Box>
       </Modal>
     </div>
   );

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Food1 from "../assets/food1.jpg";
 import { FaBookmark, FaVideo, FaYoutube } from "react-icons/fa6";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import AutohideSnackbar from "../components/AutoHideSnackbar";
 import ReactPlayer from "react-player";
 import ModalComponent from "../components/ModalComponent";
+import { SiGreasyfork } from "react-icons/si";
 
 const RecipeDetails = () => {
   const [recipeDetails, setRecipeDetails] = useState({});
@@ -16,7 +17,9 @@ const RecipeDetails = () => {
   const location = useLocation();
   const source = location.state?.source;
   const handleShowVideo = () => setShowVideo(true);
-  console.log("source", source);
+  const navigate = useNavigate();
+
+  const goBack = () => navigate(-1);
   const fetchRecipeDetails = async () => {
     console.log(source);
     if (source) {
@@ -77,7 +80,16 @@ const RecipeDetails = () => {
 
   return (
     // <div>hey</div>
-    <div className="flex flex-col gap-8 pt-8 pb-44 justify-center items-center px-4">
+    <div className="flex flex-col gap-8 pt-20 pb-44 justify-center items-center px-4">
+      <div className="flex justify-between items-center backdrop-blur-lg lg:backdrop-blur-0  fixed right-8 lg:right-16 lg:top-12 left-8 lg:left-24">
+        <SiGreasyfork className="text-2xl lg:text-4xl   backdrop-blur-lg" />
+        <button
+          onClick={goBack}
+          className="border flex  items-center justify-center rounded-lg bg-[#d9d9d9] text-black w-20 h-8 "
+        >
+          Close
+        </button>
+      </div>
       {displayMsg && (
         <AutohideSnackbar
           displayMsg={displayMsg}
@@ -100,12 +112,16 @@ const RecipeDetails = () => {
               <FaYoutube className="text-xl text-red-500" />
             </button>
           )}
+
           {showVideo && (
-            <ModalComponent
-              showVideo={showVideo}
-              setShowVideo={setShowVideo}
-              url={recipeDetails.videoLink}
-            />
+            <ModalComponent showModal={showVideo} setShowModal={setShowVideo}>
+              <ReactPlayer
+                url={recipeDetails.videoLink}
+                controls
+                width="100%"
+                height="300px"
+              />
+            </ModalComponent>
           )}
           <button
             onClick={saveRecipe}

@@ -6,18 +6,9 @@ const MaybeShowComponent = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const hidePaths = [
-      "/sign-up",
-      "/login",
-      "/dashboard",
-      "/preference",
-      "/reset-password",
-      "/forgot-password",
-      "/saved-meals",
-      "/pantry",
-    ];
+    const showPaths = ["/metrics-based", "/ingredients-based", "/home"];
     setShowComponent(
-      !hidePaths.some((path) => location.pathname.startsWith(path))
+      showPaths.some((path) => location.pathname.startsWith(path))
     );
   }, [location]);
   return showComponent ? <div>{children}</div> : null;
