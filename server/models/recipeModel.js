@@ -14,9 +14,9 @@ const recipeSchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
-    image: {
-      type: String,
-      required: true,
+    images: {
+      type: [String],
+      validate: [validateLimit, "Exceeds the limit of 3 images"],
     },
     category: {
       type: String,
@@ -24,7 +24,7 @@ const recipeSchema = new mongoose.Schema(
     },
     dietaryPreferences: {
       type: [String],
-      required: true,
+      required: false,
     },
     videoLink: {
       type: String,
@@ -32,11 +32,11 @@ const recipeSchema = new mongoose.Schema(
     },
     sourceUrl: {
       type: String,
-      required: true,
+      required: false,
     },
     calories: {
       type: Number,
-      required: true,
+      required: false,
     },
     prepTime: {
       type: String,
@@ -65,6 +65,10 @@ const recipeSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+function validateLimit(val) {
+  return val.length <= 3;
+}
 
 const Recipe = mongoose.model("recipe", recipeSchema);
 

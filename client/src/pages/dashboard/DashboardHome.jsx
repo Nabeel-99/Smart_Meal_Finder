@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import food from "../../assets/food4.jpg";
 import {
   FaBookmark,
@@ -10,18 +10,52 @@ import {
 import { IoIosNotifications, IoIosNotificationsOutline } from "react-icons/io";
 import ModalComponent from "../../components/ModalComponent";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import moment from "moment";
 
 const DashboardHome = ({ anchorRef, showNotifications }) => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const openModal = (id) => {
-    setSelectedId(id);
-    setShowModal(true);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [likedPosts, setLikedPosts] = useState({});
+
+  const fetchAllPosts = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/recipes/posts",
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      setPosts(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
-  const likeRecipe = () => {
-    setIsLiked(!isLiked);
-    console.log("liked recipe");
+
+  useEffect(() => {
+    fetchAllPosts();
+  }, []);
+
+  const openModal = (id) => {
+    setSelectedPost(id);
+    setShowModal(true);
+    console.log(id);
+  };
+
+  const likeRecipe = async (postId) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/recipes/like",
+        {
+          postId: postId,
+        },
+        { withCredentials: true }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <>
@@ -36,65 +70,76 @@ const DashboardHome = ({ anchorRef, showNotifications }) => {
         </div>
         <div className="flex w-full  ">
           <div className="flex flex-col gap-4 w-full">
-            {Array.from({ length: 10 }).map((_, index) => (
-              <div
-                className="flex pt-8 lg:px-10 flex-col w-full lg:w-[650px] gap-3"
-                key={index}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full font-bold text-sm text-center flex items-center justify-center bg-[#B678F0]">
-                    N
-                  </div>
-                  <div className="text-sm font-semibold">
-                    {" "}
-                    cristiano 3hrs ago
-                  </div>
-                </div>
-                <div className="bg-[#0c0c0c] border border-[#171717] rounded-lg">
-                  <img
-                    src={food}
-                    onDoubleClick={likeRecipe}
-                    className="w-full h-[450px] md:h-[550px] lg:h-[650px] rounded-md object-contain "
-                  />
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-4">
-                    <button onClick={likeRecipe}>
+            {posts.map((post, index) => {
+              const images = post.posts.images;
+              const isLiked = likedPosts[post.postId];
+              return (
+                <div
+                  className="flex pt-8 lg:px-10 flex-col w-full lg:w-[650px] gap-3"
+                  key={index}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full font-bold text-sm text-center flex items-center justify-center bg-[#B678F0]">
+                      {post.firstName.slice(0, 1)}
+                    </div>
+                    <div className="text-sm font-semibold">
                       {" "}
-                      {isLiked ? (
-                        <FaHeart className="text-xl  text-red-500" />
-                      ) : (
-                        <FaRegHeart className="text-xl" />
-                      )}
-                    </button>
-                    <button>
-                      <FaRegComment
-                        onClick={() => openModal(index)}
-                        className="text-xl"
-                      />
-                    </button>
+                      {post.firstName} {post.lastName}{" "}
+                      {moment(
+                        post.posts.updatedAt || post.posts.createdAt
+                      ).fromNow()}
+                    </div>
+                  </div>
+                  <div className="bg-[#0c0c0c] border border-[#171717] rounded-lg">
+                    <img
+                      src={`http://localhost:8000/${images[currentImageIndex]}`}
+                      onDoubleClick={() => likeRecipe(post.postId)}
+                      onClick={() => openModal(post)}
+                      className="w-full h-[450px] md:h-[550px] lg:h-[650px] rounded-md object-contain "
+                    />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                      <button onClick={() => likeRecipe(post.postId)}>
+                        {" "}
+                        {isLiked ? (
+                          <FaHeart className="text-xl  text-red-500" />
+                        ) : (
+                          <FaRegHeart className="text-xl" />
+                        )}
+                      </button>
+                      <button>
+                        <FaRegComment
+                          onClick={() => openModal(post)}
+                          className="text-xl"
+                        />
+                      </button>
+                    </div>
+                    <div>
+                      <button>
+                        {" "}
+                        <FaRegBookmark className="text-xl" />
+                      </button>
+                    </div>
                   </div>
                   <div>
-                    <button>
+                    <p>2,128,022 likes</p>
+                  </div>
+                  <div className="">
+                    <span className="font-bold pr-2">
                       {" "}
-                      <FaRegBookmark className="text-xl" />
-                    </button>
+                      {post.firstName} {post.lastName}
+                    </span>
+                    {post.posts.title}
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      View all 24,000 comments
+                    </p>
                   </div>
                 </div>
-                <div>
-                  <p>2,128,022 likes</p>
-                </div>
-                <div className="">
-                  <span className="font-bold pr-2">cristiano</span>Chicken Fried
-                  Rice
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">
-                    View all 24,000 comments
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="mt-16 ">
             <div className="hidden xl:sticky top-[60px] w-96 py-2 xl:flex flex-col  border border-[#1d1d1d] rounded-xl h-80 bg-[#0f0f0f]">
@@ -104,11 +149,8 @@ const DashboardHome = ({ anchorRef, showNotifications }) => {
               </div>
               <div className="overflow-y-scroll flex flex-col pt-4 pb-4 gap-6">
                 {Array.from({ length: 10 }).map((_, index) => (
-                  <>
-                    <div
-                      className="flex justify-between items-center pr-6"
-                      key={`like-${index}`}
-                    >
+                  <React.Fragment key={index}>
+                    <div className="flex justify-between items-center pr-6">
                       <div className="flex items-center gap-2 px-4">
                         <div className="w-12 h-12 rounded-full font-bold text-sm text-center flex items-center justify-center bg-[#B678F0]">
                           N
@@ -126,10 +168,7 @@ const DashboardHome = ({ anchorRef, showNotifications }) => {
                         />
                       </div>
                     </div>
-                    <div
-                      className="flex justify-between items-center pr-6"
-                      key={`comment-${index}`}
-                    >
+                    <div className="flex justify-between items-center pr-6">
                       <div className="flex items-center gap-2 px-4">
                         <div className="max-w-12 min-w-12 w-12 h-12 rounded-full font-bold text-sm text-center flex items-center justify-center bg-[#B678F0]">
                           N
@@ -150,7 +189,7 @@ const DashboardHome = ({ anchorRef, showNotifications }) => {
                         />
                       </div>
                     </div>
-                  </>
+                  </React.Fragment>
                 ))}
               </div>
             </div>
@@ -174,19 +213,24 @@ const DashboardHome = ({ anchorRef, showNotifications }) => {
                   </div>
                   <div className="text-sm font-semibold">
                     {" "}
-                    cristiano 3hrs ago
+                    {selectedPost.firstName} {selectedPost.lastName} 3hrs ago
                   </div>
                 </div>
                 <div className="md:pl-14 flex items-center w-full justify-between">
-                  <p className="text-sm  text-gray-200">Chicken Fried Rice</p>
-                  <Link className="text-sm text-nowrap text-gray-400 hover:text-white">
+                  <p className="text-sm  text-gray-200">
+                    {selectedPost.posts.title}
+                  </p>
+                  <Link
+                    to={`/recipe-details/${selectedPost.posts._id}`}
+                    className="text-sm text-nowrap text-gray-400 hover:text-white"
+                  >
                     View full details
                   </Link>
                 </div>
               </div>
               <div className="flex flex-col gap-4 pb-2  pt-8 overflow-y-scroll">
                 {Array.from({ length: 30 }).map((_, index) => (
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4" key={index}>
                     <div className="min-w-10 max-w-10 h-10 rounded-full font-bold text-sm text-center flex items-center justify-center bg-[#B678F0]">
                       N
                     </div>

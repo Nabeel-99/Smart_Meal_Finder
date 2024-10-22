@@ -13,9 +13,11 @@ const RecipeDetails = () => {
   const [displayMsg, setDisplayMsg] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [message, setMessage] = useState("");
+  const [currentImageIndex, setImageIndex] = useState(0);
   const { id } = useParams();
   const location = useLocation();
   const source = location.state?.source;
+
   const handleShowVideo = () => setShowVideo(true);
   const navigate = useNavigate();
 
@@ -43,12 +45,15 @@ const RecipeDetails = () => {
       );
       if (response.status === 200) {
         setRecipeDetails(response.data);
+        console.log(response.data);
       }
     } catch (error) {
       console.error("Error fetching recipe from API", error);
     }
   };
-
+  const images = recipeDetails.images
+    ? recipeDetails.images.map((image) => image)
+    : [];
   const saveRecipe = async () => {
     try {
       const response = await axios.post(
@@ -81,8 +86,8 @@ const RecipeDetails = () => {
   return (
     // <div>hey</div>
     <div className="flex flex-col gap-8 pt-20 pb-44 justify-center items-center px-4">
-      <div className="flex justify-between items-center backdrop-blur-lg lg:backdrop-blur-0  fixed right-8 lg:right-16 lg:top-12 left-8 lg:left-24">
-        <SiGreasyfork className="text-2xl lg:text-4xl   backdrop-blur-lg" />
+      <div className="flex justify-between items-center backdrop-blur-md md:backdrop-blur-none px-6 pb-2  top-0 pt-4 fixed right-0 lg:right-16 lg:top-12 left-0 lg:left-24">
+        <SiGreasyfork className="text-2xl lg:text-4xl   " />
         <button
           onClick={goBack}
           className="border flex  items-center justify-center rounded-lg bg-[#d9d9d9] text-black w-20 h-8 "
@@ -97,10 +102,23 @@ const RecipeDetails = () => {
           message={message}
         />
       )}
-      <div className="flex flex-col items-center justify-center bg-[#0E0F10] w-full md:min-w-[200px] md:max-w-[400px] p-4 lg:min-w-[200px] lg:max-w-[500px] min-h-[100px] border border-[#1d1d1d] rounded-xl gap-2">
+      <div className="flex flex-col items-center justify-center bg-[#0E0F10] w-full md:min-w-[200px] md:max-w-[400px] p-4 lg:min-w-[200px] lg:max-w-[500px] min-h-[100px] border border-[#1d1d1d] rounded-xl gap-4">
         <div className="text-xl text-center font-bold">
           {recipeDetails?.title}
         </div>
+        {recipeDetails.category && (
+          <div>
+            <span className="pr-1 font-semibold">Meal type: </span>
+            {recipeDetails.category.slice(0, 1).toUpperCase() +
+              recipeDetails.category.slice(1).toLowerCase()}
+          </div>
+        )}
+        {recipeDetails.prepTime && (
+          <div>
+            <span className="pr-1 font-semibold">Cooking time: </span>
+            {recipeDetails.prepTime} minutes
+          </div>
+        )}
 
         <div className="flex items-center gap-6">
           {showVideo && recipeDetails?.videoLink && (
@@ -123,6 +141,7 @@ const RecipeDetails = () => {
               />
             </ModalComponent>
           )}
+
           <button
             onClick={saveRecipe}
             className="flex py-1 items-center border px-3 rounded-md bg-[#dadada] hover:bg-[#ffffff] text-black gap-2"
@@ -135,42 +154,48 @@ const RecipeDetails = () => {
       <div className="flex flex-col w-full justify-center md:w-[600px] lg:w-auto lg:flex-row gap-10">
         <div className="">
           <img
-            src={recipeDetails?.image}
+            src={
+              recipeDetails?.image ||
+              `http://localhost:8000/${images[currentImageIndex]}`
+            }
             alt=""
-            className="w-full h-[280px] md:w-[600px] md:h-[400px] lg:w-[500px] lg:h-[400px] xl:w-[700px] xl:h-[500px] object-cover rounded-2xl"
+            className="w-full h-[280px] md:w-[600px] md:h-[400px] lg:w-[500px] lg:h-[400px] xl:w-[700px] xl:h-[500px] object-cover border border-[#1d1d1d] rounded-2xl"
           />
         </div>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#1d1d1d] max-h-[300px] rounded-2xl">
-            <div className="bg-[#181818] border-b rounded-t-2xl border-b-[#343333]">
-              <h2 className="px-6 py-2">Nutritional Information</h2>
+          {recipeDetails.nutrients && (
+            <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#1d1d1d] max-h-[300px] rounded-2xl">
+              <div className="bg-[#181818] border-b rounded-t-2xl border-b-[#343333]">
+                <h2 className="px-6 py-2">Nutritional Information</h2>
+              </div>
+              <div className="px-6 overflow-y-scroll pt-4  ">
+                <ul className="list-disc">
+                  {(Array.isArray(recipeDetails?.nutrients)
+                    ? recipeDetails.nutrients
+                    : Object.entries(recipeDetails?.nutrients || {})
+                  ).map((nutrient, index) => (
+                    <li key={index} className="pb-2 flex items-center w-full">
+                      {Array.isArray(recipeDetails?.nutrients) ? (
+                        <>
+                          <span className="w-52">{nutrient.name}:</span>
+                          <span>
+                            {nutrient.amount.toFixed(0)}
+                            <span className="pl-1">{nutrient.unit}</span>
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="w-32">{nutrient[0]}:</span>
+                          <span>{nutrient[1]}</span>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <div className="px-6 overflow-y-scroll pt-4  ">
-              <ul className="list-disc">
-                {(Array.isArray(recipeDetails?.nutrients)
-                  ? recipeDetails.nutrients
-                  : Object.entries(recipeDetails?.nutrients || {})
-                ).map((nutrient, index) => (
-                  <li key={index} className="pb-2 flex items-center w-full">
-                    {Array.isArray(recipeDetails?.nutrients) ? (
-                      <>
-                        <span className="w-52">{nutrient.name}:</span>
-                        <span>
-                          {nutrient.amount.toFixed(0)}
-                          <span className="pl-1">{nutrient.unit}</span>
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="w-32">{nutrient[0]}:</span>
-                        <span>{nutrient[1]}</span>
-                      </>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          )}
+
           {recipeDetails.missingIngredients &&
             recipeDetails.missingIngredients?.length > 0 && (
               <div className="flex flex-col bg-[#0E0F10] gap-1 overflow-y-scroll min-w-80 lg:max-w-96 border border-[#1d1d1d] max-h-[200px] rounded-2xl">
