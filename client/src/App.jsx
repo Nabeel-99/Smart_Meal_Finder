@@ -49,6 +49,7 @@ const App = () => {
         withCredentials: true,
       });
       if (response.status === 200) {
+        console.log(response.data);
         setUserData(response.data.user);
       }
     } catch (error) {

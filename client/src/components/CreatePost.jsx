@@ -14,6 +14,7 @@ import { FaArrowLeft, FaArrowRight, FaTrash, FaXmark } from "react-icons/fa6";
 import ingredientsData from "../../../server/utils/ingredientsHelper.json";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
 import axios from "axios";
+import PreviewCard from "./PreviewCard";
 
 const CreatePost = ({ setCreatePost }) => {
   const [title, setTitle] = useState("");
@@ -28,33 +29,6 @@ const CreatePost = ({ setCreatePost }) => {
   const [category, setCategory] = useState("breakfast");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [displayMsg, setDisplayMsg] = useState(true);
-  const [message, setMessage] = useState("");
-
-  const handleNextImage = () => {
-    if (currentImageIndex < imagePreviews.length - 1) {
-      setCurrentImageIndex(currentImageIndex + 1);
-    }
-  };
-  const handlePreviousImage = () => {
-    if (currentImageIndex > 0) {
-      setCurrentImageIndex(currentImageIndex - 1);
-    }
-  };
-
-  const removeImage = (image) => {
-    setImages((prevImages) => {
-      const updatedImages = prevImages.filter((i) => i !== image);
-
-      if (updatedImages.length === 0) {
-        setCurrentImageIndex(0);
-      } else if (currentImageIndex >= updatedImages.length) {
-        setCurrentImageIndex(updatedImages.length - 1);
-      }
-      return updatedImages;
-    });
-  };
 
   const addIngredient = () => {
     if (item && !ingredients.includes(item)) {
@@ -76,11 +50,11 @@ const CreatePost = ({ setCreatePost }) => {
     const newImages = files.map((file) => file);
     setImages((prevImages) => [...prevImages, ...newImages]);
   };
+
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
-  const isLastImage = currentImageIndex === imagePreviews.length - 1;
-  const isFirstImage = currentImageIndex === 0;
+
   useEffect(() => {
     const newImagePreviews = images.map((image) => URL.createObjectURL(image));
     setImagePreviews(newImagePreviews);
@@ -89,6 +63,7 @@ const CreatePost = ({ setCreatePost }) => {
       newImagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
     };
   }, [images]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -157,69 +132,12 @@ const CreatePost = ({ setCreatePost }) => {
 
         <div className="relative w-[15rem] lg:w-[200rem] xl:w-[230rem]  border border-[#2a2a2a] rounded-md">
           {imagePreviews.length > 0 ? (
-            <div className="flex h-full ">
-              <Tooltip title="previous">
-                <button
-                  className={`absolute flex border backdrop-blur-md hover:bg-[#484848] border-[#676767] p-2 bg-[#1d1d1d] rounded-full items-center justify-center top-[50%] ${
-                    isFirstImage ? "hidden" : ""
-                  }`}
-                  onClick={handlePreviousImage}
-                  type="button"
-                  disabled={isFirstImage}
-                >
-                  <FaArrowLeft />
-                </button>
-              </Tooltip>
-
-              <div className="absolute flex  items-center gap-2  w-full justify-end bottom-2  right-2 ">
-                <Tooltip title="delete">
-                  <button
-                    type="button"
-                    onClick={() => removeImage(images[currentImageIndex])}
-                    className="flex border hover:bg-[#484848] border-[#676767] p-2 bg-[#1d1d1d] rounded-full items-center  justify-center  "
-                  >
-                    <FaTrash />
-                  </button>
-                </Tooltip>
-                {images.length < 3 && (
-                  <Tooltip title="Add images">
-                    <label
-                      type="button"
-                      htmlFor="file-upload"
-                      className="flex flex-col cursor-pointer border hover:bg-[#484848] border-[#676767] p-2 bg-[#1d1d1d] rounded-full items-center  justify-center  "
-                    >
-                      <HiOutlineSquare2Stack />
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      id="file-upload"
-                      multiple
-                      onChange={handleImageUpload}
-                    />
-                  </Tooltip>
-                )}
-              </div>
-
-              <img
-                src={imagePreviews[currentImageIndex]}
-                alt={`uploaded image - ${currentImageIndex + 1}`}
-                className=" rounded-md w-full h-[16rem] md:h-[20rem] lg:w-full lg:h-full xl:w-full  xl:h-full object-contain"
-              />
-              <Tooltip title="next">
-                <button
-                  className={`absolute flex border backdrop-blur-md hover:bg-[#484848] border-[#676767] p-2 bg-[#1d1d1d] rounded-full right-0 items-center justify-center top-[50%] ${
-                    isLastImage ? "hidden" : ""
-                  }`}
-                  type="button"
-                  onClick={handleNextImage}
-                  disabled={isLastImage}
-                >
-                  <FaArrowRight />
-                </button>
-              </Tooltip>
-            </div>
+            <PreviewCard
+              imagePreviews={imagePreviews}
+              images={images}
+              setImages={setImages}
+              handleImageUpload={handleImageUpload}
+            />
           ) : (
             <div className="flex flex-col gap-2 items-center justify-center w-full h-64 lg:h-[416px] xl:h-full">
               <label

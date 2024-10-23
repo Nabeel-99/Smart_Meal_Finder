@@ -37,7 +37,7 @@ import PantryPage from "./PantryPage";
 import DialogComponent from "../../components/DialogComponent";
 import DashboardHome from "./DashboardHome";
 import PopperComponent from "../../components/PopperComponent";
-import NotificationCard from "../../components/NotificationCard";
+
 import ModalComponent from "../../components/ModalComponent";
 import TextInput from "../../components/formInputs/TextInput";
 import SelectInput from "../../components/formInputs/SelectInput";
@@ -45,6 +45,8 @@ import { mealCategories } from "../../../../server/utils/helper";
 import { Autocomplete, TextField } from "@mui/material";
 import ingredientsData from "../../../../server/utils/ingredientsHelper.json";
 import CreatePost from "../../components/CreatePost";
+import Profile from "./Profile";
+import MobileNotificationCard from "../../components/MobileNotificationCard";
 const Dashboard = ({ userData, fetchUserData }) => {
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState(false);
@@ -106,7 +108,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
         null,
         { withCredentials: true }
       );
-      console.log(response.data);
+
       if (response.status === 200) {
         window.location = "/home";
       }
@@ -126,7 +128,6 @@ const Dashboard = ({ userData, fetchUserData }) => {
       );
       if (response.status === 200) {
         setUserMetrics(response.data.metrics);
-        console.log("user metrics", response.data);
       }
       if (response.status === 404) {
         console.log("User has no metrics");
@@ -149,7 +150,6 @@ const Dashboard = ({ userData, fetchUserData }) => {
         { withCredentials: true }
       );
       if (response.status === 200) {
-        console.log(response.data);
         setDashboardRecipes(response.data);
       }
     } catch (error) {
@@ -160,6 +160,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
   };
 
   const getCurrentView = () => {
+    if (location.pathname === "/profile") return "Profile";
     if (location.pathname === "/content") return "Dashboard";
     if (location.pathname === "/saved-meals") return "Saved Meals";
     if (location.pathname === "/my-cooking-choices")
@@ -177,9 +178,11 @@ const Dashboard = ({ userData, fetchUserData }) => {
             <DashboardHome
               anchorRef={anchorRef}
               showNotifications={showNotifications}
+              currentUserId={userData._id}
             />
           }
         />
+        <Route path="/profile" element={<Profile userData={userData} />} />
         <Route
           path="content"
           element={
@@ -251,7 +254,6 @@ const Dashboard = ({ userData, fetchUserData }) => {
     if (userMetrics) {
       const refetchData = async () => await fetchUserData();
       refetchData();
-      console.log("User metrics updated", userMetrics);
     }
   }, [userMetrics]);
 
@@ -308,7 +310,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
                 anchorRef={anchorRef}
                 setViewPopper={setViewNotifications}
               >
-                <NotificationCard />
+                <MobileNotificationCard />
               </PopperComponent>
             )}
           </div>

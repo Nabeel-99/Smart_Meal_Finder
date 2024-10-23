@@ -12,8 +12,12 @@ import {
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import {
+  deleteComment,
   getAllPosts,
+  getLikedPosts,
+  getUserPosts,
   likePost,
+  postComment,
   postRecipe,
   updateRecipePost,
 } from "../controllers/postController.js";
@@ -69,4 +73,9 @@ router.patch(
 );
 router.get("/posts", verifyUser, getAllPosts);
 router.post("/like", verifyUser, likePost);
+router.get("/liked-posts", verifyUser, getLikedPosts);
+router.post("/post-comment", verifyUser, postComment);
+router.post("/delete-comment", verifyUser, deleteComment);
+router.get("/user-posts", verifyUser, getUserPosts);
+// router.get("/comments", verifyUser, getAllPostComments);
 export default router;

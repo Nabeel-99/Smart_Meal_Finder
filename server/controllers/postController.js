@@ -109,6 +109,10 @@ export const getAllPosts = async (req, res) => {
     const posts = await UserPost.find()
       .populate("recipeId")
       .populate("userId", "firstName lastName")
+      .populate({
+        path: "comments.userId",
+        select: "firstName lastName",
+      })
       .sort({ createdAt: -1 });
 
     const allPosts = posts.map((post) => ({
@@ -118,7 +122,9 @@ export const getAllPosts = async (req, res) => {
       lastName: post.userId.lastName,
       posts: post.recipeId,
       likes: post.likes,
+      likesCount: post.likes.size,
       comments: post.comments,
+      commentsCount: post.comments.length,
     }));
     if (!posts) {
       return res.status(404).json({ message: "No posts found" });
@@ -151,7 +157,9 @@ export const likePost = async (req, res) => {
       post.likes.set(userId, true); //like
     }
     await post.save();
-    return res.status(200).json({ likes: post.likes });
+    return res
+      .status(200)
+      .json({ likes: post.likes, likesCount: post.likes.size });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal server error" });
@@ -159,3 +167,110 @@ export const likePost = async (req, res) => {
 };
 
 // get liked stated
+export const getLikedPosts = async (req, res) => {
+  try {
+    const { userId } = req;
+    const likedPosts = await UserPost.find({ [`likes.${userId}`]: true })
+      .select("_id") //[post id]
+      .lean();
+
+    const likedPostIds = likedPosts.map((post) => post._id.toString());
+
+    return res.status(200).json({ likedPostIds });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// comment on post
+export const postComment = async (req, res) => {
+  try {
+    const { userId } = req;
+    const { postId, comment } = req.body;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!postId) {
+      return res.status(400).json({ message: "Post id is required" });
+    }
+
+    const post = await UserPost.findById(postId);
+    if (post) {
+      post.comments.push({ userId, text: comment });
+    }
+    await post.save();
+
+    return res.status(200).json({ message: "comment posted", comment: post });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// delete comment
+export const deleteComment = async (req, res) => {
+  try {
+    const { userId } = req;
+    const { postId, commentId } = req.body;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const post = await UserPost.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const comment = post.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+    if (comment.userId.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this comment" });
+    }
+    post.comments.pull(commentId);
+    await post.save();
+
+    return res.status(200).json({ message: "comment deleted Successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// get user posts
+export const getUserPosts = async (req, res) => {
+  try {
+    const { userId } = req;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const posts = await UserPost.find({ userId: userId }).populate("recipeId");
+    if (!posts) {
+      return res.status(404).json({ message: "No posts found" });
+    }
+    let totalLikes = 0;
+
+    const userPosts = posts.map((post) => {
+      const likes = post.likes.size;
+      totalLikes += likes;
+      return {
+        postId: post._id,
+        userId: post.userId._id,
+        posts: post.recipeId,
+        likes: post.likes,
+        likesCount: post.likes.size,
+        comments: post.comments,
+        commentsCount: post.comments.length,
+      };
+    });
+    return res.status(200).json({
+      userPosts,
+      totalLikes: totalLikes,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

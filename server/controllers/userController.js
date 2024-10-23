@@ -40,12 +40,10 @@ export const loginUser = async (req, res) => {
     }
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Sorry, your password was incorrect. Please double-check your password.",
-        });
+      return res.status(400).json({
+        message:
+          "Sorry, your password was incorrect. Please double-check your password.",
+      });
     }
     // user token
     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
@@ -66,7 +64,7 @@ export const loginUser = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "log in successful", isNewUser: isNewUser });
+      .json({ message: "log in successful", isNewUser: isNewUser, user });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
