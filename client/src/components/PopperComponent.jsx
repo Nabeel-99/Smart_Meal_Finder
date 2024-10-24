@@ -20,11 +20,7 @@ const PopperComponent = ({
   };
 
   return (
-    <Popper
-      open={viewPopper}
-      anchorEl={anchorRef.current}
-      placement="bottom-start"
-    >
+    <Popper open={viewPopper} anchorEl={anchorRef.current} placement="bottom">
       <ClickAwayListener onClickAway={handleClose}>
         <div> {children}</div>
       </ClickAwayListener>

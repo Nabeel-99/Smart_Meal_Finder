@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import moment from "moment";
 
 const CommentsCard = ({
@@ -7,6 +7,9 @@ const CommentsCard = ({
   selectedPost,
   currentUserId,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => setIsExpanded(!isExpanded);
   return (
     <div className="relative w-full  group hover:visible flex items-center gap-4">
       <div className="min-w-10 max-w-10 h-10 rounded-full font-bold text-sm text-center flex items-center justify-center bg-[#B678F0]">
@@ -18,7 +21,21 @@ const CommentsCard = ({
           <span className="font-bold pr-1 ">
             {comment.userId.firstName} {comment.userId.lastName}
           </span>
-          <span className="">{comment.text} </span>
+          <span className="">
+            {isExpanded || comment.text.length <= 120 ? (
+              comment.text
+            ) : (
+              <span>
+                {comment.text.slice(0, 120).concat("...")}{" "}
+                <button
+                  className="text-gray-400 hover:text-white"
+                  onClick={toggleExpand}
+                >
+                  more
+                </button>
+              </span>
+            )}{" "}
+          </span>
         </div>
         <div className="text-gray-500 justify-between flex items-center w-full">
           {moment(comment.timestamp).fromNow()}

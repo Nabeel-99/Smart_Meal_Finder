@@ -50,7 +50,7 @@ const PantryItems = () => {
     setItem("");
   };
   const skipToDashboard = () => {
-    navigate("/dashboard");
+    navigate("/content");
   };
   const savePantryItems = async () => {
     setLoading(true);
@@ -65,7 +65,7 @@ const PantryItems = () => {
       console.log(response.data);
       if (response.status === 200) {
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/content");
         }, 2000);
       }
     } catch (error) {

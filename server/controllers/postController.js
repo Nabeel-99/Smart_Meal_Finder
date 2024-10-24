@@ -198,11 +198,20 @@ export const postComment = async (req, res) => {
 
     const post = await UserPost.findById(postId);
     if (post) {
-      post.comments.push({ userId, text: comment });
-    }
-    await post.save();
+      const newComment = { userId, text: comment };
+      post.comments.push(newComment);
+      await post.save();
 
-    return res.status(200).json({ message: "comment posted", comment: post });
+      const updatedPost = await UserPost.findById(postId).populate(
+        "comments.userId",
+        "firstName lastName"
+      );
+      return res
+        .status(200)
+        .json({ message: "comment posted", comment: updatedPost });
+    } else {
+      return res.status(404).json({ message: "Post not found" });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal server error" });

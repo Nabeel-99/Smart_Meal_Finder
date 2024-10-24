@@ -140,7 +140,7 @@ export const extractRecipeData = (recipe) => {
     dietaryPreferences = [],
     videoLink,
     sourceUrl,
-    image,
+    images = [],
     prepTime,
     nutrients;
 
@@ -181,7 +181,7 @@ export const extractRecipeData = (recipe) => {
       recipe.dairyFree ? "Dairy-Free" : "",
     ].filter(Boolean);
     sourceUrl = recipe.spoonacularSourceUrl || "Unknown Source";
-    image = recipe.image || "default_image_url";
+    images = recipe.image ? [recipe.image] : ["no image"];
     videoLink = "will come back to this";
   } else if (isEdamam) {
     if (recipe.recipe) {
@@ -195,7 +195,7 @@ export const extractRecipeData = (recipe) => {
       instructions = ["no instructions for edamam"];
       mealType = recipe.recipe.mealType || [];
       dietaryPreferences = recipe.recipe.healthLabels || [];
-      image = recipe.recipe.image || "default_image_url";
+      images = recipe.recipe.image ? [recipe.recipe.image] : ["no image"];
       sourceUrl = recipe.recipe.shareAs || "Unknown Source";
       videoLink = "will come back to this";
       nutrients =
@@ -226,7 +226,7 @@ export const extractRecipeData = (recipe) => {
       ? recipe.instructions.map((instruction) => instruction.display_text)
       : ["no instructions"];
     videoLink = recipe.original_video_url || "No Video";
-    image = recipe.thumbnail_url || "default_image_url";
+    images = recipe.thumbnail_url ? [recipe.thumbnail_url] : ["no image"];
     prepTime = recipe.prep_time_minutes || 0;
     nutrients = filteredNutrition;
     sourceUrl = "https://rapidapi.com/apidojo/api/tasty/";
@@ -240,7 +240,7 @@ export const extractRecipeData = (recipe) => {
     instructions,
     mealType,
     dietaryPreferences,
-    image,
+    images,
     sourceUrl,
     videoLink,
     prepTime,

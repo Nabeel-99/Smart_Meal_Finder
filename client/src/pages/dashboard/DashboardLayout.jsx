@@ -47,7 +47,7 @@ import ingredientsData from "../../../../server/utils/ingredientsHelper.json";
 import CreatePost from "../../components/CreatePost";
 import Profile from "./Profile";
 import MobileNotificationCard from "../../components/MobileNotificationCard";
-const Dashboard = ({ userData, fetchUserData }) => {
+const DashboardLayout = ({ userData, fetchUserData }) => {
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState(false);
   const [sideMenu, setSideMenu] = useState(false);
@@ -65,6 +65,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
   const [ingredients, setIngredients] = useState([]);
   const [prepTime, setPrepTime] = useState(0);
   const anchorRef = useRef(null);
+
   const navigate = useNavigate();
 
   const addIngredient = () => {
@@ -110,7 +111,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
       );
 
       if (response.status === 200) {
-        window.location = "/home";
+        window.location = "/";
       }
     } catch (error) {
       console.log(error);
@@ -163,8 +164,6 @@ const Dashboard = ({ userData, fetchUserData }) => {
     if (location.pathname === "/profile") return "Profile";
     if (location.pathname === "/content") return "Dashboard";
     if (location.pathname === "/saved-meals") return "Saved Meals";
-    if (location.pathname === "/my-cooking-choices")
-      return "My Cooking Choices";
     if (location.pathname === "/settings") return "Settings";
     if (location.pathname === "/pantry-items") return "Pantry";
   };
@@ -173,7 +172,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
     return (
       <Routes>
         <Route
-          path="/"
+          path="home"
           element={
             <DashboardHome
               anchorRef={anchorRef}
@@ -202,17 +201,6 @@ const Dashboard = ({ userData, fetchUserData }) => {
           path="saved-meals"
           element={
             <SavedMeals
-              showGridView={showGridView}
-              showListView={showListView}
-              gridView={gridView}
-              listView={listView}
-            />
-          }
-        />
-        <Route
-          path="my-cooking-choices"
-          element={
-            <CookingChoice
               showGridView={showGridView}
               showListView={showListView}
               gridView={gridView}
@@ -275,6 +263,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
   return (
     <>
       <div className="flex flex-col lg:flex-row bg-[#08090a] w-full  gap-10">
+        {/* side Menu */}
         {userData && userMetrics && (
           <SideMenu
             userData={userData}
@@ -295,7 +284,7 @@ const Dashboard = ({ userData, fetchUserData }) => {
                 <FaBarsStaggered className="text-2xl" />
               )}
             </button>
-            {location.pathname === "/" && (
+            {location.pathname === "/home" && (
               <button
                 ref={anchorRef}
                 onClick={showNotifications}
@@ -328,10 +317,11 @@ const Dashboard = ({ userData, fetchUserData }) => {
             showPostModal={showPostModal}
           />
         )}
+        {/* Outlet */}
         <div className="bg-[#0c0c0c] lg:pl-64 flex flex-col min-h-screen pb-8 w-full">
           <div
             className={`hidden lg:block   pb-6  z-30 w-full ${
-              location.pathname === "/"
+              location.pathname === "/home"
                 ? ""
                 : "border-b border-b-[#1d1d1d] fixed bg-[#0c0c0c]  pt-6"
             }`}
@@ -358,4 +348,4 @@ const Dashboard = ({ userData, fetchUserData }) => {
   );
 };
 
-export default Dashboard;
+export default DashboardLayout;

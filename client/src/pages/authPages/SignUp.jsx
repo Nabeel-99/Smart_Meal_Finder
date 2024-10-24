@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import TextInput from "../../components/formInputs/TextInput";
 import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState("");
@@ -12,6 +13,11 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
@@ -60,7 +66,7 @@ const SignUp = () => {
       <div className="flex justify-between items-center backdrop-blur-lg  fixed right-8 lg:right-16 lg:top-12 left-8 lg:left-24">
         <SiGreasyfork className="text-2xl lg:text-4xl   backdrop-blur-lg" />
         <Link
-          to={"/home"}
+          to={"/"}
           className="border flex  items-center justify-center rounded-lg bg-[#d9d9d9] text-black w-20 h-8 "
         >
           Close
@@ -118,16 +124,26 @@ const SignUp = () => {
               labelClassName="lg:text-lg"
               className="lg:w-96"
             />
-            <TextInput
-              label={"Password"}
-              htmlFor={"password"}
-              id={"password"}
-              type={"password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              labelClassName="lg:text-lg"
-              className="lg:w-96"
-            />
+            <div className="relative">
+              <TextInput
+                label={"Password"}
+                htmlFor={"password"}
+                id={"password"}
+                type={isPasswordVisible ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                labelClassName="lg:text-lg"
+                className="lg:w-96"
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-12"
+                onClick={togglePasswordVisibility}
+              >
+                {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+
             <div className="pt-4">
               <button
                 type="submit"

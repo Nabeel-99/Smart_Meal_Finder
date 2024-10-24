@@ -123,21 +123,30 @@ export const saveRecipe = async (req, res) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+
     const { recipeDetails } = req.body;
 
-    let exisitingRecipe = await Recipe.findOne({ title: recipeDetails.title });
-    if (exisitingRecipe) {
-      return res.status(400).json({ message: "Recipe already exists" });
-    }
-    const newRecipe = new Recipe({
-      ...recipeDetails,
-    });
-    await newRecipe.save();
-    const savedRecipe = new SavedRecipe({
+    let savedRecipe = await SavedRecipe.findOne({
       userId,
-      recipeId: newRecipe._id,
+      recipeId: recipeDetails._id,
     });
-    await savedRecipe.save();
+
+    if (savedRecipe) {
+      return res.status(400).json({ message: "Recipe already saved" });
+    }
+    let exisitingRecipe = await Recipe.findOne({ title: recipeDetails.title });
+    if (!exisitingRecipe) {
+      const newRecipe = new Recipe({
+        ...recipeDetails,
+      });
+      exisitingRecipe = await newRecipe.save();
+    }
+
+    const newSavedRecipe = new SavedRecipe({
+      userId,
+      recipeId: exisitingRecipe._id,
+    });
+    await newSavedRecipe.save();
 
     return res.status(200).json({ message: "Recipe saved successfully" });
   } catch (error) {

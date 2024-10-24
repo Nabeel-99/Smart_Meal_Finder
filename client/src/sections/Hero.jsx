@@ -7,7 +7,10 @@ import GridCard from "../components/GridCard";
 
 const Hero = () => {
   return (
-    <div className="flex flex-col gap-2 pt-8 justify-center items-center">
+    <div
+      id="/"
+      className="flex flex-col gap-2 pt-8 justify-center items-center"
+    >
       <h1 className="text-4xl md:text-6xl font-bold text-center tracking-tighter">
         Smart <span className="block">Meal Finder</span>{" "}
       </h1>

@@ -17,7 +17,9 @@ const prepareRecipesForInsertion = (recipes) => {
     title: recipe.title || "Untitled",
     ingredients: recipe.ingredients || [],
     instructions: recipe.instructions || [],
-    image: recipe.image || "",
+    images: Array.isArray(recipe.images)
+      ? recipe.images
+      : [recipe.images || "no image"],
     category: recipe.category || "uncategorized",
     dietaryPreferences: recipe.dietaryPreferences || [],
     videoLink: recipe.videoLink || "",
@@ -33,8 +35,13 @@ const generateDashboardRecipes = async (req) => {
     const userId = req.userId;
     const user = await Metrics.findOne({ userId: userId });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return {
+        error: true,
+        message: "User not found",
+        statusCode: 404,
+      };
     }
+
     const {
       gender = null,
       age = null,
@@ -58,7 +65,9 @@ const generateDashboardRecipes = async (req) => {
     const allRecipes = await fetchDashboardRecipes(goal, dietaryPreferences);
     console.log("recipes length", allRecipes.length);
     const filteredAndRankedRecipes = await categorizeRecipes(allRecipes);
+
     return {
+      error: false,
       message: "Dashboard recipes fetched successfully",
       calorieTarget:
         calorieTarget || "No calorie target due to missing preferences",
@@ -66,9 +75,11 @@ const generateDashboardRecipes = async (req) => {
     };
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Error fetching dashboard recipes" });
+    return {
+      error: true,
+      message: "Error fetching dashboard recipes",
+      statusCode: 500,
+    };
   }
 };
 
@@ -79,7 +90,7 @@ export const manageDashboardRecipes = async (req, res) => {
       userId: userId,
     }).populate({
       path: "generatedMeals.breakfast.recipeId generatedMeals.lunch.recipeId generatedMeals.dinner.recipeId",
-      model: "recipe", //getting full recipe data with populate
+      model: "recipe",
     });
 
     if (userDashboard) {
@@ -101,8 +112,17 @@ export const manageDashboardRecipes = async (req, res) => {
       });
     }
 
+    const dashboardResponse = await generateDashboardRecipes(req);
+
+    // Handle error response from generateDashboardRecipes
+    if (dashboardResponse.error) {
+      return res
+        .status(dashboardResponse.statusCode)
+        .json({ message: dashboardResponse.message });
+    }
+
     const { recipes: filteredAndRankedRecipes, calorieTarget } =
-      await generateDashboardRecipes(req);
+      dashboardResponse;
 
     const recipesToSave = prepareRecipesForInsertion([
       ...filteredAndRankedRecipes.breakfast,

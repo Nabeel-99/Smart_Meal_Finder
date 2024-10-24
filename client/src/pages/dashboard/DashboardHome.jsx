@@ -21,14 +21,17 @@ import { Tooltip } from "@mui/material";
 import ImageCard from "../../components/ImageCard";
 import PostHeader from "../../components/PostHeader";
 import PostComment from "../../components/PostComment";
+import AutoHideSnackbar from "../../components/AutoHideSnackbar";
 
 const DashboardHome = ({ anchorRef, showNotifications, currentUserId }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const [likedPosts, setLikedPosts] = useState({});
   const [comment, setComment] = useState("");
+  const [snackbarMsg, setSnackbarMsg] = useState("");
+  const [displaySnackbar, setDisplaySnackbar] = useState("");
 
   const fetchAllPosts = async () => {
     try {
@@ -74,6 +77,7 @@ const DashboardHome = ({ anchorRef, showNotifications, currentUserId }) => {
     setSelectedPost(id);
     setShowModal(true);
     console.log(id);
+    console.log(selectedPost);
   };
 
   const likeRecipe = async (postId) => {
@@ -102,7 +106,7 @@ const DashboardHome = ({ anchorRef, showNotifications, currentUserId }) => {
     }
   };
 
-  const postComment = async (postId) => {
+  const postUserComment = async (postId) => {
     try {
       const response = await axios.post(
         "http://localhost:8000/api/recipes/post-comment",
@@ -115,15 +119,20 @@ const DashboardHome = ({ anchorRef, showNotifications, currentUserId }) => {
         }
       );
       console.log(response.data);
-      const updatedComments = response.data.comment.comments;
+      if (response.status === 200) {
+        const newComment = response.data.comment.comments.slice(-1)[0];
 
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.postId === postId ? { ...post, comments: updatedComments } : post
-        )
-      );
+        setSelectedPost((prevPost) => ({
+          ...prevPost,
+          comments: [...prevPost.comments, newComment],
+        }));
+
+        await fetchAllPosts();
+        console.log(newComment);
+      }
+      setComment("");
     } catch (error) {
-      console.log(error);
+      console.log("Error posting comment:", error);
     }
   };
 
@@ -139,29 +148,37 @@ const DashboardHome = ({ anchorRef, showNotifications, currentUserId }) => {
       );
       console.log(response.data);
 
-      setPosts((prevPosts) => {
-        return prevPosts.map((post) => {
-          if (post.postId === postId) {
-            return {
-              ...post,
-              comments: post.comments.filter(
-                (comment) => comment._id !== commentId
-              ),
-            };
-          }
-          return post;
-        });
+      setSelectedPost((prevPost) => {
+        return {
+          ...prevPost,
+          comments: prevPost.comments.filter(
+            (comment) => comment._id !== commentId
+          ),
+        };
       });
+      if (response.status === 200) {
+        setDisplaySnackbar(true);
+        setSnackbarMsg("Comment deleted");
+      }
     } catch (error) {
       console.log(error);
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status <= 500
+      ) {
+        setDisplaySnackbar(error.response.message);
+        setDisplaySnackbar(true);
+      }
     }
   };
+
   return (
     <>
-      <div className="px-4 lg:px-10 flex flex-col gap-8 w-full">
-        <div className="flex gap-2 items-center justify-between border-b border-b-[#1d1d1d] w-full pb-2">
+      <div className="px-4 lg:px-10 pt-14 lg:pt-0 flex flex-col gap-8 w-full">
+        <div className="hidden  lg:flex gap-2 items-center justify-between border-b border-b-[#1d1d1d] w-full pb-2">
           For you
-          <div className="lg:block xl:hidden">
+          <div className="lg:block  xl:hidden">
             <button ref={anchorRef} onClick={showNotifications}>
               <FaRegHeart className="text-2xl w-6" />
             </button>
@@ -182,7 +199,6 @@ const DashboardHome = ({ anchorRef, showNotifications, currentUserId }) => {
                   isLiked={isLiked}
                   images={images}
                   openModal={openModal}
-                  currentImageIndex={currentImageIndex}
                 />
               );
             })}
@@ -230,12 +246,20 @@ const DashboardHome = ({ anchorRef, showNotifications, currentUserId }) => {
               <PostComment
                 comment={comment}
                 setComment={setComment}
-                postComment={postComment}
+                postUserComment={postUserComment}
                 selectedPost={selectedPost}
               />
             </div>
           </div>
         </ModalComponent>
+      )}
+
+      {displaySnackbar && (
+        <AutoHideSnackbar
+          message={snackbarMsg}
+          openSnackbar={displaySnackbar}
+          setSnackbar={setDisplaySnackbar}
+        />
       )}
     </>
   );

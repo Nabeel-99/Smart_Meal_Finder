@@ -1,13 +1,13 @@
 import { Snackbar } from "@mui/material";
 import React, { useState } from "react";
 
-const AutoHideSnackbar = ({ message, displayMsg, setDisplayMsg }) => {
+const AutoHideSnackbar = ({ message, openSnackbar, setSnackbar }) => {
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
 
-    setDisplayMsg(false);
+    setSnackbar(false);
   };
 
   return (
@@ -19,7 +19,7 @@ const AutoHideSnackbar = ({ message, displayMsg, setDisplayMsg }) => {
             color: "black",
           },
         }}
-        open={displayMsg}
+        open={openSnackbar}
         autoHideDuration={3000}
         onClose={handleClose}
         message={message}

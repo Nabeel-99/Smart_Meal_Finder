@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaTrash } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
+import { HiSquare2Stack } from "react-icons/hi2";
 const MealCard = ({
   meals,
   showInput = false,
@@ -14,6 +15,9 @@ const MealCard = ({
   handleChecboxChange,
   selectedRecipes,
 }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  console.log("meals", meals);
+
   return (
     <>
       <div className="grid grid-col-1  md:grid-cols-2 xl:grid-cols-3 gap-10">
@@ -25,12 +29,23 @@ const MealCard = ({
                   to={`/recipe-details/${meal._id || meal.id}`}
                   state={{ source: sourceType }}
                 >
-                  <div className="pb-2">
+                  <div className="pb-2 relative">
                     <img
-                      src={meal.image}
+                      src={
+                        meal.images[currentImageIndex]
+                          ? meal.images[currentImageIndex].startsWith("http")
+                            ? meal.images[currentImageIndex]
+                            : `http://localhost:8000/${meal.images[currentImageIndex]}`
+                          : "default"
+                      }
                       alt=""
                       className="w-full h-[250px] object-cover rounded-xl"
                     />
+                    {meal.images.length > 1 && (
+                      <div className="absolute right-2 top-2 text-xl font-bold">
+                        <HiSquare2Stack />
+                      </div>
+                    )}
                   </div>
                 </Link>
 
@@ -50,7 +65,9 @@ const MealCard = ({
                     )}
                   </div>
                   <div className="text-sm ">
-                    {meal.calories.toFixed(0)} calories
+                    {meal.calories && (
+                      <span>{meal.calories.toFixed(0)} calories</span>
+                    )}
                   </div>
                 </div>
                 {showMissingIngredients && (
@@ -59,7 +76,7 @@ const MealCard = ({
                   </p>
                 )}
                 {showTrash && (
-                  <div className="flex flex-col justify-end items-end gap-1">
+                  <div className="flex flex-col mt-2 gap-1">
                     <button
                       onClick={() => openDialog(meal._id)}
                       className="hover:text-red-400 transition-all duration-200"
@@ -84,16 +101,32 @@ const MealCard = ({
                         pathname: `/recipe-details/${meal._id || meal.id}`,
                         state: { source: sourceType },
                       }}
+                      className="relative"
                     >
                       <img
-                        src={meal.image}
+                        src={
+                          meal.images[currentImageIndex]
+                            ? meal.images[currentImageIndex].startsWith("http")
+                              ? meal.images[currentImageIndex]
+                              : `http://localhost:8000/${meal.images[currentImageIndex]}`
+                            : "default"
+                        }
                         alt=""
-                        className={`h-full  w-full md:w-96  lg:w-72 rounded-md bg-[#595959] border border-[#7d7d7d]`}
+                        className={`h-full xl:h-44 object-cover  w-full md:w-96  lg:w-72 rounded-md bg-[#595959] border border-[#7d7d7d]`}
                       />
+                      {meal.images.length > 1 && (
+                        <div className="absolute right-2 top-2 text-xl font-bold">
+                          <HiSquare2Stack />
+                        </div>
+                      )}
                     </Link>
                     <div className="flex flex-col gap-2 w-full">
                       <p>{meal.title}</p>
-                      <p>{meal.calories.toFixed(0)} calories</p>
+                      <div className="text-sm ">
+                        {meal.calories && (
+                          <span>{meal.calories.toFixed(0)} calories</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col">

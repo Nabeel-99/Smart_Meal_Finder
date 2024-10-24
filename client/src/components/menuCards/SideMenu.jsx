@@ -39,10 +39,10 @@ const SideMenu = ({
           <div className="flex px-3 pt-8 flex-col  pb-4 text-base font-bold gap-4">
             <button
               onClick={() => {
-                navigate("/");
+                navigate("/home");
               }}
               className={`flex items-center border py-3 rounded-md border-none hover:bg-[#181818] transition-all duration-300  px-2 gap-2 ${
-                location.pathname === "/" ? "bg-[#181818]" : ""
+                location.pathname === "/dashboard" ? "bg-[#181818]" : ""
               }`}
             >
               <GoHomeFill className="w-6 text-2xl " />

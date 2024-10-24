@@ -1,6 +1,12 @@
 import { Tooltip } from "@mui/material";
 import React, { useState } from "react";
-import { FaArrowLeft, FaArrowRight, FaTrash } from "react-icons/fa6";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaChevronLeft,
+  FaChevronRight,
+  FaTrash,
+} from "react-icons/fa6";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
 
 const PreviewCard = ({
@@ -39,14 +45,14 @@ const PreviewCard = ({
     <div className="flex h-full ">
       <Tooltip title="previous">
         <button
-          className={`absolute flex border backdrop-blur-md hover:bg-[#484848] border-[#676767] p-2 bg-[#1d1d1d] rounded-full items-center justify-center top-[50%] ${
+          className={`absolute flex  backdrop-blur-md hover:bg-[#484848]  p-2  rounded-full  items-center justify-center top-[50%] ${
             isFirstImage ? "hidden" : ""
           }`}
           onClick={handlePreviousImage}
           type="button"
           disabled={isFirstImage}
         >
-          <FaArrowLeft />
+          <FaChevronLeft />
         </button>
       </Tooltip>
 
@@ -88,14 +94,14 @@ const PreviewCard = ({
       />
       <Tooltip title="next">
         <button
-          className={`absolute flex border backdrop-blur-md hover:bg-[#484848] border-[#676767] p-2 bg-[#1d1d1d] rounded-full right-0 items-center justify-center top-[50%] ${
+          className={`absolute flex  backdrop-blur-md hover:bg-[#484848]  p-2  rounded-full right-0 items-center justify-center top-[50%] ${
             isLastImage ? "hidden" : ""
           }`}
           type="button"
           onClick={handleNextImage}
           disabled={isLastImage}
         >
-          <FaArrowRight />
+          <FaChevronRight />
         </button>
       </Tooltip>
     </div>

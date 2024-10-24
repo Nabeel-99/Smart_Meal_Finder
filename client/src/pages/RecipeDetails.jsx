@@ -59,7 +59,7 @@ const RecipeDetails = () => {
       const response = await axios.post(
         "http://localhost:8000/api/recipes/save-recipe",
         {
-          recipeDetails,
+          recipeDetails: recipeDetails,
         },
         {
           withCredentials: true,
@@ -97,8 +97,8 @@ const RecipeDetails = () => {
       </div>
       {displayMsg && (
         <AutohideSnackbar
-          displayMsg={displayMsg}
-          setDisplayMsg={setDisplayMsg}
+          openSnackbar={displayMsg}
+          setSnackbar={setDisplayMsg}
           message={message}
         />
       )}

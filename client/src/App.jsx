@@ -20,7 +20,7 @@ import Home from "./pages/Home";
 import MetricsBased from "./pages/MetricsBased";
 import ScrollToTop from "./components/ScrollToTop";
 import RecipeDetails from "./pages/RecipeDetails";
-import Dashboard from "./pages/dashboard/Dashboard";
+
 import SavedMeals from "./pages/dashboard/SavedMeals";
 import DashboardContent from "./pages/dashboard/DashboardContent";
 import CookingChoice from "./pages/dashboard/CookingChoice";
@@ -29,6 +29,7 @@ import Preferences from "./pages/Preferences";
 import axios from "axios";
 import AnimationComponent from "./components/AnimationComponent";
 import PantryItems from "./pages/PantryItems";
+import DashboardLayout from "./pages/dashboard/DashboardLayout";
 
 const App = () => {
   const [userData, setUserData] = useState(null);
@@ -49,7 +50,6 @@ const App = () => {
         withCredentials: true,
       });
       if (response.status === 200) {
-        console.log(response.data);
         setUserData(response.data.user);
       }
     } catch (error) {
@@ -120,20 +120,25 @@ const App = () => {
           <Navbar userData={userData} />
         </MaybeShowComponent>
         <Routes>
-          <Route path="/home" element={<Home userData={userData} />} />
+          <Route path="/" element={<Home userData={userData} />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route
             path="/login"
             element={<Login authenticateUser={authenticateUser} />}
           />
-          <Route path="/preferences" element={<Preferences />} />
-          <Route path="/pantry" element={<PantryItems />} />
+
           <Route
             path="/*"
             element={
-              <Dashboard userData={userData} fetchUserData={authenticateUser} />
+              <DashboardLayout
+                userData={userData}
+                fetchUserData={authenticateUser}
+              />
             }
-          ></Route>
+          />
+
+          <Route path="preferences" element={<Preferences />} />
+          <Route path="pantry" element={<PantryItems />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 

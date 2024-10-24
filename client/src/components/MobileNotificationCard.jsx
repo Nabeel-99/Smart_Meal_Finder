@@ -11,7 +11,7 @@ import { IoIosNotifications, IoIosNotificationsOutline } from "react-icons/io";
 
 const MobileNotificationCard = () => {
   return (
-    <div className="mt-10 xl:sticky py-2 flex flex-col  border border-[#1d1d1d] h-80 bg-[#0f0f0f]">
+    <div className="mt-16  lg:mt-4 relative lg:right-10 lg:top-0 xl:hidden py-2 flex flex-col   border border-[#1d1d1d] h-80 bg-[#0f0f0f]">
       <div className="flex items-center  justify-center border-b border-b-[#2a2a2a] px-4 py-2 text-lg gap-2">
         Notifications
         <IoIosNotifications className="text-2xl w-6" />
